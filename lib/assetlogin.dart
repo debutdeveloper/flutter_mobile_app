@@ -41,20 +41,22 @@ class _state extends State<Login> {
       final credentials = {
         "email": username,
         "password": "bbumv1uu9us7j0j8rjg0",
-        "device_token": "rwefrcr420"
+        "device_token": "abrakadabra"
       };
       var response = await http.post(loginURL, body: credentials, headers: {});
-
-      print(response.statusCode.toString());
+      print(response.body);
       if (response.statusCode == 200) {
         print("SUCCESSFULLY LOGIN");
         var jsonData = json.decode(response.body);
-
-        print(response.body);
+        var first_name = jsonData["data"]["first_name"];
+        var last_name = jsonData["data"]["last_name"];
+        var fullName = first_name + " " + last_name;
+        print(fullName);
         Navigator
             .of(context)
             .push(
-            new MaterialPageRoute(builder: (context) => new Dashboard(null)));
+            new MaterialPageRoute(
+                builder: (context) => new Dashboard(fullName)));
       } else {
         print("UNSUCCESSFUL LOGIN");
       }

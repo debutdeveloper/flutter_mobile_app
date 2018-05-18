@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'Asset.dart';
-
 class MyAssets extends StatefulWidget {
   @override
   _CardViewState createState() => new _CardViewState();
@@ -16,26 +14,10 @@ class _CardViewState extends State<MyAssets> {
     return new Material(
       child: new ListView(
           padding: new EdgeInsets.all(8.0),
-          children: getMyAssets(4)
+          children: []
       ),
     );
   }
 
-  List<Widget> getMyAssets(int count) {
-    List<Widget> notificationCards = [];
-    for (int i = 0; i < count; i++) {
-      var assetModel = new AssetModel(
-          allotedTo: "Narinder Singh",
-          available: "$i May, 2018",
-          status: "Alloted",
-          icon: iconImage,
-          category: "Iphone",
-          modelName: "Iphone $i -64 GB");
 
-      notificationCards.add(new Asset(
-        cardModel: assetModel,
-      ));
-    }
-    return notificationCards;
-  }
 }

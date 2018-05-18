@@ -1,24 +1,25 @@
 import 'package:debut_assets/asset_details.dart';
 import 'package:flutter/material.dart';
 
-class AssetModel {
-  AssetModel({this.icon,
-    this.category,
-    this.allotedTo,
-    this.status,
-    this.available,
-    this.modelName});
-
-  final String icon;
-  final String category;
-  final String allotedTo;
-  final String status;
-  final String available;
-  final String modelName;
-}
+//class AssetModel {
+//  AssetModel.fromJson(Map<String, dynamic> json) {
+//    icon = json["Record"]["color"];
+//    category = json["Record"]["category"];
+//    allotedTo = "Admin";
+//    status = json["Record"]["status"] == 0 ? "Not Working" : "Working";
+//    modelName = json["Record"]["name"];
+//  }
+//
+//  String icon;
+//  String category;
+//  String allotedTo;
+//  String status;
+//  String available;
+//  String modelName;
+//}
 
 class Asset extends StatelessWidget {
-  final AssetModel cardModel;
+  final Map cardModel;
 
   Asset({this.cardModel});
 
@@ -28,17 +29,19 @@ class Asset extends StatelessWidget {
       elevation: 8.0,
       shape: new RoundedRectangleBorder(
           borderRadius: new BorderRadius.all(new Radius.circular(8.0))),
-      child: new
-      Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch, children: <
+      child:
+      new Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: <
           Widget>[
         new Padding(padding: const EdgeInsets.all(8.0)),
         new Row(children: <Widget>[
           new Padding(padding: const EdgeInsets.fromLTRB(8.0, 0.0, 0.0, 0.0)),
-          new Image(
-            image: new NetworkImage(cardModel.icon),
-            width: 80.0,
-            height: 80.0,
+          new CircleAvatar(
+            minRadius: 36.0,
+            child: new Text(
+              cardModel["name"].toString()[0],
+              style: new TextStyle(color: Colors.white, fontSize: 32.0),
+            ),
+            backgroundColor: Colors.deepOrange,
           ),
           new Padding(padding: const EdgeInsets.fromLTRB(8.0, 0.0, 0.0, 0.0)),
           new Expanded(
@@ -46,7 +49,7 @@ class Asset extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 new Text(
-                  cardModel.modelName,
+                  cardModel["name"],
                   style: new TextStyle(
                     fontSize: 18.0,
                     fontWeight: FontWeight.w600,
@@ -67,25 +70,30 @@ class Asset extends StatelessWidget {
                                 style: new TextStyle(
                                   fontSize: 12.0,
                                 )),
-                            new Text(cardModel.category,
+                            new Text(cardModel["category"]["name"],
                                 style: new TextStyle(
                                     fontSize: 12.0,
                                     fontWeight: FontWeight.w400)),
                           ],
                         ),
                         new Padding(
-                            padding: const EdgeInsets.fromLTRB(
-                                0.0, 4.0, 0.0, 0.0)),
+                            padding:
+                            const EdgeInsets.fromLTRB(0.0, 4.0, 0.0, 0.0)),
                         new Row(
                           children: <Widget>[
                             new Text('Status - ',
                                 style: new TextStyle(
                                   fontSize: 12.0,
                                 )),
-                            new Text(cardModel.status,
+                            new Text(
+                                cardModel["status"] == 0 ? "False" : "True",
                                 style: new TextStyle(
-                                    fontSize: 12.0,
-                                    fontWeight: FontWeight.w400)),
+                                  fontSize: 12.0,
+                                  fontWeight: FontWeight.w400,
+                                  color: cardModel["status"] == 0
+                                      ? Colors.red
+                                      : Colors.green,
+                                )),
                           ],
                         )
                       ],
@@ -99,7 +107,7 @@ class Asset extends StatelessWidget {
                                 style: new TextStyle(
                                   fontSize: 12.0,
                                 )),
-                            new Text(cardModel.allotedTo,
+                            new Text("Admin",
                                 style: new TextStyle(
                                     fontSize: 12.0,
                                     color: Colors.blue,
@@ -107,18 +115,20 @@ class Asset extends StatelessWidget {
                           ],
                         ),
                         new Padding(
-                            padding: const EdgeInsets.fromLTRB(
-                                0.0, 4.0, 0.0, 0.0)),
+                            padding:
+                            const EdgeInsets.fromLTRB(0.0, 4.0, 0.0, 0.0)),
                         new Row(
                           children: <Widget>[
                             new Text('Available - ',
                                 style: new TextStyle(
                                   fontSize: 12.0,
                                 )),
-                            new Text(cardModel.available,
+                            new Text(cardModel["status"].toString(),
                                 style: new TextStyle(
                                     fontSize: 12.0,
-                                    color: Colors.green,
+                                    color: cardModel["status"] == 0
+                                        ? Colors.red
+                                        : Colors.green,
                                     fontWeight: FontWeight.w400)),
                           ],
                         )

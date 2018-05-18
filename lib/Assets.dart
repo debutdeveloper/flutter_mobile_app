@@ -1,6 +1,9 @@
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:debut_assets/Asset.dart';
 import 'package:flutter/material.dart';
-
+import 'package:http/http.dart' as http;
 
 class Assets extends StatefulWidget {
   @override
@@ -8,35 +11,45 @@ class Assets extends StatefulWidget {
 }
 
 class _CardViewState extends State<Assets> {
-  String iconImage =
-      "http://68.media.tumblr.com/f7e2e01128ca8eb2b9436aa3eb2a0a33/tumblr_ogwlnpSpcU1sikc68o1_1280.png";
+  List assetsList;
+
+  Future<String> getAssetsList() async {
+    var response = await http.get("http://192.168.0.18:3000/asset",
+        headers: {"Accept": "application/json"});
+    if (response.statusCode == 200) {
+      var listData = json.decode(response.body);
+      setState(() {
+        assetsList = listData["assets"];
+      });
+    }
+
+    return "Success";
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    this.getAssetsList();
+  }
 
   @override
   Widget build(BuildContext context) {
     return new Container(
-      color: Colors.white,
-      child: new ListView(
-          padding: new EdgeInsets.all(6.0),
-          children: getMyAssets(12)
-      ),
+        color: Colors.white,
+        child: getListView()
     );
   }
 
+  Widget getListView() {
+    return new ListView.builder(
+      itemBuilder: (buildContext, index) {
+        return new Asset(
+          cardModel: assetsList[index]["Record"],
+        );
+      },
+      itemCount: assetsList == null ? 0 : assetsList.length,
 
-  List<Widget> getMyAssets(int count) {
-    List<Widget> notificationCards = [];
-    for (int i = 0; i < count; i++) {
-      var assetModel = new AssetModel(
-          allotedTo: "Narinder Singh",
-          available: "$i May, 2018",
-          status: "Alloted",
-          icon: iconImage,
-          category: "Iphone",
-          modelName: "Iphone $i -64 GB");
-
-      notificationCards.add(new Asset(cardModel: assetModel,));
-    }
-    return notificationCards;
+    );
   }
-
 }

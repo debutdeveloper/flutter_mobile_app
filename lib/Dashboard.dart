@@ -1,15 +1,16 @@
+import 'dart:async';
+
 import 'package:debut_assets/Assets.dart';
 import 'package:debut_assets/MyAssets.dart';
 import 'package:debut_assets/Notifications.dart';
-import 'package:debut_assets/models/LoginResponse.dart';
 import 'package:debut_assets/utils.dart';
 import 'package:flutter/material.dart';
 
 class Dashboard extends StatefulWidget {
 
-  final LoginResponse loginResponse;
+  final String userName;
 
-  Dashboard(this.loginResponse);
+  Dashboard(this.userName);
 
   @override
   _DashboardState createState() => new _DashboardState();
@@ -56,7 +57,26 @@ class _DashboardState extends State<Dashboard>
         _getAppTitle();
       }
     });
+
+//    _askedToLead();
   }
+
+  Future<Null> _askedToLead() async {
+    await showDialog(context: context, child: new SimpleDialog(
+      title: const Text('Alert'),
+      children: <Widget>[
+        new Text("Welcome ${widget.userName} to Debut Assets",
+          style: new TextStyle(fontSize: 24.0, color: Colors.teal),),
+        new SimpleDialogOption(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          child: const Text('OK'),
+        ),
+      ],
+    ));
+  }
+
 
   @override
   void dispose() {
