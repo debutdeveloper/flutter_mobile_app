@@ -1,0 +1,155 @@
+import 'package:debut_assets/asset_details.dart';
+import 'package:flutter/material.dart';
+
+class AssetModel {
+  AssetModel({this.icon,
+    this.category,
+    this.allotedTo,
+    this.status,
+    this.available,
+    this.modelName});
+
+  final String icon;
+  final String category;
+  final String allotedTo;
+  final String status;
+  final String available;
+  final String modelName;
+}
+
+class Asset extends StatelessWidget {
+  final AssetModel cardModel;
+
+  Asset({this.cardModel});
+
+  @override
+  Widget build(BuildContext context) {
+    return new Card(
+      elevation: 8.0,
+      shape: new RoundedRectangleBorder(
+          borderRadius: new BorderRadius.all(new Radius.circular(8.0))),
+      child: new
+      Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch, children: <
+          Widget>[
+        new Padding(padding: const EdgeInsets.all(8.0)),
+        new Row(children: <Widget>[
+          new Padding(padding: const EdgeInsets.fromLTRB(8.0, 0.0, 0.0, 0.0)),
+          new Image(
+            image: new NetworkImage(cardModel.icon),
+            width: 80.0,
+            height: 80.0,
+          ),
+          new Padding(padding: const EdgeInsets.fromLTRB(8.0, 0.0, 0.0, 0.0)),
+          new Expanded(
+            child: new Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                new Text(
+                  cardModel.modelName,
+                  style: new TextStyle(
+                    fontSize: 18.0,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                new Padding(
+                    padding: const EdgeInsets.fromLTRB(0.0, 8.0, 0.0, 0.0)),
+                new Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    new Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        new Row(
+                          children: <Widget>[
+                            new Text('Category - ',
+                                style: new TextStyle(
+                                  fontSize: 12.0,
+                                )),
+                            new Text(cardModel.category,
+                                style: new TextStyle(
+                                    fontSize: 12.0,
+                                    fontWeight: FontWeight.w400)),
+                          ],
+                        ),
+                        new Padding(
+                            padding: const EdgeInsets.fromLTRB(
+                                0.0, 4.0, 0.0, 0.0)),
+                        new Row(
+                          children: <Widget>[
+                            new Text('Status - ',
+                                style: new TextStyle(
+                                  fontSize: 12.0,
+                                )),
+                            new Text(cardModel.status,
+                                style: new TextStyle(
+                                    fontSize: 12.0,
+                                    fontWeight: FontWeight.w400)),
+                          ],
+                        )
+                      ],
+                    ),
+                    new Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        new Row(
+                          children: <Widget>[
+                            new Text('Alloted - ',
+                                style: new TextStyle(
+                                  fontSize: 12.0,
+                                )),
+                            new Text(cardModel.allotedTo,
+                                style: new TextStyle(
+                                    fontSize: 12.0,
+                                    color: Colors.blue,
+                                    fontWeight: FontWeight.w400)),
+                          ],
+                        ),
+                        new Padding(
+                            padding: const EdgeInsets.fromLTRB(
+                                0.0, 4.0, 0.0, 0.0)),
+                        new Row(
+                          children: <Widget>[
+                            new Text('Available - ',
+                                style: new TextStyle(
+                                  fontSize: 12.0,
+                                )),
+                            new Text(cardModel.available,
+                                style: new TextStyle(
+                                    fontSize: 12.0,
+                                    color: Colors.green,
+                                    fontWeight: FontWeight.w400)),
+                          ],
+                        )
+                      ],
+                    ),
+                    new Padding(
+                      padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
+                    )
+                  ],
+                ),
+              ],
+            ),
+          )
+        ]),
+        new Padding(padding: const EdgeInsets.fromLTRB(0.0, 8.0, 0.0, 0.0)),
+        new ButtonTheme(
+          height: 40.0,
+          child: new RaisedButton(
+            child: new Text(
+              'VIEW DETAIS',
+              style: new TextStyle(fontSize: 12.0),
+            ),
+            color: Colors.blueAccent,
+            onPressed: () {
+              Navigator.of(context).push(new MaterialPageRoute(
+                  builder: (context) => new AssetHistory()));
+            },
+            textColor: Colors.white,
+          ),
+        )
+      ]),
+    );
+  }
+}
