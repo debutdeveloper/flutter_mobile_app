@@ -1,7 +1,18 @@
+import 'dart:async';
+
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:debut_assets/models/Asset.dart';
+import 'package:debut_assets/models/User.dart';
 import 'package:debut_assets/utils.dart';
 import 'package:flutter/material.dart';
 
 class RequestAsset extends StatefulWidget {
+  final User user;
+  final Asset asset;
+
+  RequestAsset({@required this.user,@required this.asset});
+
   @override
   _State createState() => new _State();
 }
@@ -16,6 +27,9 @@ class _State extends State<RequestAsset> {
   static final TextEditingController _user = new TextEditingController();
   static final TextEditingController _pass = new TextEditingController();
 
+  final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
+  final GlobalKey<ScaffoldState> scaffoldKey = new GlobalKey<ScaffoldState>();
+
   String username = _user.text;
   String password = _pass.text;
   double priority = 0.0;
@@ -23,11 +37,71 @@ class _State extends State<RequestAsset> {
   bool rememberMe = false;
   bool errorsOnForm = false;
 
-  bool _obscureText = true;
+  TimeOfDay _startTime = new TimeOfDay.now();
+  TimeOfDay _endTime = new TimeOfDay.now();
 
-  FocusNode _password = new FocusNode();
-  final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
-  final GlobalKey<ScaffoldState> scaffoldKey = new GlobalKey<ScaffoldState>();
+  Future startTimePicker(BuildContext context) async {
+    final TimeOfDay time = await showTimePicker(context: context, initialTime: _startTime);
+
+    /// Check selected date
+    if (time != null) {
+      setState(() {
+        _startTime = time;
+        print("starttime $_startTime");
+      });
+    }
+  }
+
+  Future endTimePicker(BuildContext context) async {
+    final TimeOfDay time = await showTimePicker(context: context, initialTime: _endTime);
+
+    /// Check selected date
+    if (time != null) {
+      setState(() {
+        _endTime = time;
+        print(_endTime);
+      });
+    }
+  }
+
+  _requestForAsset() async{
+    if (_formKey.currentState.validate()) {
+      final String requestURL = "http://192.168.0.18:3000/request/" +
+          widget.asset.record.category.id;
+      final credentials = {
+        "description": "POORNIMA TK",
+        "start_time": "10/12/2017 23:59:30",
+        "end_time": "10/12/2017 00:59:30",
+        "priority": "1",
+        "user": {
+          "id": "bbukl4eu9us7j0j8rj5g",
+          "first_name": "Raj",
+          "last_name": "Thakur"
+        },
+        "asset": {
+          "id": "bbukk4eu9us7j0j8rj4g",
+          "name": "Iphone 6s",
+          "description": "sfsddas"
+        }
+      };
+
+      var response = await http.post(
+          requestURL, body: credentials, headers: {});
+      print(response.body);
+
+
+      if (response.statusCode == 200) {
+        print("SUCCESSFULLY REQUEST SENT");
+        scaffoldKey.currentState.showSnackBar(
+          new SnackBar(content: new Text("Requested Successfully"))
+        );
+      } else {
+        scaffoldKey.currentState.showSnackBar(
+            new SnackBar(content: new Text("Something went wrong"))
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -73,36 +147,102 @@ class _State extends State<RequestAsset> {
                             new SizedBox(
                               height: 24.0,
                             ),
-                            new TextFormField(
-                                maxLines: 1,
-                                decoration: new InputDecoration(
-                                  hintText: "Asset needs to",
-                                  border: new OutlineInputBorder(
-                                      borderRadius:
-                                          new BorderRadius.circular(12.0)),
-                                )),
+//                            new TextFormField(
+//                                maxLines: 1,
+//                                keyboardType: ,
+//                                decoration: new InputDecoration(
+//                                  hintText: "Asset needs from",
+//                                  labelText:  "Asset needs from",
+//                                  border: new OutlineInputBorder(
+//                                      borderRadius:
+//                                          new BorderRadius.circular(12.0)),
+//                                )),
+                            new GestureDetector(
+                              onTap: () { startTimePicker(context); },
+                              child: new Container(
+                                height: 48.0,
+                                decoration: new BoxDecoration(
+                                    borderRadius: new BorderRadius.all(
+                                        new Radius.circular(12.0)),
+                                    border: new Border.all(
+                                      color: Colors.grey,
+                                      width: 1.0,
+                                    )),
+                                child: new Center(
+                                  child: new Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                    children: <Widget>[
+                                      new Text('Today:',
+                                        style: const TextStyle(
+                                          fontSize: 18.0
+                                        ),
+                                      ),
+                                      new Text(_startTime.toString(),
+                                        style: const TextStyle(
+                                            fontSize: 18.0
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                            new SizedBox(
+                              height: 8.0,
+                            ),
+//                            new TextFormField(
+//                                maxLines: 1,
+//                                decoration: new InputDecoration(
+//                                  hintText: "Asset needs upto",
+//                                  border: new OutlineInputBorder(
+//                                      borderRadius:
+//                                          new BorderRadius.circular(12.0)),
+//                                )),
+                            new GestureDetector(
+                              onTap: () { endTimePicker(context); },
+                              child: new Container(
+                                height: 48.0,
+                                decoration: new BoxDecoration(
+                                    borderRadius: new BorderRadius.all(
+                                        new Radius.circular(12.0)),
+                                    border: new Border.all(
+                                      color: Colors.grey,
+                                      width: 1.0,
+                                    )),
+                                child: new Center(
+                                  child: new Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                    children: <Widget>[
+                                      new Text('Today:',
+                                        style: const TextStyle(
+                                            fontSize: 18.0
+                                        ),
+                                      ),
+                                      new Text(_endTime.toString(),
+                                        style: const TextStyle(
+                                            fontSize: 18.0
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
                             new SizedBox(
                               height: 8.0,
                             ),
                             new TextFormField(
                                 maxLines: 1,
+                                initialValue: widget.user.data.emp_id,
+                                enabled: false,
                                 decoration: new InputDecoration(
-                                  hintText: "Asset needs upto",
+                                  labelText: "Employee ID",
                                   border: new OutlineInputBorder(
                                       borderRadius:
-                                          new BorderRadius.circular(12.0)),
-                                )),
-                            new SizedBox(
-                              height: 8.0,
+                                          new BorderRadius.circular(12.0),
+                                  ),
+                                )
                             ),
-                            new TextFormField(
-                                maxLines: 1,
-                                decoration: new InputDecoration(
-                                  hintText: "Employee ID",
-                                  border: new OutlineInputBorder(
-                                      borderRadius:
-                                          new BorderRadius.circular(12.0)),
-                                )),
                             new SizedBox(
                               height: 8.0,
                             ),
@@ -210,7 +350,9 @@ class _State extends State<RequestAsset> {
                     minWidth: screenSize.width,
                     height: buttonHeight,
                     child: new FlatButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        _requestForAsset();
+                      },
                       shape: new StadiumBorder(),
                       child: new Text(
                         "REQUEST",
