@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:debut_assets/Dashboard.dart';
 import 'package:debut_assets/forgot_password.dart';
+import 'package:debut_assets/models/User.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -39,24 +40,24 @@ class _state extends State<Login> {
     if (_formKey.currentState.validate()) {
       final String loginURL = "http://192.168.0.18:3000/user/login";
       final credentials = {
-        "email": username,
-        "password": "bbumv1uu9us7j0j8rjg0",
+        "email": "raj.thakur@debutinfotech.com",
+        "password": "ioszindabad!",
         "device_token": "abrakadabra"
       };
       var response = await http.post(loginURL, body: credentials, headers: {});
       print(response.body);
+
+
       if (response.statusCode == 200) {
         print("SUCCESSFULLY LOGIN");
-        var jsonData = json.decode(response.body);
-        var first_name = jsonData["data"]["first_name"];
-        var last_name = jsonData["data"]["last_name"];
-        var fullName = first_name + " " + last_name;
-        print(fullName);
+
+        var userJson = json.decode(response.body);
+        var newUser = new User.fromJSON(userJson);
         Navigator
             .of(context)
             .push(
             new MaterialPageRoute(
-                builder: (context) => new Dashboard(fullName)));
+                builder: (context) => new Dashboard(newUser)));
       } else {
         print("UNSUCCESSFUL LOGIN");
       }

@@ -1,8 +1,14 @@
+import 'package:debut_assets/models/Asset.dart';
 import 'package:debut_assets/request_asset.dart';
 import 'package:debut_assets/utils.dart';
 import 'package:flutter/material.dart';
 
 class AssetHistory extends StatefulWidget {
+
+  final Asset asset;
+
+  const AssetHistory(this.asset);
+
   @override
   _State createState() => new _State();
 }
@@ -13,6 +19,7 @@ class _State extends State<AssetHistory> {
   @override
   void initState() {
     fillList();
+    print("Device name : ${widget.asset.record.name}");
     super.initState();
   }
 

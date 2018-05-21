@@ -3,14 +3,13 @@ import 'dart:async';
 import 'package:debut_assets/Assets.dart';
 import 'package:debut_assets/MyAssets.dart';
 import 'package:debut_assets/Notifications.dart';
+import 'package:debut_assets/models/User.dart';
 import 'package:debut_assets/utils.dart';
 import 'package:flutter/material.dart';
 
 class Dashboard extends StatefulWidget {
-  final String userName;
-
-  Dashboard(this.userName);
-
+  final User user;
+  Dashboard(this.user);
   @override
   _DashboardState createState() => new _DashboardState();
 }
@@ -56,6 +55,9 @@ class _DashboardState extends State<Dashboard>
       }
     });
 
+
+    print(widget.user.data.password);
+
 //    _askedToLead();
   }
 
@@ -66,7 +68,7 @@ class _DashboardState extends State<Dashboard>
           title: const Text('Alert'),
           children: <Widget>[
             new Text(
-              "Welcome ${widget.userName} to Debut Assets",
+              "Welcome ${widget.user.data.first_name} to Debut Assets",
               style: new TextStyle(fontSize: 24.0, color: Colors.teal),
             ),
             new SimpleDialogOption(

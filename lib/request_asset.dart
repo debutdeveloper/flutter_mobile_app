@@ -6,12 +6,19 @@ class RequestAsset extends StatefulWidget {
   _State createState() => new _State();
 }
 
+enum RequestPriority {
+  high,
+  medium,
+  low,
+}
+
 class _State extends State<RequestAsset> {
   static final TextEditingController _user = new TextEditingController();
   static final TextEditingController _pass = new TextEditingController();
 
   String username = _user.text;
   String password = _pass.text;
+  double priority = 0.0;
 
   bool rememberMe = false;
   bool errorsOnForm = false;
@@ -24,9 +31,7 @@ class _State extends State<RequestAsset> {
 
   @override
   Widget build(BuildContext context) {
-    var screenSize = MediaQuery
-        .of(context)
-        .size;
+    var screenSize = MediaQuery.of(context).size;
 
     return new Scaffold(
       appBar: new AppBar(
@@ -74,7 +79,7 @@ class _State extends State<RequestAsset> {
                                   hintText: "Asset needs to",
                                   border: new OutlineInputBorder(
                                       borderRadius:
-                                      new BorderRadius.circular(12.0)),
+                                          new BorderRadius.circular(12.0)),
                                 )),
                             new SizedBox(
                               height: 8.0,
@@ -85,7 +90,7 @@ class _State extends State<RequestAsset> {
                                   hintText: "Asset needs upto",
                                   border: new OutlineInputBorder(
                                       borderRadius:
-                                      new BorderRadius.circular(12.0)),
+                                          new BorderRadius.circular(12.0)),
                                 )),
                             new SizedBox(
                               height: 8.0,
@@ -96,7 +101,7 @@ class _State extends State<RequestAsset> {
                                   hintText: "Employee ID",
                                   border: new OutlineInputBorder(
                                       borderRadius:
-                                      new BorderRadius.circular(12.0)),
+                                          new BorderRadius.circular(12.0)),
                                 )),
                             new SizedBox(
                               height: 8.0,
@@ -111,17 +116,92 @@ class _State extends State<RequestAsset> {
                                     hintText: "Purpose",
                                     border: new OutlineInputBorder(
                                         borderRadius:
-                                        new BorderRadius.circular(12.0)),
+                                            new BorderRadius.circular(12.0)),
                                   )),
                             ),
+                            new SizedBox(
+                              height: 8.0,
+                            ),
+                            new Container(
+                              padding: new EdgeInsets.only(
+                                  left: 4.0, right: 4.0, bottom: 4.0),
+                              decoration: new BoxDecoration(
+                                  borderRadius: new BorderRadius.all(
+                                      new Radius.circular(12.0)),
+                                  border: new Border.all(
+                                    color: Colors.grey,
+                                    width: 1.0,
+                                  )),
+                              child: new Row(
+                                children: <Widget>[
+                                  new Text(
+                                    "Priority",
+                                    style: new TextStyle(
+                                      fontWeight: FontWeight.normal,
+                                    ),
+                                  ),
+                                  new SizedBox(
+                                    width: 12.0,
+                                  ),
+                                  new Expanded(
+                                    child: new Column(
+                                      children: <Widget>[
+                                        new Slider(
+                                          max: 2.0,
+                                          min: 0.0,
+                                          label: setSliderLabel(),
+                                          value: priority,
+                                          onChanged: (value) {
+                                            setState(() {
+                                              priority = value;
+                                            });
+                                          },
+                                          divisions: 2,
+                                        ),
+                                        new Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: <Widget>[
+                                            new Text(
+                                              "Low",
+                                              style: new TextStyle(
+                                                color: priority == 0.0
+                                                    ? Colors.blue
+                                                    : Colors.black,
+                                              ),
+                                            ),
+                                            new Text(
+                                              "Medium",
+                                              style: new TextStyle(
+                                                color: priority == 1.0
+                                                    ? Colors.blue
+                                                    : Colors.black,
+                                              ),
+                                            ),
+                                            new Text(
+                                              "High",
+                                              style: new TextStyle(
+                                                color: priority == 2.0
+                                                    ? Colors.blue
+                                                    : Colors.black,
+                                              ),
+                                            ),
+                                          ],
+                                        )
+                                      ],
+                                    ),
+                                  )
+                                ],
+                              ),
+                            )
                           ],
                         ),
                       ),
                     )),
               ),
               new Padding(
-                padding: const EdgeInsets.only(
-                    top: 16.0, left: 64.0, right: 64.0),
+                padding:
+                    const EdgeInsets.only(top: 16.0, left: 64.0, right: 64.0),
                 child: new Container(
                   decoration: new BoxDecoration(
                       borderRadius: new BorderRadius.circular(32.0),
@@ -130,14 +210,12 @@ class _State extends State<RequestAsset> {
                     minWidth: screenSize.width,
                     height: buttonHeight,
                     child: new FlatButton(
-                      onPressed: () {
-
-                      },
+                      onPressed: () {},
                       shape: new StadiumBorder(),
                       child: new Text(
                         "REQUEST",
-                        style: new TextStyle(
-                            color: Colors.white, fontSize: 16.0),
+                        style:
+                            new TextStyle(color: Colors.white, fontSize: 16.0),
                       ),
                     ),
                   ),
@@ -146,5 +224,18 @@ class _State extends State<RequestAsset> {
             ],
           )),
     );
+  }
+
+  String setSliderLabel() {
+    switch (priority.truncate()) {
+      case 0:
+        return "Low";
+      case 1:
+        return "Medium";
+      case 2:
+        return "High";
+      default:
+        return 'Low';
+    }
   }
 }

@@ -1,11 +1,14 @@
 import 'package:debut_assets/asset_details.dart';
+import 'package:debut_assets/models/Asset.dart';
 import 'package:flutter/material.dart';
 
 
-class Asset extends StatelessWidget {
-  final Map cardModel;
+class AssetCard extends StatelessWidget {
+//  final Map cardModel;
+  final Asset asset;
 
-  Asset({this.cardModel});
+
+  AssetCard({this.asset});
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +25,7 @@ class Asset extends StatelessWidget {
           new CircleAvatar(
             minRadius: 36.0,
             child: new Text(
-              cardModel["name"].toString()[0],
+              asset.record.name[0],
               style: new TextStyle(color: Colors.white, fontSize: 32.0),
             ),
             backgroundColor: Colors.deepOrange,
@@ -33,7 +36,7 @@ class Asset extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 new Text(
-                  cardModel["name"],
+                  asset.record.name,
                   style: new TextStyle(
                     fontSize: 18.0,
                     fontWeight: FontWeight.w600,
@@ -54,7 +57,7 @@ class Asset extends StatelessWidget {
                                 style: new TextStyle(
                                   fontSize: 12.0,
                                 )),
-                            new Text(cardModel["category"]["name"],
+                            new Text(asset.record.category.name,
                                 style: new TextStyle(
                                     fontSize: 12.0,
                                     fontWeight: FontWeight.bold)),
@@ -70,11 +73,11 @@ class Asset extends StatelessWidget {
                                   fontSize: 12.0,
                                 )),
                             new Text(
-                                cardModel["status"] == 0 ? "False" : "True",
+                                asset.record.status == 0 ? "False" : "True",
                                 style: new TextStyle(
                                   fontSize: 12.0,
                                   fontWeight: FontWeight.bold,
-                                  color: cardModel["status"] == 0
+                                  color: asset.record.status == 0
                                       ? Colors.red
                                       : Colors.green,
                                 )),
@@ -107,10 +110,10 @@ class Asset extends StatelessWidget {
                                 style: new TextStyle(
                                   fontSize: 12.0,
                                 )),
-                            new Text(cardModel["status"].toString(),
+                            new Text(asset.record.status.toString(),
                                 style: new TextStyle(
                                     fontSize: 12.0,
-                                    color: cardModel["status"] == 0
+                                    color: asset.record.status == 0
                                         ? Colors.red
                                         : Colors.green,
                                     fontWeight: FontWeight.w400)),
@@ -138,7 +141,7 @@ class Asset extends StatelessWidget {
             color: Colors.blueAccent,
             onPressed: () {
               Navigator.of(context).push(new MaterialPageRoute(
-                  builder: (context) => new AssetHistory()));
+                  builder: (context) => new AssetHistory(asset)));
             },
             textColor: Colors.white,
           ),
