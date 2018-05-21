@@ -11,9 +11,11 @@ class Assets extends StatefulWidget {
 }
 
 class _CardViewState extends State<Assets> {
-  List assetsList;
 
+
+  List assetsList;
   Future<String> getAssetsList() async {
+    print("Getting list");
     var response = await http.get("http://192.168.0.18:3000/asset",
         headers: {"Accept": "application/json"});
     if (response.statusCode == 200) {
@@ -43,6 +45,8 @@ class _CardViewState extends State<Assets> {
 
   Widget getListView() {
     return new ListView.builder(
+
+      padding: new EdgeInsets.all(8.0),
       itemBuilder: (buildContext, index) {
         return new Asset(
           cardModel: assetsList[index]["Record"],

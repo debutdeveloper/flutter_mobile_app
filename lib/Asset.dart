@@ -1,22 +1,6 @@
 import 'package:debut_assets/asset_details.dart';
 import 'package:flutter/material.dart';
 
-//class AssetModel {
-//  AssetModel.fromJson(Map<String, dynamic> json) {
-//    icon = json["Record"]["color"];
-//    category = json["Record"]["category"];
-//    allotedTo = "Admin";
-//    status = json["Record"]["status"] == 0 ? "Not Working" : "Working";
-//    modelName = json["Record"]["name"];
-//  }
-//
-//  String icon;
-//  String category;
-//  String allotedTo;
-//  String status;
-//  String available;
-//  String modelName;
-//}
 
 class Asset extends StatelessWidget {
   final Map cardModel;
@@ -73,7 +57,7 @@ class Asset extends StatelessWidget {
                             new Text(cardModel["category"]["name"],
                                 style: new TextStyle(
                                     fontSize: 12.0,
-                                    fontWeight: FontWeight.w400)),
+                                    fontWeight: FontWeight.bold)),
                           ],
                         ),
                         new Padding(
@@ -89,7 +73,7 @@ class Asset extends StatelessWidget {
                                 cardModel["status"] == 0 ? "False" : "True",
                                 style: new TextStyle(
                                   fontSize: 12.0,
-                                  fontWeight: FontWeight.w400,
+                                  fontWeight: FontWeight.bold,
                                   color: cardModel["status"] == 0
                                       ? Colors.red
                                       : Colors.green,

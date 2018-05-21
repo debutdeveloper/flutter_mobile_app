@@ -7,7 +7,6 @@ import 'package:debut_assets/utils.dart';
 import 'package:flutter/material.dart';
 
 class Dashboard extends StatefulWidget {
-
   final String userName;
 
   Dashboard(this.userName);
@@ -17,7 +16,7 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   TabController tabController;
 
   String _allAssets = "All Assets";
@@ -43,7 +42,6 @@ class _DashboardState extends State<Dashboard>
     });
   }
 
-
   @override
   void initState() {
     // TODO: implement initState
@@ -62,21 +60,24 @@ class _DashboardState extends State<Dashboard>
   }
 
   Future<Null> _askedToLead() async {
-    await showDialog(context: context, child: new SimpleDialog(
-      title: const Text('Alert'),
-      children: <Widget>[
-        new Text("Welcome ${widget.userName} to Debut Assets",
-          style: new TextStyle(fontSize: 24.0, color: Colors.teal),),
-        new SimpleDialogOption(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          child: const Text('OK'),
-        ),
-      ],
-    ));
+    await showDialog(
+        context: context,
+        child: new SimpleDialog(
+          title: const Text('Alert'),
+          children: <Widget>[
+            new Text(
+              "Welcome ${widget.userName} to Debut Assets",
+              style: new TextStyle(fontSize: 24.0, color: Colors.teal),
+            ),
+            new SimpleDialogOption(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        ));
   }
-
 
   @override
   void dispose() {
@@ -87,7 +88,6 @@ class _DashboardState extends State<Dashboard>
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-
       appBar: new AppBar(
         automaticallyImplyLeading: false,
         title: new Text(_appTitle),
@@ -96,11 +96,9 @@ class _DashboardState extends State<Dashboard>
         ),
       ),
       bottomNavigationBar: new TabBar(
-
-
+        key: new PageStorageKey("assets"),
         labelStyle: new TextStyle(fontSize: 12.0, color: Colors.white),
         unselectedLabelColor: Colors.black,
-
         indicator: new BoxDecoration(
           gradient: getGradient(),
         ),
@@ -121,8 +119,6 @@ class _DashboardState extends State<Dashboard>
         controller: tabController,
       ),
       body: new TabBarView(
-        physics: new NeverScrollableScrollPhysics(),
-
         children: [
           new Assets(),
           new MyAssets(),
