@@ -1,11 +1,13 @@
 import 'dart:async';
 
+import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:debut_assets/models/Asset.dart';
 import 'package:debut_assets/models/User.dart';
 import 'package:debut_assets/utils.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class RequestAsset extends StatefulWidget {
   final User user;
@@ -24,87 +26,249 @@ enum RequestPriority {
 }
 
 class _State extends State<RequestAsset> {
-  static final TextEditingController _user = new TextEditingController();
-  static final TextEditingController _pass = new TextEditingController();
 
+  static final TextEditingController _purposeController = new TextEditingController();
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
   final GlobalKey<ScaffoldState> scaffoldKey = new GlobalKey<ScaffoldState>();
 
-  String username = _user.text;
-  String password = _pass.text;
+  String get _purpose => _purposeController.text;
   double priority = 0.0;
 
   bool rememberMe = false;
   bool errorsOnForm = false;
 
-  TimeOfDay _startTime = new TimeOfDay.now();
-  TimeOfDay _endTime = new TimeOfDay.now();
+  bool isStartTimeSelected = false;
+  bool isEndTimeSelected = false;
+
+  TimeOfDay _actualStartTime = new TimeOfDay.now();
+
+  String _startTimeLabel = 'Select time';
+  String _endTimeLabel = 'Select time';
+
+  String _startTimeString = '${new TimeOfDay.now().hour}:${new TimeOfDay.now().minute}:00';
+  String _endTimeString = '${new TimeOfDay.now().hour}:${new TimeOfDay.now().minute}:00';
+
+  String _today = new DateFormat.yMd().format(new DateTime.now()).toString();
 
   Future startTimePicker(BuildContext context) async {
-    final TimeOfDay time = await showTimePicker(context: context, initialTime: _startTime);
+    final TimeOfDay time = await showTimePicker(context: context, initialTime: new TimeOfDay.now());
 
     /// Check selected date
-    if (time != null) {
-      setState(() {
-        _startTime = time;
-        print("starttime $_startTime");
-      });
+    //  && time.hour < _actualEndTime.hour
+    //&& (time.hour >= new TimeOfDay.now().hour) && (time.minute >= new TimeOfDay.now().minute)
+    if (time != null){
+      if (time.hour == new TimeOfDay.now().hour) {
+        if (time.minute > new TimeOfDay.now().minute) {
+          setState(() {
+            _startTimeLabel = time.format(context);
+            _startTimeString = '${time.hour}:${time.minute}:00';
+            _actualStartTime = time;
+            isStartTimeSelected = true;
+            _endTimeLabel = "Select date";
+          });
+        } else {
+          print("failed 1");
+          showAlert(context,
+              title: new Icon(Icons.error, color: Colors.red,),
+              content: new Text("Selected time is not valid"),
+              materialActions: <Widget>[
+                new CupertinoDialogAction(
+                  child: new Text("OK"),
+                  onPressed: () { Navigator.of(context).pop();  },
+                  isDefaultAction: true,
+                ),
+              ],
+              cupertinoActions: <Widget>[
+                new FlatButton(onPressed: () { Navigator.of(context).pop();  }, child: new Text("OK"))
+              ]
+          );
+        }
+      } else if (time.hour > new TimeOfDay.now().hour) {
+        setState(() {
+          _startTimeLabel = time.format(context);
+          _startTimeString = '${time.hour}:${time.minute}:00';
+          _actualStartTime = time;
+          isStartTimeSelected = true;
+          isEndTimeSelected = false;
+          _endTimeLabel = "Select time";
+        });
+      } else {
+        print("failed 2");
+        showAlert(context,
+            title: new Icon(Icons.error, color: Colors.red,),
+            content: new Text("Selected time is not valid"),
+            materialActions: <Widget>[
+              new CupertinoDialogAction(
+                child: new Text("OK"),
+                onPressed: () { Navigator.of(context).pop();  },
+                isDefaultAction: true,
+              ),
+            ],
+            cupertinoActions: <Widget>[
+              new FlatButton(onPressed: () { Navigator.of(context).pop();  }, child: new Text("OK"))
+            ]
+        );
+      }
+    }
+    else{
+      print('failed 3');
+      showAlert(context,
+          title: new Icon(Icons.error, color: Colors.red,),
+          content: new Text("Please select time"),
+          materialActions: <Widget>[
+            new CupertinoDialogAction(
+              child: new Text("OK"),
+              onPressed: () { Navigator.of(context).pop();  },
+              isDefaultAction: true,
+            ),
+          ],
+          cupertinoActions: <Widget>[
+            new FlatButton(onPressed: () { Navigator.of(context).pop();  }, child: new Text("OK"))
+          ]
+      );
     }
   }
 
+
   Future endTimePicker(BuildContext context) async {
-    final TimeOfDay time = await showTimePicker(context: context, initialTime: _endTime);
+    final TimeOfDay time = await showTimePicker(context: context, initialTime: new TimeOfDay.now());
 
     /// Check selected date
+    //   && (time.hour >= _actualStartTime.hour && time.minute > _actualStartTime.minute)
     if (time != null) {
-      setState(() {
-        _endTime = time;
-        print(_endTime);
-      });
+      if (time.hour == _actualStartTime.hour) {
+        if (time.minute > _actualStartTime.minute) {
+          setState(() {
+            _endTimeLabel = time.format(context);
+            isEndTimeSelected = true;
+            _endTimeString = '${time.hour}:${time.minute}:00';
+          });
+        } else {
+          print("Failed 1");
+          showAlert(context,
+            title: new Icon(Icons.error, color: Colors.red,),
+            content: new Text("Selected time is not valid"),
+            materialActions: <Widget>[
+              new CupertinoDialogAction(
+                child: new Text("OK"),
+                onPressed: () { Navigator.of(context).pop();  },
+                isDefaultAction: true,
+              ),
+            ],
+            cupertinoActions: <Widget>[
+              new FlatButton(onPressed: () { Navigator.of(context).pop();  }, child: new Text("OK"))
+            ]
+          );
+        }
+      } else if (time.hour > _actualStartTime.hour) {
+        setState(() {
+          _endTimeLabel = time.format(context);
+          isEndTimeSelected = true;
+          _endTimeString = '${time.hour}:${time.minute}:00';
+        });
+      } else {
+        print("Failed 2");
+        showAlert(context,
+            title: new Icon(Icons.error, color: Colors.red,),
+            content: new Text("Selected time is not valid"),
+            materialActions: <Widget>[
+              new CupertinoDialogAction(
+                child: new Text("OK"),
+                onPressed: () { Navigator.of(context).pop();  },
+                isDefaultAction: true,
+              ),
+            ],
+            cupertinoActions: <Widget>[
+              new FlatButton(onPressed: () { Navigator.of(context).pop();  }, child: new Text("OK"))
+            ]
+        );
+      }
+    }
+    else{
+      print('failed 3');
+      showAlert(context,
+          title: new Icon(Icons.error, color: Colors.red,),
+          content: new Text("Please select time"),
+          materialActions: <Widget>[
+            new CupertinoDialogAction(
+              child: new Text("OK"),
+              onPressed: () { Navigator.of(context).pop();  },
+              isDefaultAction: true,
+            ),
+          ],
+          cupertinoActions: <Widget>[
+            new FlatButton(onPressed: () { Navigator.of(context).pop();  }, child: new Text("OK"))
+          ]
+      );
+    }
+  }
+
+  String _validatePurpose(String value) {
+    if (value.isEmpty) {
+      return "Please enter purpose";
+    } else {
+      return null;
     }
   }
 
   _requestForAsset() async{
-    if (_formKey.currentState.validate()) {
-      final String requestURL = "http://192.168.0.18:3000/request/" +
-          widget.asset.record.category.id;
-      final credentials = {
-        "description": "POORNIMA TK",
-        "start_time": "10/12/2017 23:59:30",
-        "end_time": "10/12/2017 00:59:30",
-        "priority": "1",
-        "user": {
-          "id": "bbukl4eu9us7j0j8rj5g",
-          "first_name": "Raj",
-          "last_name": "Thakur"
-        },
-        "asset": {
-          "id": "bbukk4eu9us7j0j8rj4g",
-          "name": "Iphone 6s",
-          "description": "sfsddas"
+    if (isStartTimeSelected && isEndTimeSelected) {
+      if (_formKey.currentState.validate()) {
+        final String requestURL = "http://192.168.0.18:3001/request/" +
+            widget.asset.record.category.id;
+        final Map<String,Object> credentials = {
+          "description": _purpose,
+          "start_time": "$_today $_startTimeString",
+          "end_time": "$_today $_endTimeString",
+          "priority": 1,
+          "user": {
+            "id": widget.user.id,
+            "first_name": widget.user.data.first_name,
+            "last_name": widget.user.data.last_name
+          },
+          "asset": {
+            "id": widget.asset.record.category.id,
+            "name": widget.asset.record.name,
+            "description": widget.asset.record.description
+          }
+        };
+
+        var response = await http.post(
+            requestURL, body: credentials, headers: {"Accept": "application/json"});
+        print(response.body);
+
+        if (response.statusCode == 200) {
+          print("SUCCESSFULLY REQUEST SENT");
+          scaffoldKey.currentState.showSnackBar(
+              new SnackBar(content: new Text("Requested Successfully"))
+          );
+        } else {
+          scaffoldKey.currentState.showSnackBar(
+              new SnackBar(content: new Text("Something went wrong"))
+          );
         }
-      };
-
-      var response = await http.post(
-          requestURL, body: credentials, headers: {});
-      print(response.body);
-
-
-      if (response.statusCode == 200) {
-        print("SUCCESSFULLY REQUEST SENT");
-        scaffoldKey.currentState.showSnackBar(
-          new SnackBar(content: new Text("Requested Successfully"))
-        );
-      } else {
-        scaffoldKey.currentState.showSnackBar(
-            new SnackBar(content: new Text("Something went wrong"))
-        );
       }
+    } else {
+      showAlert(context,
+          title: new Icon(Icons.error, color: Colors.red,),
+          content: new Text("All fields are required"),
+          materialActions: <Widget>[
+            new CupertinoDialogAction(
+              child: new Text("OK"),
+              onPressed: () { Navigator.of(context).pop();  },
+              isDefaultAction: true,
+            ),
+          ],
+          cupertinoActions: <Widget>[
+            new FlatButton(onPressed: () { Navigator.of(context).pop();  }, child: new Text("OK"))
+          ]
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    print(_today);
     var screenSize = MediaQuery.of(context).size;
 
     return new Scaffold(
@@ -147,19 +311,11 @@ class _State extends State<RequestAsset> {
                             new SizedBox(
                               height: 24.0,
                             ),
-//                            new TextFormField(
-//                                maxLines: 1,
-//                                keyboardType: ,
-//                                decoration: new InputDecoration(
-//                                  hintText: "Asset needs from",
-//                                  labelText:  "Asset needs from",
-//                                  border: new OutlineInputBorder(
-//                                      borderRadius:
-//                                          new BorderRadius.circular(12.0)),
-//                                )),
+//
                             new GestureDetector(
-                              onTap: () { startTimePicker(context); },
+                              onTap: () { startTimePicker(context);},
                               child: new Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 16.0),
                                 height: 48.0,
                                 decoration: new BoxDecoration(
                                     borderRadius: new BorderRadius.all(
@@ -170,14 +326,14 @@ class _State extends State<RequestAsset> {
                                     )),
                                 child: new Center(
                                   child: new Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: <Widget>[
-                                      new Text('Today:',
+                                      new Text('From (Today):',
                                         style: const TextStyle(
                                           fontSize: 18.0
                                         ),
                                       ),
-                                      new Text(_startTime.toString(),
+                                      new Text(_startTimeLabel,
                                         style: const TextStyle(
                                             fontSize: 18.0
                                         ),
@@ -190,18 +346,11 @@ class _State extends State<RequestAsset> {
                             new SizedBox(
                               height: 8.0,
                             ),
-//                            new TextFormField(
-//                                maxLines: 1,
-//                                decoration: new InputDecoration(
-//                                  hintText: "Asset needs upto",
-//                                  border: new OutlineInputBorder(
-//                                      borderRadius:
-//                                          new BorderRadius.circular(12.0)),
-//                                )),
                             new GestureDetector(
-                              onTap: () { endTimePicker(context); },
+                              onTap: () { endTimePicker(context);},
                               child: new Container(
                                 height: 48.0,
+                                padding: const EdgeInsets.symmetric(horizontal: 16.0),
                                 decoration: new BoxDecoration(
                                     borderRadius: new BorderRadius.all(
                                         new Radius.circular(12.0)),
@@ -211,14 +360,14 @@ class _State extends State<RequestAsset> {
                                     )),
                                 child: new Center(
                                   child: new Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: <Widget>[
-                                      new Text('Today:',
+                                      new Text('To (Today):',
                                         style: const TextStyle(
                                             fontSize: 18.0
                                         ),
                                       ),
-                                      new Text(_endTime.toString(),
+                                      new Text(_endTimeLabel,
                                         style: const TextStyle(
                                             fontSize: 18.0
                                         ),
@@ -246,19 +395,17 @@ class _State extends State<RequestAsset> {
                             new SizedBox(
                               height: 8.0,
                             ),
-                            new GestureDetector(
-                              onTap: () {
-                                print("adhsfadfks");
-                              },
-                              child: new TextFormField(
-                                  maxLines: 5,
-                                  decoration: new InputDecoration(
-                                    hintText: "Purpose",
-                                    border: new OutlineInputBorder(
-                                        borderRadius:
-                                            new BorderRadius.circular(12.0)),
-                                  )),
-                            ),
+                            new TextFormField(
+                                maxLines: 5,
+                                controller: _purposeController,
+                                validator: _validatePurpose,
+                                decoration: new InputDecoration(
+                                  hintText: "Purpose",
+                                  labelText: "Purpose",
+                                  border: new OutlineInputBorder(
+                                      borderRadius:
+                                          new BorderRadius.circular(12.0)),
+                                )),
                             new SizedBox(
                               height: 8.0,
                             ),
@@ -351,7 +498,7 @@ class _State extends State<RequestAsset> {
                     height: buttonHeight,
                     child: new FlatButton(
                       onPressed: () {
-                        _requestForAsset();
+                       _requestForAsset();
                       },
                       shape: new StadiumBorder(),
                       child: new Text(

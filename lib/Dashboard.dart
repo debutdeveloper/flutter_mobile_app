@@ -4,8 +4,10 @@ import 'package:debut_assets/Assets.dart';
 import 'package:debut_assets/MyAssets.dart';
 import 'package:debut_assets/Notifications.dart';
 import 'package:debut_assets/models/User.dart';
+import 'package:debut_assets/reset_password.dart';
 import 'package:debut_assets/utils.dart';
 import 'package:flutter/material.dart';
+import 'assetlogin.dart';
 
 class Dashboard extends StatefulWidget {
   final User user;
@@ -90,10 +92,64 @@ class _DashboardState extends State<Dashboard>
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: new AppBar(
-        automaticallyImplyLeading: false,
         title: new Text(_appTitle),
         flexibleSpace: new Container(
           child: getDecorationBox(),
+        ),
+      ),
+      drawer: new Drawer(
+        child: new ListView(
+          children: <Widget>[
+            new UserAccountsDrawerHeader(
+              decoration: new BoxDecoration(
+                gradient: getGradient()
+              ),
+              accountName: new Text(widget.user.data.first_name + " " + widget.user.data.last_name),
+              accountEmail: new Text(widget.user.data.email),
+              currentAccountPicture: new CircleAvatar(
+                backgroundColor: new Color.fromRGBO(170, 210, 234, 1.0),
+                child: new Text(widget.user.data.first_name[0],
+                  style: new TextStyle(
+                    fontSize: 40.0,
+                    color: new Color.fromRGBO(33, 96, 232, 1.0)
+                  ),
+                ),
+              ),
+            ),
+            new InkWell(
+              onTap: () {
+                Navigator.of(context).push(new MaterialPageRoute(
+                    builder: (
+                        context) => new ResetPasswordScreen(user: widget.user,)));
+              },
+              child: new ListTile(
+                leading: new Icon(Icons.change_history),
+                title: new Text("Change password",
+                  style: new TextStyle(
+                    fontSize: 16.0
+                  ),
+                ),
+              ),
+            ),
+            new Divider(),
+            new InkWell(
+              onTap: () {
+                Navigator.of(context).pushAndRemoveUntil(new MaterialPageRoute(
+                    builder: (context) => new Login()
+                ),
+                      (Route<dynamic> newRoute)=>false,
+                );
+              },
+              child: new ListTile(
+                leading: new Icon(Icons.power_settings_new),
+                title: new Text("Logout",
+                  style: new TextStyle(
+                      fontSize: 16.0
+                  ),
+                ),
+              ),
+            )
+          ],
         ),
       ),
       bottomNavigationBar: new TabBar(

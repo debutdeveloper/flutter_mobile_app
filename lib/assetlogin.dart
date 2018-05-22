@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:debut_assets/reset_password.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/foundation.dart';
 
@@ -43,10 +44,10 @@ class _state extends State<Login> {
   void _validate() async {
     //print(new DateFormat.yMMMd().format(new DateTime.now()));
     if (_formKey.currentState.validate()) {
-      final String loginURL = "http://192.168.0.18:3000/user/login";
+      final String loginURL = "http://192.168.0.18:3001/user/login";
       final credentials = {
-        "email": "raj.thakur@debutinfotech.com",
-        "password": "ioszindabad!",
+        "email": username.toLowerCase(),
+        "password": password,
         "device_token": "abrakadabra"
       };
 
@@ -59,15 +60,58 @@ class _state extends State<Login> {
 
           var userJson = json.decode(response.body);
           var newUser = new User.fromJSON(userJson);
-          Navigator.of(context).push(new MaterialPageRoute(
-              builder: (context) => new Dashboard(newUser)));
+          if (newUser.data.is_random_password) {
+            Navigator.of(context).push(new MaterialPageRoute(
+                builder: (context) => new ResetPasswordScreen(user: newUser)));
+          } else {
+            Navigator.of(context).push(new MaterialPageRoute(
+                builder: (context) => new Dashboard(newUser)));
+          }
         } else {
           var errorJson = json.decode(response.body);
-          showAlert(_context,title: new Icon(Icons.warning,color: Colors.red,),content: new Text(errorJson["message"]));
+          showAlert(_context,
+              title: new Icon(Icons.warning,color: Colors.red,),
+              content: new Text(errorJson["message"]),
+            cupertinoActions: <Widget>[
+              new CupertinoDialogAction(
+                child: new Text("OK"),
+                isDefaultAction: true,
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+            materialActions: <Widget>[
+              new FlatButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: new Text("OK"))
+            ],
+          );
         }
       }
       catch(e){
-        showAlert(_context,title: new Icon(Icons.warning,color: Colors.red,),content: new Text('Connection time-out'));
+        showAlert(_context,
+            title: new Icon(Icons.warning,color: Colors.red,),
+            content: new Text('Connection time-out'),
+          cupertinoActions: <Widget>[
+            new CupertinoDialogAction(
+              child: new Text("OK"),
+              isDefaultAction: true,
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+          materialActions: <Widget>[
+            new FlatButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: new Text("OK"))
+          ],
+        );
       }
     }
   }

@@ -1,6 +1,11 @@
+import 'dart:convert';
+
+import 'package:debut_assets/assetlogin.dart';
+import 'package:debut_assets/models/User.dart';
 import 'package:debut_assets/reset_password.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 import 'utils.dart';
 
@@ -10,17 +15,138 @@ class ForgotPassword extends StatefulWidget {
 }
 
 class _ForgotPasswordState extends State<ForgotPassword> {
-  static final TextEditingController _emailController =
-  new TextEditingController();
   GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey();
+  final _forgotPasswordFormKey = new GlobalKey<FormState>();
+
+  static final TextEditingController _emailController =
+      new TextEditingController();
 
   String get _email => _emailController.text;
 
+  String _validateEmail(String value) {
+    if (value.isEmpty) {
+      return "Please enter your email";
+    } else if (!isEmailValid(value)) {
+      return "Please enter valid e-mail Id";
+    } else {
+      return null;
+    }
+  }
+
+  _submit(BuildContext context) async {
+    if (_forgotPasswordFormKey.currentState.validate()) {
+      _emailController.clear();
+      final String resetPasswordUrl =
+          "http://192.168.0.18:3001/user/forget-password";
+      final credentials = {"email": _email.toLowerCase()};
+
+      try {
+        var response = await http.put(resetPasswordUrl,
+            body: credentials, headers: {}).timeout(new Duration(seconds: 60));
+        print("Reset password response : ${json.decode(response.body)}");
+
+        if (response.statusCode == 200) {
+          print("Your new password has been sent to your email address.");
+          var responseJson = json.decode(response.body);
+          showAlert(
+            context,
+            title: new Title(color: Colors.blue, child: new Text("Success")),
+            content: new Text(responseJson["message"]),
+            cupertinoActions: <Widget>[
+              new CupertinoDialogAction(
+                child: new Text("Login"),
+                isDefaultAction: true,
+                onPressed: () {
+                  Navigator.of(context).pushAndRemoveUntil(
+                        new MaterialPageRoute(
+                            builder: (context) => new Login()),
+                        (Route<dynamic> newRoute) => false,
+                      );
+                },
+              ),
+            ],
+            materialActions: <Widget>[
+              new FlatButton(
+                  onPressed: () {
+                    Navigator.of(context).pushAndRemoveUntil(
+                          new MaterialPageRoute(
+                              builder: (context) => new Login()),
+                          (Route<dynamic> newRoute) => false,
+                        );
+                  },
+                  child: new Text("Login"))
+            ],
+          );
+        } else {
+          print("Error occured");
+          var errorJson = json.decode(response.body);
+          showAlert(
+            context,
+            title: new Title(color: Colors.blue, child: new Text("Success")),
+            content: new Text(errorJson["message"]),
+            cupertinoActions: <Widget>[
+              new CupertinoDialogAction(
+                child: new Text("Login"),
+                isDefaultAction: true,
+                onPressed: () {
+                  Navigator.of(context).pushAndRemoveUntil(
+                        new MaterialPageRoute(
+                            builder: (context) => new Login()),
+                        (Route<dynamic> newRoute) => false,
+                      );
+                },
+              ),
+            ],
+            materialActions: <Widget>[
+              new FlatButton(
+                  onPressed: () {
+                    Navigator.of(context).pushAndRemoveUntil(
+                          new MaterialPageRoute(
+                              builder: (context) => new Login()),
+                          (Route<dynamic> newRoute) => false,
+                        );
+                  },
+                  child: new Text("Login"))
+            ],
+          );
+        }
+      } catch (e) {
+        print("Exception occured");
+        showAlert(
+          context,
+          title: new Title(color: Colors.blue, child: new Text("Success")),
+          content: new Text('Connection time-out'),
+          cupertinoActions: <Widget>[
+            new CupertinoDialogAction(
+              child: new Text("Login"),
+              isDefaultAction: true,
+              onPressed: () {
+                Navigator.of(context).pushAndRemoveUntil(
+                      new MaterialPageRoute(builder: (context) => new Login()),
+                      (Route<dynamic> newRoute) => false,
+                    );
+              },
+            ),
+          ],
+          materialActions: <Widget>[
+            new FlatButton(
+                onPressed: () {
+                  Navigator.of(context).pushAndRemoveUntil(
+                        new MaterialPageRoute(
+                            builder: (context) => new Login()),
+                        (Route<dynamic> newRoute) => false,
+                      );
+                },
+                child: new Text("Login"))
+          ],
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final Size _screenSize = MediaQuery
-        .of(context)
-        .size;
+    final Size _screenSize = MediaQuery.of(context).size;
     return new Scaffold(
       key: _scaffoldKey,
       body: new SingleChildScrollView(
@@ -57,21 +183,24 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                     new Text(
                       "We just need your registered Email Id to send you password reset instructions",
                       textAlign: TextAlign.center,
-
                     ),
                     new SizedBox(height: 24.0),
-                    new TextFormField(
-                      decoration: new InputDecoration(
-                          border: new UnderlineInputBorder(),
-                          suffixIcon: new Icon(Icons.email),
-                          hintText: "Registered Email ID"),
-                      controller: _emailController,
+                    new Form(
+                      key: _forgotPasswordFormKey,
+                      child: new TextFormField(
+                        decoration: new InputDecoration(
+                            border: new UnderlineInputBorder(),
+                            suffixIcon: new Icon(Icons.email),
+                            hintText: "Registered Email ID"),
+                        controller: _emailController,
+                        validator: _validateEmail,
+                      ),
                     ),
                     new SizedBox(height: 32.0),
                     new Container(
                       decoration: new BoxDecoration(
                         borderRadius:
-                        new BorderRadius.all(new Radius.circular(32.0)),
+                            new BorderRadius.all(new Radius.circular(32.0)),
                         gradient: new LinearGradient(
                           colors: getColors(),
                         ),
@@ -82,9 +211,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                         child: new FlatButton(
                           onPressed: () {
                             print("Reset password button is pressed");
-                            Navigator.of(context).push(new MaterialPageRoute(
-                                builder: (
-                                    context) => new ResetPasswordScreen()));
+                            _submit(context);
                           },
                           child: new Text(
                             "RESET PASSWORD",
@@ -118,6 +245,6 @@ class _ForgotPasswordState extends State<ForgotPassword> {
     );
   }
 
-/// Validate email field
+  /// Validate email field
 
 }
