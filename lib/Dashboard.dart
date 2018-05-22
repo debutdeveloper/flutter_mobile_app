@@ -10,7 +10,7 @@ import 'package:flutter/material.dart';
 import 'assetlogin.dart';
 
 class Dashboard extends StatefulWidget {
-  final User user;
+  final CurrentUser user;
   Dashboard(this.user);
   @override
   _DashboardState createState() => new _DashboardState();

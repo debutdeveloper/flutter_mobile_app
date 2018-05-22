@@ -22,18 +22,32 @@ getGradient() {
 
 
 
-void showAlert(BuildContext context,{Widget title,Widget content, List<Widget> cupertinoActions, List<Widget> materialActions}){
+Widget showAlert(BuildContext context,{Widget title,Widget content}){
 
   var cupertinoAlert = new CupertinoAlertDialog(
     content: content,
     title: title,
-    actions: cupertinoActions
+    actions: <Widget>[
+      new CupertinoDialogAction(
+        child: new Text('OK'),
+        isDefaultAction: true,
+        onPressed: () {
+          Navigator.pop(context);
+        },
+      )
+    ],
   );
 
   var materialAlert = new AlertDialog(
     title: title,
     content: content,
-    actions: materialActions
+    actions: <Widget>[
+      new FlatButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          child: new Text("OK"))
+    ],
   );
 
 

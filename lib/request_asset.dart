@@ -10,7 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class RequestAsset extends StatefulWidget {
-  final User user;
+  final CurrentUser user;
   final Asset asset;
 
   RequestAsset({@required this.user,@required this.asset});

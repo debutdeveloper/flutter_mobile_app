@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class Assets extends StatefulWidget {
-  final User user;
+  final CurrentUser user;
   const Assets({@required this.user});
   @override
   _CardViewState createState() => new _CardViewState();
@@ -21,6 +21,7 @@ class _CardViewState extends State<Assets> {
   List<Asset> listOfAssets = [];
 
   Future<String> getAssetsList() async {
+    print("GETASSETSLIST CALLED");
     print("Getting list");
     var response = await http.get("http://192.168.0.18:3001/asset",
         headers: {"Accept": "application/json"});
@@ -45,13 +46,14 @@ class _CardViewState extends State<Assets> {
 
   @override
   void initState() {
-    // TODO: implement initState
+    print("ASSETS INIT CALLED");
     super.initState();
     this.getAssetsList();
   }
 
   @override
   Widget build(BuildContext context) {
+    print("ASSETS BUILD CALLED");
     return new Container(
         color: Colors.white,
         child: getListView()
