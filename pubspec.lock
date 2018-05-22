@@ -63,7 +63,7 @@ packages:
       name: csslib
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.14.4"
+    version: "0.14.3"
   cupertino_icons:
     dependency: "direct main"
     description:
@@ -374,4 +374,4 @@ packages:
     source: hosted
     version: "2.1.13"
 sdks:
-  dart: ">=2.0.0-dev.52.0 <=2.0.0-dev.55.0.flutter-43635d3372"
+  dart: ">=2.0.0-dev.52.0 <=2.0.0-edge.c080951d45e79cd25df98036c4be835b284a269c"

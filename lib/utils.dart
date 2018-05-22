@@ -1,3 +1,5 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 getColors() {
@@ -17,6 +19,47 @@ getDecorationBox() {
 getGradient() {
   return new LinearGradient(colors: getColors());
 }
+
+
+
+Widget showAlert(BuildContext context,{Widget title,Widget content}){
+
+  var cupertinoAlert = new CupertinoAlertDialog(
+    content: content,
+    title: title,
+    actions: <Widget>[
+      new CupertinoDialogAction(
+        child: new Text('OK'),
+        isDefaultAction: true,
+        onPressed: () {
+          Navigator.pop(context);
+        },
+      )
+    ],
+  );
+
+  var materialAlert = new AlertDialog(
+    title: title,
+    content: content,
+    actions: <Widget>[
+      new FlatButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          child: new Text("OK"))
+    ],
+  );
+
+
+
+  defaultTargetPlatform == TargetPlatform.iOS
+      ? showDialog(context: context,
+      builder: (BuildContext context) => cupertinoAlert)
+      : showDialog(context: context,
+      builder: (BuildContext context) => materialAlert);
+
+}
+
 
 double reducedHeight = 25.0;
 double buttonHeight = 48.0;

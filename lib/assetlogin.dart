@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:intl/intl.dart';
+import 'package:flutter/foundation.dart';
 
 import 'package:debut_assets/Dashboard.dart';
 import 'package:debut_assets/forgot_password.dart';
@@ -33,6 +34,8 @@ class _state extends State<Login> {
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
   final GlobalKey<ScaffoldState> scaffoldKey = new GlobalKey<ScaffoldState>();
 
+  BuildContext _context;
+
   bool isPasswordValid(String password) {
     return true;
   }
@@ -43,30 +46,28 @@ class _state extends State<Login> {
       final String loginURL = "http://192.168.0.18:3000/user/login";
       final credentials = {
         "email": "raj.thakur@debutinfotech.com",
-        "password": "ioszindabad",
+        "password": "ioszindabad!",
         "device_token": "abrakadabra"
       };
-      var response = await http.post(loginURL, body: credentials, headers: {});
-      print(response.body);
 
+      try{
+        var response = await http.post(loginURL, body: credentials, headers: {}).timeout(new Duration(seconds: 60));
+        print(response.body);
 
-      if (response.statusCode == 200) {
-        print("SUCCESSFULLY LOGIN");
+        if (response.statusCode == 200) {
+          print("SUCCESSFULLY LOGIN");
 
-        var userJson = json.decode(response.body);
-        var newUser = new User.fromJSON(userJson);
-        Navigator
-            .of(context)
-            .push(
-            new MaterialPageRoute(
-                builder: (context) => new Dashboard(newUser)));
-      } else {
-        var errorJson = json.decode(response.body);
-        scaffoldKey.currentState.showSnackBar(
-          new SnackBar(
-              content: new Text(errorJson["message"] ?? "The email or password you have entered is wrong")
-          )
-        );
+          var userJson = json.decode(response.body);
+          var newUser = new User.fromJSON(userJson);
+          Navigator.of(context).push(new MaterialPageRoute(
+              builder: (context) => new Dashboard(newUser)));
+        } else {
+          var errorJson = json.decode(response.body);
+          showAlert(_context,title: new Icon(Icons.warning,color: Colors.red,),content: new Text(errorJson["message"]));
+        }
+      }
+      catch(e){
+        showAlert(_context,title: new Icon(Icons.warning,color: Colors.red,),content: new Text('Connection time-out'));
       }
     }
   }
@@ -94,9 +95,9 @@ class _state extends State<Login> {
 
   @override
   Widget build(BuildContext context) {
-    var screenSize = MediaQuery
-        .of(context)
-        .size;
+    _context = context;
+
+    var screenSize = MediaQuery.of(context).size;
 
     return new Stack(
       fit: StackFit.expand,
@@ -126,10 +127,10 @@ class _state extends State<Login> {
           children: <Widget>[
             new Center(
                 child: new CircleAvatar(
-                  backgroundColor: Colors.white,
-                  radius: 48.0,
-                  backgroundImage: new AssetImage("assets/logo.jpg"),
-                )),
+              backgroundColor: Colors.white,
+              radius: 48.0,
+              backgroundImage: new AssetImage("assets/logo.jpg"),
+            )),
             new Padding(
               padding: new EdgeInsets.all(16.0),
               child: new Card(
@@ -137,7 +138,7 @@ class _state extends State<Login> {
                   color: Colors.white,
                   shape: new RoundedRectangleBorder(
                       borderRadius:
-                      new BorderRadius.all(new Radius.circular(4.0))),
+                          new BorderRadius.all(new Radius.circular(4.0))),
                   child: new Padding(
                     padding: new EdgeInsets.all(16.0),
                     child: new Form(
@@ -176,7 +177,7 @@ class _state extends State<Login> {
                               decoration: new BoxDecoration(
                                   borderRadius: new BorderRadius.circular(32.0),
                                   gradient:
-                                  new LinearGradient(colors: getColors())),
+                                      new LinearGradient(colors: getColors())),
                               child: new ButtonTheme(
                                 minWidth: screenSize.width,
                                 height: buttonHeight,
