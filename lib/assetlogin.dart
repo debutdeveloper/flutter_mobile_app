@@ -30,6 +30,8 @@ class _state extends State<Login> {
   bool errorsOnForm = false;
   bool _obscureText = true;
 
+  bool _showLoader = true;
+
   FocusNode _password = new FocusNode();
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
   final GlobalKey<ScaffoldState> scaffoldKey = new GlobalKey<ScaffoldState>();
@@ -41,15 +43,19 @@ class _state extends State<Login> {
   }
 
   void _validate() async {
+
     //print(new DateFormat.yMMMd().format(new DateTime.now()));
     if (_formKey.currentState.validate()) {
       final String loginURL = "http://192.168.0.18:3000/user/login";
       final credentials = {
-        "email": "raj.thakur@debutinfotech.com",
-        "password": "ioszindabad!",
+        "email": username,
+        "password": password,
         "device_token": "abrakadabra"
       };
 
+      setState(() {
+        _showLoader = false;
+      });
       try{
         var response = await http.post(loginURL, body: credentials, headers: {}).timeout(new Duration(seconds: 10));
         print(response.body);
@@ -69,6 +75,11 @@ class _state extends State<Login> {
       catch(e){
         showAlert(_context,title: new Icon(Icons.error,color: Colors.red,),content: new Text('Connection time-out'));
       }
+
+      setState(() {
+        _showLoader = true;
+      });
+
     }
   }
 
@@ -183,7 +194,13 @@ class _state extends State<Login> {
                                 height: buttonHeight,
                                 child: new FlatButton(
                                   shape: new StadiumBorder(),
-                                  onPressed: _validate,
+                                  onPressed: () {
+                                    setState(() {
+//                                      _showLoader =
+                                      _password.unfocus();
+                                    });
+                                    _validate();
+                                  },
                                   child: new Text(
                                     "LOGIN",
                                     style: new TextStyle(
@@ -216,7 +233,9 @@ class _state extends State<Login> {
               ),
             )
           ],
-        )
+        ),
+        new Offstage(child: new Container( color: new Color.fromRGBO(1, 1, 1 , 0.3), child: new Center(child: new CircularProgressIndicator(backgroundColor: Colors.transparent,),)),
+        offstage: _showLoader,)
       ],
     );
   }
