@@ -2,6 +2,7 @@ name: debut_assets
 description: For Handling Debut Assets
 
 dependencies:
+  intl: "^0.15.6"
   flutter:
     sdk: flutter
 

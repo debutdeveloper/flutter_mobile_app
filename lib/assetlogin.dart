@@ -43,7 +43,7 @@ class _state extends State<Login> {
       final String loginURL = "http://192.168.0.18:3000/user/login";
       final credentials = {
         "email": "raj.thakur@debutinfotech.com",
-        "password": "ioszindabad!",
+        "password": "ioszindabad",
         "device_token": "abrakadabra"
       };
       var response = await http.post(loginURL, body: credentials, headers: {});
@@ -61,7 +61,12 @@ class _state extends State<Login> {
             new MaterialPageRoute(
                 builder: (context) => new Dashboard(newUser)));
       } else {
-        print("UNSUCCESSFUL LOGIN");
+        var errorJson = json.decode(response.body);
+        scaffoldKey.currentState.showSnackBar(
+          new SnackBar(
+              content: new Text(errorJson["message"] ?? "The email or password you have entered is wrong")
+          )
+        );
       }
     }
   }

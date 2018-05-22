@@ -1,14 +1,15 @@
 import 'package:debut_assets/asset_details.dart';
 import 'package:debut_assets/models/Asset.dart';
+import 'package:debut_assets/models/User.dart';
 import 'package:flutter/material.dart';
 
 
 class AssetCard extends StatelessWidget {
 //  final Map cardModel;
   final Asset asset;
+  final User user;
 
-
-  AssetCard({this.asset});
+  AssetCard({@required this.asset,@required this.user});
 
   @override
   Widget build(BuildContext context) {
@@ -141,7 +142,7 @@ class AssetCard extends StatelessWidget {
             color: Colors.blueAccent,
             onPressed: () {
               Navigator.of(context).push(new MaterialPageRoute(
-                  builder: (context) => new AssetHistory(asset)));
+                  builder: (context) => new AssetHistory(user: user,asset: asset,)));
             },
             textColor: Colors.white,
           ),

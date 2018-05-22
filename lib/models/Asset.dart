@@ -29,7 +29,7 @@ class Record {
   bool is_deleted;
   String name;
   String purchase_date;
-  int purchasing_amount;
+  var purchasing_amount;
   int quantity;
   String serial_number;
   int status;

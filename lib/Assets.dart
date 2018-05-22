@@ -3,10 +3,13 @@ import 'dart:convert';
 
 import 'package:debut_assets/AssetCard.dart';
 import 'package:debut_assets/models/Asset.dart';
+import 'package:debut_assets/models/User.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class Assets extends StatefulWidget {
+  final User user;
+  const Assets({@required this.user});
   @override
   _CardViewState createState() => new _CardViewState();
 }
@@ -15,7 +18,7 @@ class _CardViewState extends State<Assets> {
 
 
   List assetsList;
-  List<Asset> listOfAssets;
+  List<Asset> listOfAssets = [];
 
   Future<String> getAssetsList() async {
     print("Getting list");
@@ -25,15 +28,16 @@ class _CardViewState extends State<Assets> {
       var listData = json.decode(response.body);
       setState(() {
         assetsList = listData["assets"];
-        print("Asset llist : $assetsList");
+        print("Asset list : ${assetsList.length}");
         for (var assetJSON in assetsList) {
-          print("Asset json: ${assetJSON.runtimeType}");
+          print("Asset json: ${assetJSON}");
+
           Asset asset = new Asset.fromJSON(assetJSON);
           listOfAssets.add(asset);
         }
       });
     }
-print(listOfAssets.length.toString());
+//    print(listOfAssets.length.toString());
     return "Success";
   }
 
@@ -59,6 +63,7 @@ print(listOfAssets.length.toString());
       itemBuilder: (buildContext, index) {
         return new AssetCard(
           asset: listOfAssets[index],
+          user: widget.user,
         );
       },
       itemCount: listOfAssets == null ? 0 : listOfAssets.length,

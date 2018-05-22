@@ -1,4 +1,5 @@
 import 'package:debut_assets/models/Asset.dart';
+import 'package:debut_assets/models/User.dart';
 import 'package:debut_assets/request_asset.dart';
 import 'package:debut_assets/utils.dart';
 import 'package:flutter/material.dart';
@@ -6,8 +7,8 @@ import 'package:flutter/material.dart';
 class AssetHistory extends StatefulWidget {
 
   final Asset asset;
-
-  const AssetHistory(this.asset);
+  final User user;
+  const AssetHistory({@required this.asset,@required this.user});
 
   @override
   _State createState() => new _State();
@@ -69,7 +70,7 @@ class _State extends State<AssetHistory> {
                   child: new FlatButton(
                     onPressed: () {
                       Navigator.of(context).push(new MaterialPageRoute(
-                          builder: (context) => new RequestAsset()));
+                          builder: (context) => new RequestAsset(user: widget.user,asset: widget.asset)));
                     },
                     shape: new StadiumBorder(),
                     child: new Text(

@@ -56,8 +56,7 @@ class _DashboardState extends State<Dashboard>
     });
 
 
-    print(widget.user.data.password);
-
+    print(widget.user.data.first_name);
 //    _askedToLead();
   }
 
@@ -122,7 +121,7 @@ class _DashboardState extends State<Dashboard>
       ),
       body: new TabBarView(
         children: [
-          new Assets(),
+          new Assets(user: widget.user),
           new MyAssets(),
           new Notifications(),
         ],
