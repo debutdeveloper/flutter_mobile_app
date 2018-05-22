@@ -21,8 +21,7 @@ getGradient() {
 }
 
 
-
-Widget showAlert(BuildContext context,{Widget title,Widget content}){
+showAlert(BuildContext context,{Widget title,Widget content}){
 
   var cupertinoAlert = new CupertinoAlertDialog(
     content: content,
@@ -49,8 +48,6 @@ Widget showAlert(BuildContext context,{Widget title,Widget content}){
           child: new Text("OK"))
     ],
   );
-
-
 
   defaultTargetPlatform == TargetPlatform.iOS
       ? showDialog(context: context,

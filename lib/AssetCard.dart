@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 class AssetCard extends StatelessWidget {
 //  final Map cardModel;
   final Asset asset;
-  final User user;
+  final CurrentUser user;
 
   AssetCard({@required this.asset,@required this.user});
 

@@ -51,23 +51,23 @@ class _state extends State<Login> {
       };
 
       try{
-        var response = await http.post(loginURL, body: credentials, headers: {}).timeout(new Duration(seconds: 60));
+        var response = await http.post(loginURL, body: credentials, headers: {}).timeout(new Duration(seconds: 10));
         print(response.body);
 
         if (response.statusCode == 200) {
           print("SUCCESSFULLY LOGIN");
 
           var userJson = json.decode(response.body);
-          var newUser = new User.fromJSON(userJson);
+          var newUser = new CurrentUser.fromJSON(userJson);
           Navigator.of(context).push(new MaterialPageRoute(
               builder: (context) => new Dashboard(newUser)));
         } else {
           var errorJson = json.decode(response.body);
-          showAlert(_context,title: new Icon(Icons.warning,color: Colors.red,),content: new Text(errorJson["message"]));
+          showAlert(_context,title: new Icon(Icons.error,color: Colors.red,),content: new Text(errorJson["message"]));
         }
       }
       catch(e){
-        showAlert(_context,title: new Icon(Icons.warning,color: Colors.red,),content: new Text('Connection time-out'));
+        showAlert(_context,title: new Icon(Icons.error,color: Colors.red,),content: new Text('Connection time-out'));
       }
     }
   }

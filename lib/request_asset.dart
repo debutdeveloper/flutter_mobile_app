@@ -8,7 +8,7 @@ import 'package:debut_assets/utils.dart';
 import 'package:flutter/material.dart';
 
 class RequestAsset extends StatefulWidget {
-  final User user;
+  final CurrentUser user;
   final Asset asset;
 
   RequestAsset({@required this.user,@required this.asset});

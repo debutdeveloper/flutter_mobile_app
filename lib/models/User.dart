@@ -1,8 +1,8 @@
-class User{
+class CurrentUser{
   String id;
   Data data;
 
-  User.fromJSON(Map<String,dynamic> json){
+  CurrentUser.fromJSON(Map<String,dynamic> json){
     id = json["id"];
     data = new Data.fromJSON(json["data"]);
   }

@@ -1,44 +1,86 @@
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:debut_assets/models/Asset.dart';
+import 'package:debut_assets/models/Request.dart';
 import 'package:debut_assets/models/User.dart';
 import 'package:debut_assets/request_asset.dart';
 import 'package:debut_assets/utils.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 
 class AssetHistory extends StatefulWidget {
-
   final Asset asset;
-  final User user;
-  const AssetHistory({@required this.asset,@required this.user});
+  final CurrentUser user;
+  const AssetHistory({@required this.asset, @required this.user});
 
   @override
-  _State createState() => new _State();
+  _AssetHistoryState createState() => new _AssetHistoryState();
 }
 
-class _State extends State<AssetHistory> {
-  List<AssetData> dataList = new List();
+class _AssetHistoryState extends State<AssetHistory> {
+  List requestList;
+  List<Request> listOfRequests = [];
+  String demoText = 'hello world';
 
-  @override
-  void initState() {
-    fillList();
-    print("Device name : ${widget.asset.record.name}");
-    super.initState();
-  }
+  BuildContext _context;
 
-  fillList() {
-    for (int i = 0; i < 50; i++) {
-      dataList.add(new AssetData(
-          "Hello Number $i", (i.isEven ? Colors.red : Colors.grey)));
+  Future getAssetHistory() async {
+    print("getting asset history called");
+    print("Getting Asset History");
+
+    final assetHistoryURL =
+        "http://192.168.0.18:3000/request/requests/" + widget.asset.key;
+    try {
+      var response = await http.get(assetHistoryURL, headers: {
+        "Accept": "application/json"
+      }).timeout(new Duration(seconds: 60));
+
+      if (response.statusCode == 200) {
+        setState(() {
+          var assetHistoryJson = json.decode(response.body);
+          requestList = assetHistoryJson["requests"];
+          print('REQUESTLIST LENGTH :${requestList.length}');
+          for (var requestJSON in requestList) {
+            print("Request json: $requestJSON");
+            Request request = new Request.fromJSON(requestJSON);
+            listOfRequests.add(request);
+          }
+        });
+      } else {
+        var errorJson = json.decode(response.body);
+        showAlert(_context,
+            title: new Icon(
+              Icons.error,
+              color: Colors.red,
+            ),
+            content: new Text(errorJson["message"]));
+      }
+    } catch (e) {
+      showAlert(_context,title: new Icon(Icons.error,color: Colors.red,),content: new Text('Connection time-out'));
     }
   }
 
   @override
+  void initState() {
+    print("ASSET DETAILS INIT CALLED");
+    super.initState();
+    getAssetHistory();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final _screenSize = MediaQuery
-        .of(context)
-        .size;
+
+    print("Build callled");
+    print(listOfRequests.length);
+    _context = context;
+    final _screenSize = MediaQuery.of(context).size;
     return new Scaffold(
       appBar: new AppBar(
-        title: new Text("Asset History",),
+        title: new Text(
+          "Asset History",
+        ),
       ),
       body: new Container(
         height: _screenSize.height,
@@ -53,8 +95,8 @@ class _State extends State<AssetHistory> {
                 child: new Container(
                   height: _screenSize.height * 0.60,
                   padding: const EdgeInsets.symmetric(
-                      vertical: 10.0, horizontal: 30.0),
-                  child: new ListView(children: getAssetDetails()),
+                      vertical: 10.0, horizontal: 10.0),
+                  child: new ListView(children: getRequestDetails()),
                 ),
               ),
             ),
@@ -70,7 +112,8 @@ class _State extends State<AssetHistory> {
                   child: new FlatButton(
                     onPressed: () {
                       Navigator.of(context).push(new MaterialPageRoute(
-                          builder: (context) => new RequestAsset(user: widget.user,asset: widget.asset)));
+                          builder: (context) => new RequestAsset(
+                              user: widget.user, asset: widget.asset)));
                     },
                     shape: new StadiumBorder(),
                     child: new Text(
@@ -87,29 +130,63 @@ class _State extends State<AssetHistory> {
     );
   }
 
-  List<AssetItem> getAssetDetails() {
-    List<AssetItem> assetsDetailsList = [];
-    for (var asset in dataList) {
-      assetsDetailsList.add(new AssetItem(asset));
+  List<Widget> getRequestDetails() {
+    List<Widget> requestDetailsList = [];
+    if (listOfRequests.isEmpty) {
+      requestDetailsList.add(new Center(
+        child: new Text(
+          'No history found',
+          style: new TextStyle(color: Colors.grey),
+        ),
+      ));
+    } else {
+      for (var request in listOfRequests) {
+        var username = '${request.value.user.first_name} ${request.value.user.last_name}';
+        var requestDate = getDate(request.value.start_timing);
+        var from = getTime(request.value.start_timing);
+        var upto = getTime(request.value.end_timing);
+        var requestData = new RequestData(
+            status: request.value.status,
+            details: '$username, $requestDate, $from-$upto');
+        requestDetailsList.add(new RequestDetails(requestData));
+      }
     }
-    return assetsDetailsList;
+
+    return requestDetailsList;
+  }
+
+
+  String getDate(String date){
+    String dateString = '';
+    var tempDate = new DateFormat.yMMMd().format(DateTime.parse(date));
+    dateString = tempDate.toString();
+    return dateString;
+  }
+  
+  String getTime(String time){
+   String timeString;
+   var tempTime = new DateFormat.jm().format(DateTime.parse(time));
+   timeString = tempTime.toString();
+   return timeString;
   }
 }
 
-class AssetData {
+class RequestData {
+  int status;
   String details;
-  MaterialColor color;
-
-  AssetData(this.details, this.color);
+  RequestData({@required this.status, @required this.details});
 }
 
-class AssetItem extends StatelessWidget {
-  final AssetData _data;
-
-  AssetItem(this._data);
+class RequestDetails extends StatelessWidget {
+  final RequestData _requestData;
+  RequestDetails(this._requestData);
 
   @override
   Widget build(BuildContext context) {
+    var moonLanding = DateTime.parse("2018-05-30T00:59:30Z");
+
+   print(moonLanding.day);
+
     return new Container(
       margin: const EdgeInsets.only(top: 1.0, bottom: 1.0),
       child: new Row(
@@ -120,19 +197,19 @@ class AssetItem extends StatelessWidget {
             height: 40.0,
             width: 5.0,
             decoration: new BoxDecoration(
-                color: _data.color,
+                color: _requestData.status == 0 ? Colors.red : Colors.green,
                 borderRadius: new BorderRadius.circular(10.0)),
           ),
           new Expanded(
             child: new Container(
-              margin: const EdgeInsets.only(left: 5.0, right: 60.0),
+              margin: const EdgeInsets.only(left: 5.0),
               padding: const EdgeInsets.only(
-                  left: 15.0, right: 15.0, top: 2.0, bottom: 2.0),
+                  left: 8.0, right: 8.0, top: 4.0, bottom: 4.0),
               decoration: new BoxDecoration(
-                  color: Colors.grey,
+                  color: new Color.fromRGBO(226, 227, 228, 1.0),
                   borderRadius: new BorderRadius.circular(10.0)),
               child: new Text(
-                _data.details,
+                _requestData.details,
                 maxLines: 10,
                 style: const TextStyle(fontSize: 12.0),
               ),
@@ -143,3 +220,147 @@ class AssetItem extends StatelessWidget {
     );
   }
 }
+
+
+
+//
+//class AssetHistory extends StatefulWidget {
+//
+//  final Asset asset;
+//  final User user;
+//  const AssetHistory({@required this.asset,@required this.user});
+//
+//  @override
+//  _AssetHistoryState createState() => new _AssetHistoryState();
+//}
+//
+//class _AssetHistoryState extends State<AssetHistory> {
+//  List<AssetData> dataList = new List();
+//
+//  @override
+//  void initState() {
+//    fillList();
+//    print("Device name : ${widget.asset.record.name}");
+//    super.initState();
+//  }
+//
+//  fillList() {
+//    for (int i = 0; i < 50; i++) {
+//      dataList.add(new AssetData(
+//          "Hello Number $i", (i.isEven ? Colors.red : Colors.grey)));
+//    }
+//  }
+//
+//
+//  @override
+//  Widget build(BuildContext context) {
+//    final _screenSize = MediaQuery
+//        .of(context)
+//        .size;
+//    return new Scaffold(
+//      appBar: new AppBar(
+//        title: new Text("Asset History",),
+//      ),
+//      body: new Container(
+//        height: _screenSize.height,
+//        width: _screenSize.width,
+//        color: Colors.white,
+//        child: new Column(
+//          children: <Widget>[
+//            new Padding(
+//              padding: const EdgeInsets.all(20.0),
+//              child: new Card(
+//                elevation: 4.0,
+//                child: new Container(
+//                  height: _screenSize.height * 0.60,
+//                  padding: const EdgeInsets.symmetric(
+//                      vertical: 10.0, horizontal: 30.0),
+//                  child: new ListView(children: getAssetDetails()),
+//                ),
+//              ),
+//            ),
+//            new Padding(
+//              padding: const EdgeInsets.all(16.0),
+//              child: new Container(
+//                decoration: new BoxDecoration(
+//                    borderRadius: new BorderRadius.circular(32.0),
+//                    gradient: new LinearGradient(colors: getColors())),
+//                child: new ButtonTheme(
+//                  minWidth: _screenSize.width,
+//                  height: buttonHeight,
+//                  child: new FlatButton(
+//                    onPressed: () {
+//                      Navigator.of(context).push(new MaterialPageRoute(
+//                          builder: (context) => new RequestAsset(user: widget.user,asset: widget.asset)));
+//                    },
+//                    shape: new StadiumBorder(),
+//                    child: new Text(
+//                      "REQUEST",
+//                      style: new TextStyle(color: Colors.white, fontSize: 16.0),
+//                    ),
+//                  ),
+//                ),
+//              ),
+//            ),
+//          ],
+//        ),
+//      ),
+//    );
+//  }
+//
+//  List<AssetItem> getAssetDetails() {
+//    List<AssetItem> assetsDetailsList = [];
+//    for (var asset in dataList) {
+//      assetsDetailsList.add(new AssetItem(asset));
+//    }
+//    return assetsDetailsList;
+//  }
+//}
+//
+//class AssetData {
+//  String details;
+//  MaterialColor color;
+//
+//  AssetData(this.details, this.color);
+//}
+//
+//class AssetItem extends StatelessWidget {
+//  final AssetData _data;
+//
+//  AssetItem(this._data);
+//
+//  @override
+//  Widget build(BuildContext context) {
+//    return new Container(
+//      margin: const EdgeInsets.only(top: 1.0, bottom: 1.0),
+//      child: new Row(
+//        mainAxisSize: MainAxisSize.min,
+//        crossAxisAlignment: CrossAxisAlignment.center,
+//        children: <Widget>[
+//          new Container(
+//            height: 40.0,
+//            width: 5.0,
+//            decoration: new BoxDecoration(
+//                color: _data.color,
+//                borderRadius: new BorderRadius.circular(10.0)),
+//          ),
+//          new Expanded(
+//            child: new Container(
+//              margin: const EdgeInsets.only(left: 5.0, right: 60.0),
+//              padding: const EdgeInsets.only(
+//                  left: 15.0, right: 15.0, top: 2.0, bottom: 2.0),
+//              decoration: new BoxDecoration(
+//                  color: Colors.grey,
+//                  borderRadius: new BorderRadius.circular(10.0)),
+//              child: new Text(
+//                _data.details,
+//                maxLines: 10,
+//                style: const TextStyle(fontSize: 12.0),
+//              ),
+//            ),
+//          )
+//        ],
+//      ),
+//    );
+//  }
+//}
