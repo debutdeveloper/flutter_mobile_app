@@ -13,7 +13,7 @@ class RequestAsset extends StatefulWidget {
   final CurrentUser user;
   final Asset asset;
 
-  RequestAsset({@required this.user,@required this.asset});
+  RequestAsset({@required this.user, @required this.asset});
 
   @override
   _State createState() => new _State();
@@ -26,8 +26,8 @@ enum RequestPriority {
 }
 
 class _State extends State<RequestAsset> {
-
-  static final TextEditingController _purposeController = new TextEditingController();
+  static final TextEditingController _purposeController =
+      new TextEditingController();
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
   final GlobalKey<ScaffoldState> scaffoldKey = new GlobalKey<ScaffoldState>();
 
@@ -45,18 +45,21 @@ class _State extends State<RequestAsset> {
   String _startTimeLabel = 'Select time';
   String _endTimeLabel = 'Select time';
 
-  String _startTimeString = '${new TimeOfDay.now().hour}:${new TimeOfDay.now().minute}:00';
-  String _endTimeString = '${new TimeOfDay.now().hour}:${new TimeOfDay.now().minute}:00';
+  String _startTimeString =
+      '${new TimeOfDay.now().hour}:${new TimeOfDay.now().minute}:00';
+  String _endTimeString =
+      '${new TimeOfDay.now().hour}:${new TimeOfDay.now().minute}:00';
 
   String _today = new DateFormat.yMd().format(new DateTime.now()).toString();
 
   Future startTimePicker(BuildContext context) async {
-    final TimeOfDay time = await showTimePicker(context: context, initialTime: new TimeOfDay.now());
+    final TimeOfDay time = await showTimePicker(
+        context: context, initialTime: new TimeOfDay.now());
 
     /// Check selected date
     //  && time.hour < _actualEndTime.hour
     //&& (time.hour >= new TimeOfDay.now().hour) && (time.minute >= new TimeOfDay.now().minute)
-    if (time != null){
+    if (time != null) {
       if (time.hour == new TimeOfDay.now().hour) {
         if (time.minute > new TimeOfDay.now().minute) {
           setState(() {
@@ -69,19 +72,27 @@ class _State extends State<RequestAsset> {
         } else {
           print("failed 1");
           showAlert(context,
-              title: new Icon(Icons.error, color: Colors.red,),
+              title: new Icon(
+                Icons.error,
+                color: Colors.red,
+              ),
               content: new Text("Selected time is not valid"),
               materialActions: <Widget>[
                 new CupertinoDialogAction(
                   child: new Text("OK"),
-                  onPressed: () { Navigator.of(context).pop();  },
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
                   isDefaultAction: true,
                 ),
               ],
               cupertinoActions: <Widget>[
-                new FlatButton(onPressed: () { Navigator.of(context).pop();  }, child: new Text("OK"))
-              ]
-          );
+                new FlatButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: new Text("OK"))
+              ]);
         }
       } else if (time.hour > new TimeOfDay.now().hour) {
         setState(() {
@@ -95,43 +106,58 @@ class _State extends State<RequestAsset> {
       } else {
         print("failed 2");
         showAlert(context,
-            title: new Icon(Icons.error, color: Colors.red,),
+            title: new Icon(
+              Icons.error,
+              color: Colors.red,
+            ),
             content: new Text("Selected time is not valid"),
             materialActions: <Widget>[
               new CupertinoDialogAction(
                 child: new Text("OK"),
-                onPressed: () { Navigator.of(context).pop();  },
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
                 isDefaultAction: true,
               ),
             ],
             cupertinoActions: <Widget>[
-              new FlatButton(onPressed: () { Navigator.of(context).pop();  }, child: new Text("OK"))
-            ]
-        );
+              new FlatButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: new Text("OK"))
+            ]);
       }
-    }
-    else{
+    } else {
       print('failed 3');
       showAlert(context,
-          title: new Icon(Icons.error, color: Colors.red,),
+          title: new Icon(
+            Icons.error,
+            color: Colors.red,
+          ),
           content: new Text("Please select time"),
           materialActions: <Widget>[
             new CupertinoDialogAction(
               child: new Text("OK"),
-              onPressed: () { Navigator.of(context).pop();  },
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
               isDefaultAction: true,
             ),
           ],
           cupertinoActions: <Widget>[
-            new FlatButton(onPressed: () { Navigator.of(context).pop();  }, child: new Text("OK"))
-          ]
-      );
+            new FlatButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: new Text("OK"))
+          ]);
     }
   }
 
-
   Future endTimePicker(BuildContext context) async {
-    final TimeOfDay time = await showTimePicker(context: context, initialTime: new TimeOfDay.now());
+    final TimeOfDay time = await showTimePicker(
+        context: context, initialTime: new TimeOfDay.now());
 
     /// Check selected date
     //   && (time.hour >= _actualStartTime.hour && time.minute > _actualStartTime.minute)
@@ -146,19 +172,27 @@ class _State extends State<RequestAsset> {
         } else {
           print("Failed 1");
           showAlert(context,
-            title: new Icon(Icons.error, color: Colors.red,),
-            content: new Text("Selected time is not valid"),
-            materialActions: <Widget>[
-              new CupertinoDialogAction(
-                child: new Text("OK"),
-                onPressed: () { Navigator.of(context).pop();  },
-                isDefaultAction: true,
+              title: new Icon(
+                Icons.error,
+                color: Colors.red,
               ),
-            ],
-            cupertinoActions: <Widget>[
-              new FlatButton(onPressed: () { Navigator.of(context).pop();  }, child: new Text("OK"))
-            ]
-          );
+              content: new Text("Selected time is not valid"),
+              materialActions: <Widget>[
+                new CupertinoDialogAction(
+                  child: new Text("OK"),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  isDefaultAction: true,
+                ),
+              ],
+              cupertinoActions: <Widget>[
+                new FlatButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: new Text("OK"))
+              ]);
         }
       } else if (time.hour > _actualStartTime.hour) {
         setState(() {
@@ -169,37 +203,52 @@ class _State extends State<RequestAsset> {
       } else {
         print("Failed 2");
         showAlert(context,
-            title: new Icon(Icons.error, color: Colors.red,),
+            title: new Icon(
+              Icons.error,
+              color: Colors.red,
+            ),
             content: new Text("Selected time is not valid"),
             materialActions: <Widget>[
               new CupertinoDialogAction(
                 child: new Text("OK"),
-                onPressed: () { Navigator.of(context).pop();  },
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
                 isDefaultAction: true,
               ),
             ],
             cupertinoActions: <Widget>[
-              new FlatButton(onPressed: () { Navigator.of(context).pop();  }, child: new Text("OK"))
-            ]
-        );
+              new FlatButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: new Text("OK"))
+            ]);
       }
-    }
-    else{
+    } else {
       print('failed 3');
       showAlert(context,
-          title: new Icon(Icons.error, color: Colors.red,),
+          title: new Icon(
+            Icons.error,
+            color: Colors.red,
+          ),
           content: new Text("Please select time"),
           materialActions: <Widget>[
             new CupertinoDialogAction(
               child: new Text("OK"),
-              onPressed: () { Navigator.of(context).pop();  },
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
               isDefaultAction: true,
             ),
           ],
           cupertinoActions: <Widget>[
-            new FlatButton(onPressed: () { Navigator.of(context).pop();  }, child: new Text("OK"))
-          ]
-      );
+            new FlatButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: new Text("OK"))
+          ]);
     }
   }
 
@@ -211,16 +260,15 @@ class _State extends State<RequestAsset> {
     }
   }
 
-  _requestForAsset() async{
+  _requestForAsset() async {
     if (isStartTimeSelected && isEndTimeSelected) {
       if (_formKey.currentState.validate()) {
-        final String requestURL = "http://192.168.0.18:3001/request/" +
-            widget.asset.record.category.id;
-        final Map<String,Object> credentials = {
+        final String requestURL = requestAPI + widget.asset.record.category.id;
+        final Map<String, String> credentials = {
           "description": _purpose,
           "start_time": "$_today $_startTimeString",
           "end_time": "$_today $_endTimeString",
-          "priority": json.encode(priority.round()),
+          "priority": priority.round().toString(),
           "user": json.encode({
             "id": widget.user.id,
             "first_name": widget.user.data.first_name,
@@ -234,41 +282,52 @@ class _State extends State<RequestAsset> {
         };
 
         try {
-          var response = await http.post(
-              requestURL, body: credentials, headers: {"Accept": "application/json"}).timeout(timeoutDuration);
+          var response = await http.post(requestURL,
+              body: json.encode(credentials),
+              headers: {
+                "Authorization": widget.user.data.token,
+                "Content-Type" : "application/json"
+              }).timeout(timeoutDuration);
           print(response.body);
 
           if (response.statusCode == 200) {
             print("SUCCESSFULLY REQUEST SENT");
             scaffoldKey.currentState.showSnackBar(
-                new SnackBar(content: new Text("Requested Successfully"))
-            );
+                new SnackBar(content: new Text("Requested Successfully")));
           } else {
-            scaffoldKey.currentState.showSnackBar(
-                new SnackBar(content: new Text("Something went wrong, Request not sent."))
-            );
+            scaffoldKey.currentState.showSnackBar(new SnackBar(
+                content: new Text("Something went wrong, Request not sent.")));
+            print(response.statusCode);
           }
         } catch (e) {
-          scaffoldKey.currentState.showSnackBar(
-              new SnackBar(content: new Text("Something went wrong, Request not sent."))
-          );
+          print(e);
+          scaffoldKey.currentState.showSnackBar(new SnackBar(
+              content: new Text("Connection time-out, Request not sent.")));
         }
       }
     } else {
       showAlert(context,
-          title: new Icon(Icons.error, color: Colors.red,),
+          title: new Icon(
+            Icons.error,
+            color: Colors.red,
+          ),
           content: new Text("All fields are required"),
           materialActions: <Widget>[
             new CupertinoDialogAction(
               child: new Text("OK"),
-              onPressed: () { Navigator.of(context).pop();  },
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
               isDefaultAction: true,
             ),
           ],
           cupertinoActions: <Widget>[
-            new FlatButton(onPressed: () { Navigator.of(context).pop();  }, child: new Text("OK"))
-          ]
-      );
+            new FlatButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: new Text("OK"))
+          ]);
     }
   }
 
@@ -308,22 +367,23 @@ class _State extends State<RequestAsset> {
                           child: new Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
-                              new Material(
-                                child: new Text(
-                                  "REQUEST FOR ASSEST",
-                                  style: new TextStyle(
-                                      fontSize: titleFontSize,
-                                      fontWeight: FontWeight.bold),
-                                ),
+                              new Text(
+                                "REQUEST FOR ASSEST",
+                                style: new TextStyle(
+                                    fontSize: titleFontSize,
+                                    fontWeight: FontWeight.bold),
                               ),
                               new SizedBox(
                                 height: 24.0,
                               ),
 //
                               new GestureDetector(
-                                onTap: () { startTimePicker(context);},
+                                onTap: () {
+                                  startTimePicker(context);
+                                },
                                 child: new Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 12.0),
                                   height: 48.0,
                                   decoration: new BoxDecoration(
                                       borderRadius: new BorderRadius.all(
@@ -334,18 +394,20 @@ class _State extends State<RequestAsset> {
                                       )),
                                   child: new Center(
                                     child: new Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
                                       children: <Widget>[
-                                        new Text('From (Today):',
+                                        new Text(
+                                          'From (Today):',
                                           style: new TextStyle(
-                                            fontSize: timePickerFieldFontSize
-                                          ),
+                                              fontSize:
+                                                  timePickerFieldFontSize),
                                         ),
-                                        new Text(_startTimeLabel,
+                                        new Text(
+                                          _startTimeLabel,
                                           style: new TextStyle(
-                                            fontSize: timePickerFieldFontSize,
-                                            fontWeight: FontWeight.bold
-                                          ),
+                                              fontSize: timePickerFieldFontSize,
+                                              fontWeight: FontWeight.bold),
                                         )
                                       ],
                                     ),
@@ -356,10 +418,13 @@ class _State extends State<RequestAsset> {
                                 height: 8.0,
                               ),
                               new GestureDetector(
-                                onTap: () { endTimePicker(context);},
+                                onTap: () {
+                                  endTimePicker(context);
+                                },
                                 child: new Container(
                                   height: 48.0,
-                                  padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 12.0),
                                   decoration: new BoxDecoration(
                                       borderRadius: new BorderRadius.all(
                                           new Radius.circular(12.0)),
@@ -369,18 +434,20 @@ class _State extends State<RequestAsset> {
                                       )),
                                   child: new Center(
                                     child: new Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
                                       children: <Widget>[
-                                        new Text('To (Today):',
+                                        new Text(
+                                          'To (Today):',
                                           style: new TextStyle(
-                                              fontSize: timePickerFieldFontSize
-                                          ),
+                                              fontSize:
+                                                  timePickerFieldFontSize),
                                         ),
-                                        new Text(_endTimeLabel,
+                                        new Text(
+                                          _endTimeLabel,
                                           style: new TextStyle(
-                                            fontSize: timePickerFieldFontSize,
-                                            fontWeight: FontWeight.bold
-                                          ),
+                                              fontSize: timePickerFieldFontSize,
+                                              fontWeight: FontWeight.bold),
                                         )
                                       ],
                                     ),
@@ -395,18 +462,16 @@ class _State extends State<RequestAsset> {
                                   initialValue: widget.user.data.emp_id,
                                   enabled: false,
                                   style: new TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 16.0,
-                                    fontWeight: FontWeight.bold
-                                  ),
+                                      color: Colors.black,
+                                      fontSize: 16.0,
+                                      fontWeight: FontWeight.bold),
                                   decoration: new InputDecoration(
                                     labelText: "Employee ID",
                                     border: new OutlineInputBorder(
-                                        borderRadius:
-                                            new BorderRadius.circular(12.0),
+                                      borderRadius:
+                                          new BorderRadius.circular(12.0),
                                     ),
-                                  )
-                              ),
+                                  )),
                               new SizedBox(
                                 height: 8.0,
                               ),
@@ -435,14 +500,14 @@ class _State extends State<RequestAsset> {
                                       width: 1.0,
                                     )),
                                 child: Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8.0),
                                   child: new Row(
                                     children: <Widget>[
                                       new Text(
                                         "Priority",
                                         style: new TextStyle(
-                                          fontSize: titleFontSize
-                                        ),
+                                            fontSize: sliderFieldFontSize),
                                       ),
                                       new SizedBox(
                                         width: 12.0,
@@ -464,34 +529,35 @@ class _State extends State<RequestAsset> {
                                             ),
                                             new Row(
                                               mainAxisAlignment:
-                                                  MainAxisAlignment.spaceBetween,
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
                                               children: <Widget>[
                                                 new Text(
                                                   "Low",
                                                   style: new TextStyle(
-                                                    color: priority == 0.0
-                                                        ? Colors.blue
-                                                        : Colors.black,
-                                                    fontSize: descriptionFontSize
-                                                  ),
+                                                      color: priority == 0.0
+                                                          ? Colors.blue
+                                                          : Colors.black,
+                                                      fontSize:
+                                                          descriptionFontSize),
                                                 ),
                                                 new Text(
                                                   "Medium",
                                                   style: new TextStyle(
-                                                    color: priority == 1.0
-                                                        ? Colors.blue
-                                                        : Colors.black,
-                                                      fontSize: descriptionFontSize
-                                                  ),
+                                                      color: priority == 1.0
+                                                          ? Colors.blue
+                                                          : Colors.black,
+                                                      fontSize:
+                                                          descriptionFontSize),
                                                 ),
                                                 new Text(
                                                   "High",
                                                   style: new TextStyle(
-                                                    color: priority == 2.0
-                                                        ? Colors.blue
-                                                        : Colors.black,
-                                                      fontSize: descriptionFontSize
-                                                  ),
+                                                      color: priority == 2.0
+                                                          ? Colors.blue
+                                                          : Colors.black,
+                                                      fontSize:
+                                                          descriptionFontSize),
                                                 ),
                                               ],
                                             )
@@ -519,13 +585,14 @@ class _State extends State<RequestAsset> {
                       height: buttonHeight,
                       child: new FlatButton(
                         onPressed: () {
-                         _requestForAsset();
+                          _requestForAsset();
                         },
                         shape: new StadiumBorder(),
                         child: new Text(
                           "REQUEST",
-                          style:
-                              new TextStyle(color: Colors.white, fontSize: buttonTitleFontSize),
+                          style: new TextStyle(
+                              color: Colors.white,
+                              fontSize: buttonTitleFontSize),
                         ),
                       ),
                     ),

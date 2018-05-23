@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:debut_assets/Assets.dart';
 import 'package:debut_assets/MyAssets.dart';
-import 'package:debut_assets/Notifications.dart';
 import 'package:debut_assets/models/User.dart';
 import 'package:debut_assets/reset_password.dart';
 import 'package:debut_assets/utils.dart';
@@ -22,7 +21,6 @@ class _DashboardState extends State<Dashboard>
 
   String _allAssets = "All Assets";
   String _MyAssets = "My Assets";
-  String _Notification = "Notification";
 
   String _appTitle = 'ALL ASSETS';
   int _tabIndex = 0;
@@ -36,9 +34,6 @@ class _DashboardState extends State<Dashboard>
         case 1:
           _appTitle = _MyAssets;
           break;
-        case 2:
-          _appTitle = _Notification;
-          break;
       }
     });
   }
@@ -47,7 +42,7 @@ class _DashboardState extends State<Dashboard>
   void initState() {
     // TODO: implement initState
     super.initState();
-    tabController = new TabController(length: 3, vsync: this);
+    tabController = new TabController(length: 2, vsync: this);
     tabController.addListener(() {
       if (tabController.indexIsChanging) {
         int index = tabController.index;
@@ -168,18 +163,13 @@ class _DashboardState extends State<Dashboard>
             icon: new Icon(Icons.folder),
             text: _MyAssets,
           ),
-          new Tab(
-            icon: new Icon(Icons.notifications),
-            text: _Notification,
-          ),
         ],
         controller: tabController,
       ),
       body: new TabBarView(
         children: [
           new Assets(user: widget.user),
-          new MyAssets(),
-          new Notifications(),
+          new MyAssets(widget.user),
         ],
         controller: tabController,
       ),

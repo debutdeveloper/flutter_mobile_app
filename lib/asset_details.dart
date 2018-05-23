@@ -29,12 +29,10 @@ class _AssetHistoryState extends State<AssetHistory> {
     print("getting asset history called");
     print("Getting Asset History");
 
-    final assetHistoryURL =
-        "http://192.168.0.18:3001/request/requests/" + widget.asset.key;
+    final assetHistoryURL = assetDetailsAPI + widget.asset.key;
     try {
-      var response = await http.get(assetHistoryURL, headers: {
-        "Accept": "application/json"
-      }).timeout(timeoutDuration);
+      var response = await http.get(assetHistoryURL,
+          headers: {"Authorization": widget.user.data.token}).timeout(timeoutDuration);
 
       if (response.statusCode == 200) {
         setState(() {
@@ -187,27 +185,6 @@ class _AssetHistoryState extends State<AssetHistory> {
 
     return requestDetailsList;
   }
-
-
-  String getDate(String date){
-    String dateString = '';
-    var tempDate = new DateFormat.yMMMd().format(DateTime.parse(date));
-    dateString = tempDate.toString();
-    return dateString;
-  }
-  
-  String getTime(String time){
-   String timeString;
-   var tempTime = new DateFormat.jm().format(DateTime.parse(time));
-   timeString = tempTime.toString();
-   return timeString;
-  }
-}
-
-class RequestData {
-  int status;
-  String details;
-  RequestData({@required this.status, @required this.details});
 }
 
 class RequestDetails extends StatelessWidget {

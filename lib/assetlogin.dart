@@ -44,7 +44,7 @@ class _LoginState extends State<Login> {
   void _validate() async {
     //print(new DateFormat.yMMMd().format(new DateTime.now()));
     if (_formKey.currentState.validate()) {
-      final String loginURL = "http://192.168.0.18:3001/user/login";
+      final String loginURL = loginAPI;
       final credentials = {
         "email": username.toLowerCase(),
         "password": password,
@@ -209,7 +209,7 @@ class _LoginState extends State<Login> {
                                 FocusScope.of(context).requestFocus(_password);
                               },
                               decoration: new InputDecoration(
-                                hintText: "Email",
+                                hintText: "Email ID",
                                 border: new UnderlineInputBorder(),
                                 suffixIcon: new Icon(Icons.email),
                               )),

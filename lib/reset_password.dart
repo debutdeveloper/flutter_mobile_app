@@ -17,11 +17,11 @@ class ResetPasswordScreen extends StatefulWidget {
 }
 
 class ResetPasswordScreenState extends State<ResetPasswordScreen> {
-
   /// Custom properties
   TextEditingController _oldPasswordController = new TextEditingController();
   TextEditingController _newPasswordController = new TextEditingController();
-  TextEditingController _confirmPasswordController = new TextEditingController();
+  TextEditingController _confirmPasswordController =
+      new TextEditingController();
 
   String get _oldPassword => _oldPasswordController.text;
   String get _newPassword => _newPasswordController.text;
@@ -41,7 +41,7 @@ class ResetPasswordScreenState extends State<ResetPasswordScreen> {
     final form = _resetPasswordFormKey.currentState;
 
     if (form.validate()) {
-      final String resetPasswordUrl = "http://192.168.0.18:3001/user/change-password";
+      final String resetPasswordUrl = resetPasswordAPI;
       final credentials = {
         "id": widget.user.id,
         "old_password": _oldPassword,
@@ -50,14 +50,18 @@ class ResetPasswordScreenState extends State<ResetPasswordScreen> {
       };
 
       try {
-        var response = await http.put(
-            resetPasswordUrl, body: credentials, headers: {}).timeout(timeoutDuration);
+        var response = await http.put(resetPasswordUrl,
+            body: credentials,
+            headers: {
+              "Authorization": widget.user.data.token
+            }).timeout(timeoutDuration);
         print("Reset password response : ${json.decode(response.body)}");
 
         if (response.statusCode == 200) {
           print("Password changed successfully");
           var responseJson = json.decode(response.body);
-          showAlert(context,
+          showAlert(
+            context,
             title: new Title(color: Colors.blue, child: new Text("Success")),
             content: new Text(responseJson["message"]),
             cupertinoActions: <Widget>[
@@ -66,11 +70,10 @@ class ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 isDefaultAction: true,
                 onPressed: () {
                   Navigator.of(context).pushAndRemoveUntil(
-                    new MaterialPageRoute(
-                        builder: (context) => new Login()
-                    ),
+                        new MaterialPageRoute(
+                            builder: (context) => new Login()),
                         (Route<dynamic> newRoute) => false,
-                  );
+                      );
                 },
               ),
             ],
@@ -78,11 +81,10 @@ class ResetPasswordScreenState extends State<ResetPasswordScreen> {
               new FlatButton(
                   onPressed: () {
                     Navigator.of(context).pushAndRemoveUntil(
-                      new MaterialPageRoute(
-                          builder: (context) => new Login()
-                      ),
+                          new MaterialPageRoute(
+                              builder: (context) => new Login()),
                           (Route<dynamic> newRoute) => false,
-                    );
+                        );
                   },
                   child: new Text("Login"))
             ],
@@ -90,8 +92,12 @@ class ResetPasswordScreenState extends State<ResetPasswordScreen> {
         } else {
           print("Error occured");
           var errorJson = json.decode(response.body);
-          showAlert(context,
-            title: new Icon(Icons.warning, color: Colors.red,),
+          showAlert(
+            context,
+            title: new Icon(
+              Icons.warning,
+              color: Colors.red,
+            ),
             content: new Text(errorJson["message"]),
             cupertinoActions: <Widget>[
               new CupertinoDialogAction(
@@ -111,10 +117,13 @@ class ResetPasswordScreenState extends State<ResetPasswordScreen> {
             ],
           );
         }
-      }
-      catch (e) {
+      } catch (e) {
         print("Exception occured");
-        showAlert(context, title: new Icon(Icons.warning, color: Colors.red,),
+        showAlert(context,
+            title: new Icon(
+              Icons.warning,
+              color: Colors.red,
+            ),
             content: new Text('Connection time-out'));
       }
     }
@@ -148,7 +157,6 @@ class ResetPasswordScreenState extends State<ResetPasswordScreen> {
     }
   }
 
-
   /// Validator method of confirm password textFormField
   ///
   /// To validate the confirmPassword entered by user
@@ -166,9 +174,7 @@ class ResetPasswordScreenState extends State<ResetPasswordScreen> {
   /// Build method
   @override
   Widget build(BuildContext context) {
-    _screenSize = MediaQuery
-        .of(context)
-        .size;
+    _screenSize = MediaQuery.of(context).size;
     return new Scaffold(
       body: new SingleChildScrollView(
         child: new Column(
@@ -208,12 +214,17 @@ class ResetPasswordScreenState extends State<ResetPasswordScreen> {
                       ),
                       new SizedBox(height: 16.0),
                       new Padding(
-                        padding: const EdgeInsets.fromLTRB(
-                            16.0, 0.0, 16.0, 0.0),
+                        padding:
+                            const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 0.0),
                         child: new TextFormField(
                             controller: _oldPasswordController,
                             validator: _validateOldPassword,
                             obscureText: true,
+                            onFieldSubmitted: (value) {
+                              FocusScope
+                                  .of(context)
+                                  .requestFocus(_newPasswordField);
+                            },
                             decoration: new InputDecoration(
                               hintText: "Old Password",
                               labelText: "Old Password",
@@ -223,13 +234,18 @@ class ResetPasswordScreenState extends State<ResetPasswordScreen> {
                       ),
                       new SizedBox(height: 16.0),
                       new Padding(
-                        padding: const EdgeInsets.fromLTRB(
-                            16.0, 0.0, 16.0, 0.0),
+                        padding:
+                            const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 0.0),
                         child: new TextFormField(
-                          controller: _newPasswordController,
+                            controller: _newPasswordController,
                             validator: _validateNewPassword,
                             focusNode: _newPasswordField,
                             obscureText: true,
+                            onFieldSubmitted: (value) {
+                              FocusScope
+                                  .of(context)
+                                  .requestFocus(_confirmNewPasswordField);
+                            },
                             decoration: new InputDecoration(
                               hintText: "New Password",
                               labelText: "New Password",
@@ -239,8 +255,8 @@ class ResetPasswordScreenState extends State<ResetPasswordScreen> {
                       ),
                       new SizedBox(height: 16.0),
                       new Padding(
-                        padding: const EdgeInsets.fromLTRB(
-                            16.0, 0.0, 16.0, 0.0),
+                        padding:
+                            const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 0.0),
                         child: new TextFormField(
                           controller: _confirmPasswordController,
                           validator: _validateConfirmPassword,
@@ -256,8 +272,8 @@ class ResetPasswordScreenState extends State<ResetPasswordScreen> {
                       ),
                       new SizedBox(height: 32.0),
                       new Padding(
-                        padding: const EdgeInsets.fromLTRB(
-                            16.0, 0.0, 16.0, 0.0),
+                        padding:
+                            const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 0.0),
                         child: new Container(
                             height: buttonHeight,
                             decoration: new BoxDecoration(
@@ -275,22 +291,24 @@ class ResetPasswordScreenState extends State<ResetPasswordScreen> {
                                 color: Colors.transparent,
                                 child: new Text(
                                   'RESET PASSWORD',
-                                  style: new TextStyle(color: Colors.white,
-                                    fontSize: buttonTitleFontSize
-                                  ),
+                                  style: new TextStyle(
+                                      color: Colors.white,
+                                      fontSize: buttonTitleFontSize),
                                 ),
                               ),
-                            )
-                        ),
+                            )),
                       ),
                       new SizedBox(height: 24.0),
-                      new FlatButton(onPressed: () {
-                        Navigator.pop(context);
-                      }, child: new Text("Back",
-                        style: new TextStyle(
-                          fontSize: buttonTitleFontSize,
-                        ),
-                      ))
+                      new FlatButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: new Text(
+                            "Back",
+                            style: new TextStyle(
+                              fontSize: buttonTitleFontSize,
+                            ),
+                          ))
                     ],
                   ),
                 ),

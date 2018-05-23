@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 class CurrentAsset {
   String description;
   String id;
@@ -58,4 +60,10 @@ class Request {
     id = json["id"];
     value = Value.fromJSON(json["value"]);
   }
+}
+
+class RequestData {
+  int status;
+  String details;
+  RequestData({@required this.status, @required this.details});
 }

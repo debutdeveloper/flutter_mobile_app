@@ -27,8 +27,8 @@ class _CardViewState extends State<Assets> {
     print("Getting list");
 
     try {
-      var response = await http.get("http://192.168.0.18:3001/asset",
-          headers: {"Accept": "application/json"}).timeout(timeoutDuration);
+      var response = await http.get(assetsAPI,
+          headers: {"Authorization": widget.user.data.token}).timeout(timeoutDuration);
       if (response.statusCode == 200) {
         var listData = json.decode(response.body);
         setState(() {

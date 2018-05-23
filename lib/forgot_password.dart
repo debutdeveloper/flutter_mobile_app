@@ -33,15 +33,14 @@ class _ForgotPasswordState extends State<ForgotPassword> {
 
   _submit(BuildContext context) async {
     if (_forgotPasswordFormKey.currentState.validate()) {
-      final String resetPasswordUrl =
-          "http://192.168.0.18:3001/user/forget-password";
+      final String forgetPasswordUrl = forgetPasswordAPI;
       final credentials = {
         "email": _email.toLowerCase()
       };
 
       try {
-        var response = await http.put(resetPasswordUrl,
-            body: credentials, headers: {}).timeout(timeoutDuration);
+        var response = await http.put(forgetPasswordUrl,
+            body: credentials).timeout(timeoutDuration);
         print("Reset password response : ${json.decode(response.body)}");
 
         print("ENTERED EMAIL : $_email");
@@ -231,8 +230,6 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                         child: new Text(
                           "Back to Login Page",
                           style: new TextStyle(
-                            color: Colors.blue,
-                            fontWeight: FontWeight.bold,
                             fontSize: buttonTitleFontSize
                           ),
                         ))
