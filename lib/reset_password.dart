@@ -10,18 +10,13 @@ import 'package:http/http.dart' as http;
 import 'utils.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
-  final User user;
+  final CurrentUser user;
   ResetPasswordScreen({@required this.user});
   @override
-  ResetPasswordScreenState createState() => new ResetPasswordScreenState(user: user);
+  ResetPasswordScreenState createState() => new ResetPasswordScreenState();
 }
 
 class ResetPasswordScreenState extends State<ResetPasswordScreen> {
-  /// User object
-  final User user;
-
-  /// Constructor
-  ResetPasswordScreenState({@required this.user});
 
   /// Custom properties
   TextEditingController _oldPasswordController = new TextEditingController();
@@ -48,7 +43,7 @@ class ResetPasswordScreenState extends State<ResetPasswordScreen> {
     if (form.validate()) {
       final String resetPasswordUrl = "http://192.168.0.18:3001/user/change-password";
       final credentials = {
-        "id": user.id,
+        "id": widget.user.id,
         "old_password": _oldPassword,
         "new_password": _newPassword,
         "confirm_password": _confirmPassword

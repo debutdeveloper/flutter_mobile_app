@@ -58,7 +58,7 @@ class _state extends State<Login> {
           print("SUCCESSFULLY LOGIN");
 
           var userJson = json.decode(response.body);
-          var newUser = new User.fromJSON(userJson);
+          var newUser = new CurrentUser.fromJSON(userJson);
           Navigator.of(context).push(new MaterialPageRoute(
               builder: (context) => new Dashboard(newUser)));
         } else {
