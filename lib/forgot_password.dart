@@ -1,8 +1,6 @@
 import 'dart:convert';
 
 import 'package:debut_assets/assetlogin.dart';
-import 'package:debut_assets/models/User.dart';
-import 'package:debut_assets/reset_password.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -35,15 +33,18 @@ class _ForgotPasswordState extends State<ForgotPassword> {
 
   _submit(BuildContext context) async {
     if (_forgotPasswordFormKey.currentState.validate()) {
-      _emailController.clear();
       final String resetPasswordUrl =
           "http://192.168.0.18:3001/user/forget-password";
-      final credentials = {"email": _email.toLowerCase()};
+      final credentials = {
+        "email": _email.toLowerCase()
+      };
 
       try {
         var response = await http.put(resetPasswordUrl,
             body: credentials, headers: {}).timeout(timeoutDuration);
         print("Reset password response : ${json.decode(response.body)}");
+
+        print("ENTERED EMAIL : $_email");
 
         if (response.statusCode == 200) {
           print("Your new password has been sent to your email address.");
@@ -82,18 +83,14 @@ class _ForgotPasswordState extends State<ForgotPassword> {
           var errorJson = json.decode(response.body);
           showAlert(
             context,
-            title: new Title(color: Colors.blue, child: new Text("Success")),
+            title: new Title(color: Colors.blue, child: new Icon(Icons.error, color:  Colors.red,)),
             content: new Text(errorJson["message"]),
             cupertinoActions: <Widget>[
               new CupertinoDialogAction(
-                child: new Text("Login"),
+                child: new Text("Ok"),
                 isDefaultAction: true,
                 onPressed: () {
-                  Navigator.of(context).pushAndRemoveUntil(
-                        new MaterialPageRoute(
-                            builder: (context) => new Login()),
-                        (Route<dynamic> newRoute) => false,
-                      );
+                  Navigator.of(context).pop();
                 },
               ),
             ],
@@ -142,6 +139,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
         );
       }
     }
+    _emailController.clear();
   }
 
   @override
@@ -177,7 +175,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                       style: new TextStyle(
                           color: Colors.black,
                           fontWeight: FontWeight.bold,
-                          fontSize: 20.0),
+                          fontSize: titleFontSize),
                     ),
                     new SizedBox(height: 16.0),
                     new Text(
@@ -215,7 +213,9 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                           },
                           child: new Text(
                             "RESET PASSWORD",
-                            style: new TextStyle(color: Colors.white),
+                            style: new TextStyle(color: Colors.white,
+                              fontSize: buttonTitleFontSize
+                            ),
                           ),
                           color: Colors.transparent,
                           shape: new StadiumBorder(),
@@ -233,6 +233,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                           style: new TextStyle(
                             color: Colors.blue,
                             fontWeight: FontWeight.bold,
+                            fontSize: buttonTitleFontSize
                           ),
                         ))
                   ],

@@ -246,7 +246,7 @@ class _LoginState extends State<Login> {
                                   child: new Text(
                                     "LOGIN",
                                     style: new TextStyle(
-                                        color: Colors.white, fontSize: 16.0),
+                                        color: Colors.white, fontSize: buttonTitleFontSize),
                                   ),
                                 ),
                               ),
@@ -269,7 +269,7 @@ class _LoginState extends State<Login> {
                   },
                   child: new Text(
                     "Forgot Password?",
-                    style: new TextStyle(fontSize: 18.0, color: Colors.black),
+                    style: new TextStyle(fontSize: buttonTitleFontSize, color: Colors.black),
                   ),
                 ),
               ),

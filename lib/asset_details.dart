@@ -6,6 +6,7 @@ import 'package:debut_assets/models/Request.dart';
 import 'package:debut_assets/models/User.dart';
 import 'package:debut_assets/request_asset.dart';
 import 'package:debut_assets/utils.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
@@ -22,8 +23,6 @@ class AssetHistory extends StatefulWidget {
 class _AssetHistoryState extends State<AssetHistory> {
   List requestList;
   List<Request> listOfRequests = [];
-  String demoText = 'hello world';
-
   BuildContext _context;
 
   Future getAssetHistory() async {
@@ -31,7 +30,7 @@ class _AssetHistoryState extends State<AssetHistory> {
     print("Getting Asset History");
 
     final assetHistoryURL =
-        "http://192.168.0.18:3000/request/requests/" + widget.asset.key;
+        "http://192.168.0.18:3001/request/requests/" + widget.asset.key;
     try {
       var response = await http.get(assetHistoryURL, headers: {
         "Accept": "application/json"
@@ -50,15 +49,49 @@ class _AssetHistoryState extends State<AssetHistory> {
         });
       } else {
         var errorJson = json.decode(response.body);
-        showAlert(_context,
-            title: new Icon(
-              Icons.error,
-              color: Colors.red,
-            ),
-            content: new Text(errorJson["message"]));
+        showAlert(
+            _context,
+            title: new Icon(Icons.error, color: Colors.red,),
+            content: new Text(errorJson["message"]),
+            cupertinoActions: <Widget>[
+              new CupertinoDialogAction(child: new Text('Ok'),
+                onPressed: (){
+                  Navigator.pop(_context);
+                },
+                isDefaultAction: true,
+              ),
+            ],
+            materialActions: <Widget>[
+              new FlatButton(onPressed: (){
+                Navigator.pop(_context);
+              },
+                child: new Text('Ok'),
+              )
+            ]
+        );
       }
-    } catch (e) {
-      showAlert(_context,title: new Icon(Icons.error,color: Colors.red,),content: new Text('Connection time-out'));
+    }
+    catch (e) {
+      showAlert(
+          _context,
+          title: new Icon(Icons.error, color: Colors.red,),
+          content: new Text('Connection time-out'),
+          cupertinoActions: <Widget>[
+            new CupertinoDialogAction(child: new Text('Ok'),
+              onPressed: (){
+                Navigator.pop(_context);
+              },
+              isDefaultAction: true,
+            ),
+          ],
+          materialActions: <Widget>[
+            new FlatButton(onPressed: (){
+              Navigator.pop(_context);
+            },
+              child: new Text('Ok'),
+            )
+          ]
+      );
     }
   }
 
@@ -118,7 +151,7 @@ class _AssetHistoryState extends State<AssetHistory> {
                     shape: new StadiumBorder(),
                     child: new Text(
                       "REQUEST",
-                      style: new TextStyle(color: Colors.white, fontSize: 16.0),
+                      style: new TextStyle(color: Colors.white, fontSize: buttonTitleFontSize),
                     ),
                   ),
                 ),
@@ -183,10 +216,6 @@ class RequestDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var moonLanding = DateTime.parse("2018-05-30T00:59:30Z");
-
-   print(moonLanding.day);
-
     return new Container(
       margin: const EdgeInsets.only(top: 1.0, bottom: 1.0),
       child: new Row(
@@ -211,7 +240,7 @@ class RequestDetails extends StatelessWidget {
               child: new Text(
                 _requestData.details,
                 maxLines: 10,
-                style: const TextStyle(fontSize: 12.0),
+                style: new TextStyle(fontSize: descriptionFontSize),
               ),
             ),
           )

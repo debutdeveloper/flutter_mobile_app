@@ -18,6 +18,4 @@ class _CardViewState extends State<MyAssets> {
       ),
     );
   }
-
-
 }

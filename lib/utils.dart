@@ -2,6 +2,16 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
+/// Custom UI Properties
+
+double titleFontSize = 18.0; // done
+double subTitleFontSize = 12.0; //done
+double buttonTitleFontSize = 16.0; // done
+double descriptionFontSize = 12.0; // done
+double timePickerFieldFontSize = 16.0; //done
+double sliderFieldFontSize = 16.0;
+
+
 getColors() {
   return [
     new Color.fromRGBO(23, 88, 232, 1.0),

@@ -199,12 +199,12 @@ class ResetPasswordScreenState extends State<ResetPasswordScreen> {
                   key: _resetPasswordFormKey,
                   child: new Column(
                     children: <Widget>[
-                      const Text(
+                      new Text(
                         'Reset Password',
-                        style: const TextStyle(
+                        style: new TextStyle(
                             color: Colors.black,
                             fontWeight: FontWeight.bold,
-                            fontSize: 20.0),
+                            fontSize: titleFontSize),
                       ),
                       new SizedBox(height: 16.0),
                       new Padding(
@@ -274,8 +274,10 @@ class ResetPasswordScreenState extends State<ResetPasswordScreen> {
                                 },
                                 color: Colors.transparent,
                                 child: new Text(
-                                  'CHANGE PASSWORD',
-                                  style: new TextStyle(color: Colors.white),
+                                  'RESET PASSWORD',
+                                  style: new TextStyle(color: Colors.white,
+                                    fontSize: buttonTitleFontSize
+                                  ),
                                 ),
                               ),
                             )
@@ -286,7 +288,7 @@ class ResetPasswordScreenState extends State<ResetPasswordScreen> {
                         Navigator.pop(context);
                       }, child: new Text("Back",
                         style: new TextStyle(
-                          fontSize: 20.0,
+                          fontSize: buttonTitleFontSize,
                         ),
                       ))
                     ],

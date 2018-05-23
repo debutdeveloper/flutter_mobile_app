@@ -1,6 +1,7 @@
 import 'package:debut_assets/asset_details.dart';
 import 'package:debut_assets/models/Asset.dart';
 import 'package:debut_assets/models/User.dart';
+import 'package:debut_assets/utils.dart';
 import 'package:flutter/material.dart';
 
 
@@ -43,8 +44,8 @@ class AssetCard extends StatelessWidget {
                 new Text(
                   asset.record.name,
                   style: new TextStyle(
-                    fontSize: 18.0,
-                    fontWeight: FontWeight.w600,
+                    fontSize: titleFontSize,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
                 new Padding(
@@ -60,11 +61,11 @@ class AssetCard extends StatelessWidget {
                           children: <Widget>[
                             new Text('Category - ',
                                 style: new TextStyle(
-                                  fontSize: 12.0,
+                                  fontSize: descriptionFontSize,
                                 )),
                             new Text(asset.record.category.name,
                                 style: new TextStyle(
-                                    fontSize: 12.0,
+                                    fontSize: descriptionFontSize,
                                     fontWeight: FontWeight.bold)),
                           ],
                         ),
@@ -75,12 +76,12 @@ class AssetCard extends StatelessWidget {
                           children: <Widget>[
                             new Text('Status - ',
                                 style: new TextStyle(
-                                  fontSize: 12.0,
+                                  fontSize: descriptionFontSize,
                                 )),
                             new Text(
                                 asset.record.status == 0 ? "False" : "True",
                                 style: new TextStyle(
-                                  fontSize: 12.0,
+                                  fontSize: descriptionFontSize,
                                   fontWeight: FontWeight.bold,
                                   color: asset.record.status == 0
                                       ? Colors.red
@@ -97,13 +98,13 @@ class AssetCard extends StatelessWidget {
                           children: <Widget>[
                             new Text('Alloted - ',
                                 style: new TextStyle(
-                                  fontSize: 12.0,
+                                  fontSize: descriptionFontSize,
                                 )),
                             new Text("Admin",
                                 style: new TextStyle(
-                                    fontSize: 12.0,
+                                    fontSize: descriptionFontSize,
                                     color: Colors.blue,
-                                    fontWeight: FontWeight.w400)),
+                                    fontWeight: FontWeight.bold)),
                           ],
                         ),
                         new Padding(
@@ -117,11 +118,11 @@ class AssetCard extends StatelessWidget {
                                 )),
                             new Text(asset.record.status.toString(),
                                 style: new TextStyle(
-                                    fontSize: 12.0,
+                                    fontSize: descriptionFontSize,
                                     color: asset.record.status == 0
                                         ? Colors.red
                                         : Colors.green,
-                                    fontWeight: FontWeight.w400)),
+                                    fontWeight: FontWeight.bold)),
                           ],
                         )
                       ],
@@ -141,7 +142,7 @@ class AssetCard extends StatelessWidget {
           child: new RaisedButton(
             child: new Text(
               'VIEW DETAIS',
-              style: new TextStyle(fontSize: 12.0),
+              style: new TextStyle(fontSize: buttonTitleFontSize),
             ),
             color: Colors.blueAccent,
             onPressed: () {

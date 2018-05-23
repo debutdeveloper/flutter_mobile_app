@@ -124,9 +124,9 @@ class _DashboardState extends State<Dashboard>
               },
               child: new ListTile(
                 leading: new Icon(Icons.lock_outline),
-                title: new Text("Change password",
+                title: new Text("Reset password",
                   style: new TextStyle(
-                    fontSize: 16.0
+                    fontSize: buttonTitleFontSize
                   ),
                 ),
               ),
@@ -144,7 +144,7 @@ class _DashboardState extends State<Dashboard>
                 leading: new Icon(Icons.power_settings_new),
                 title: new Text("Logout",
                   style: new TextStyle(
-                      fontSize: 16.0
+                      fontSize: buttonTitleFontSize
                   ),
                 ),
               ),
@@ -154,7 +154,7 @@ class _DashboardState extends State<Dashboard>
       ),
       bottomNavigationBar: new TabBar(
         key: new PageStorageKey("assets"),
-        labelStyle: new TextStyle(fontSize: 12.0, color: Colors.white),
+        labelStyle: new TextStyle(fontSize: descriptionFontSize, color: Colors.white),
         unselectedLabelColor: Colors.black,
         indicator: new BoxDecoration(
           gradient: getGradient(),
