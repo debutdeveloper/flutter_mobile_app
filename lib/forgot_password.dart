@@ -42,7 +42,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
 
       try {
         var response = await http.put(resetPasswordUrl,
-            body: credentials, headers: {}).timeout(new Duration(seconds: 60));
+            body: credentials, headers: {}).timeout(timeoutDuration);
         print("Reset password response : ${json.decode(response.body)}");
 
         if (response.statusCode == 200) {

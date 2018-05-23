@@ -220,31 +220,37 @@ class _State extends State<RequestAsset> {
           "description": _purpose,
           "start_time": "$_today $_startTimeString",
           "end_time": "$_today $_endTimeString",
-          "priority": 1,
-          "user": {
+          "priority": json.encode(priority.round()),
+          "user": json.encode({
             "id": widget.user.id,
             "first_name": widget.user.data.first_name,
             "last_name": widget.user.data.last_name
-          },
-          "asset": {
+          }),
+          "asset": json.encode({
             "id": widget.asset.record.category.id,
             "name": widget.asset.record.name,
             "description": widget.asset.record.description
-          }
+          })
         };
 
-        var response = await http.post(
-            requestURL, body: credentials, headers: {"Accept": "application/json"});
-        print(response.body);
+        try {
+          var response = await http.post(
+              requestURL, body: credentials, headers: {"Accept": "application/json"}).timeout(timeoutDuration);
+          print(response.body);
 
-        if (response.statusCode == 200) {
-          print("SUCCESSFULLY REQUEST SENT");
+          if (response.statusCode == 200) {
+            print("SUCCESSFULLY REQUEST SENT");
+            scaffoldKey.currentState.showSnackBar(
+                new SnackBar(content: new Text("Requested Successfully"))
+            );
+          } else {
+            scaffoldKey.currentState.showSnackBar(
+                new SnackBar(content: new Text("Something went wrong, Request not sent."))
+            );
+          }
+        } catch (e) {
           scaffoldKey.currentState.showSnackBar(
-              new SnackBar(content: new Text("Requested Successfully"))
-          );
-        } else {
-          scaffoldKey.currentState.showSnackBar(
-              new SnackBar(content: new Text("Something went wrong"))
+              new SnackBar(content: new Text("Something went wrong, Request not sent."))
           );
         }
       }

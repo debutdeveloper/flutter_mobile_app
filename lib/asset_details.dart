@@ -35,7 +35,7 @@ class _AssetHistoryState extends State<AssetHistory> {
     try {
       var response = await http.get(assetHistoryURL, headers: {
         "Accept": "application/json"
-      }).timeout(new Duration(seconds: 60));
+      }).timeout(timeoutDuration);
 
       if (response.statusCode == 200) {
         setState(() {

@@ -11,18 +11,22 @@ class AssetCard extends StatelessWidget {
 
   AssetCard({@required this.asset,@required this.user});
 
+  Widget get spacer {
+    return const SizedBox(height: 16.0,);
+  }
+
   @override
   Widget build(BuildContext context) {
     return new Card(
-      elevation: 8.0,
+      elevation: 6.0,
       shape: new RoundedRectangleBorder(
           borderRadius: new BorderRadius.all(new Radius.circular(8.0))),
       child:
       new Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: <
           Widget>[
-        new Padding(padding: const EdgeInsets.all(8.0)),
+        spacer,
         new Row(children: <Widget>[
-          new Padding(padding: const EdgeInsets.fromLTRB(8.0, 0.0, 0.0, 0.0)),
+          new Padding(padding: const EdgeInsets.only(left: 12.0)),
           new CircleAvatar(
             minRadius: 36.0,
             child: new Text(
@@ -31,7 +35,7 @@ class AssetCard extends StatelessWidget {
             ),
             backgroundColor: Colors.deepOrange,
           ),
-          new Padding(padding: const EdgeInsets.fromLTRB(8.0, 0.0, 0.0, 0.0)),
+          new Padding(padding: const EdgeInsets.only(left: 12.0)),
           new Expanded(
             child: new Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -44,7 +48,7 @@ class AssetCard extends StatelessWidget {
                   ),
                 ),
                 new Padding(
-                    padding: const EdgeInsets.fromLTRB(0.0, 8.0, 0.0, 0.0)),
+                    padding: const EdgeInsets.only(top: 8.0)),
                 new Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -66,7 +70,7 @@ class AssetCard extends StatelessWidget {
                         ),
                         new Padding(
                             padding:
-                            const EdgeInsets.fromLTRB(0.0, 4.0, 0.0, 0.0)),
+                            const EdgeInsets.only(top: 4.0)),
                         new Row(
                           children: <Widget>[
                             new Text('Status - ',
@@ -104,7 +108,7 @@ class AssetCard extends StatelessWidget {
                         ),
                         new Padding(
                             padding:
-                            const EdgeInsets.fromLTRB(0.0, 4.0, 0.0, 0.0)),
+                            const EdgeInsets.only(top: 4.0)),
                         new Row(
                           children: <Widget>[
                             new Text('Available - ',
@@ -131,7 +135,7 @@ class AssetCard extends StatelessWidget {
             ),
           )
         ]),
-        new Padding(padding: const EdgeInsets.fromLTRB(0.0, 8.0, 0.0, 0.0)),
+        spacer,
         new ButtonTheme(
           height: 40.0,
           child: new RaisedButton(

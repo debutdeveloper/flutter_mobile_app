@@ -51,8 +51,7 @@ class ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
       try {
         var response = await http.put(
-            resetPasswordUrl, body: credentials, headers: {}).timeout(
-            new Duration(seconds: 60));
+            resetPasswordUrl, body: credentials, headers: {}).timeout(timeoutDuration);
         print("Reset password response : ${json.decode(response.body)}");
 
         if (response.statusCode == 200) {
@@ -214,6 +213,7 @@ class ResetPasswordScreenState extends State<ResetPasswordScreen> {
                         child: new TextFormField(
                             controller: _oldPasswordController,
                             validator: _validateOldPassword,
+                            obscureText: true,
                             decoration: new InputDecoration(
                               hintText: "Old Password",
                               labelText: "Old Password",
@@ -229,6 +229,7 @@ class ResetPasswordScreenState extends State<ResetPasswordScreen> {
                           controller: _newPasswordController,
                             validator: _validateNewPassword,
                             focusNode: _newPasswordField,
+                            obscureText: true,
                             decoration: new InputDecoration(
                               hintText: "New Password",
                               labelText: "New Password",
@@ -244,6 +245,7 @@ class ResetPasswordScreenState extends State<ResetPasswordScreen> {
                           controller: _confirmPasswordController,
                           validator: _validateConfirmPassword,
                           focusNode: _confirmNewPasswordField,
+                          obscureText: true,
                           decoration: new InputDecoration(
                             hintText: "Confirm Password",
                             labelText: "Confirm Password",

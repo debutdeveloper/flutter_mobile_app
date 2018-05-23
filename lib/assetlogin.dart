@@ -1,6 +1,5 @@
 import 'dart:convert';
-import 'package:intl/intl.dart';
-import 'package:flutter/foundation.dart';
+import 'package:debut_assets/reset_password.dart';
 
 import 'package:debut_assets/Dashboard.dart';
 import 'package:debut_assets/forgot_password.dart';
@@ -15,11 +14,11 @@ import 'utils.dart';
 class Login extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    return new _state();
+    return new _LoginState();
   }
 }
 
-class _state extends State<Login> {
+class _LoginState extends State<Login> {
   static final TextEditingController _user = new TextEditingController();
   static final TextEditingController _pass = new TextEditingController();
 
@@ -29,6 +28,8 @@ class _state extends State<Login> {
   bool rememberMe = false;
   bool errorsOnForm = false;
   bool _obscureText = true;
+
+  bool _showLoader = true;
 
   FocusNode _password = new FocusNode();
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
@@ -43,15 +44,19 @@ class _state extends State<Login> {
   void _validate() async {
     //print(new DateFormat.yMMMd().format(new DateTime.now()));
     if (_formKey.currentState.validate()) {
-      final String loginURL = "http://192.168.0.18:3000/user/login";
+      final String loginURL = "http://192.168.0.18:3001/user/login";
       final credentials = {
-        "email": "raj.thakur@debutinfotech.com",
-        "password": "ioszindabad!",
+        "email": username.toLowerCase(),
+        "password": password,
         "device_token": "abrakadabra"
       };
 
+      setState(() {
+        _showLoader = false;
+      });
+
       try{
-        var response = await http.post(loginURL, body: credentials, headers: {}).timeout(new Duration(seconds: 60));
+        var response = await http.post(loginURL, body: credentials, headers: {}).timeout(timeoutDuration);
         print(response.body);
 
         if (response.statusCode == 200) {
@@ -59,16 +64,65 @@ class _state extends State<Login> {
 
           var userJson = json.decode(response.body);
           var newUser = new CurrentUser.fromJSON(userJson);
-          Navigator.of(context).push(new MaterialPageRoute(
-              builder: (context) => new Dashboard(newUser)));
+
+          if (newUser.data.is_random_password) {
+            Navigator.of(context).push(new MaterialPageRoute(
+                builder: (context) => new ResetPasswordScreen(user: newUser)));
+          } else {
+            Navigator.of(context).push(new MaterialPageRoute(
+                builder: (context) => new Dashboard(newUser)));
+          }
         } else {
           var errorJson = json.decode(response.body);
-          showAlert(_context,title: new Icon(Icons.warning,color: Colors.red,),content: new Text(errorJson["message"]));
+          showAlert(_context,
+            title: new Icon(Icons.error,color: Colors.red,),
+            content: new Text(errorJson["message"]),
+            cupertinoActions: <Widget>[
+              new CupertinoDialogAction(
+                child: new Text("OK"),
+                isDefaultAction: true,
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+            materialActions: <Widget>[
+              new FlatButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: new Text("OK"))
+            ],
+          );
         }
       }
       catch(e){
-        showAlert(_context,title: new Icon(Icons.warning,color: Colors.red,),content: new Text('Connection time-out'));
+        showAlert(_context,
+          title: new Icon(Icons.error,color: Colors.red,),
+          content: new Text('Connection time-out'),
+          cupertinoActions: <Widget>[
+            new CupertinoDialogAction(
+              child: new Text("OK"),
+              isDefaultAction: true,
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+          materialActions: <Widget>[
+            new FlatButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: new Text("OK"))
+          ],
+        );
       }
+
+      setState(() {
+        _showLoader = true;
+      });
+
     }
   }
 
@@ -183,7 +237,12 @@ class _state extends State<Login> {
                                 height: buttonHeight,
                                 child: new FlatButton(
                                   shape: new StadiumBorder(),
-                                  onPressed: _validate,
+                                  onPressed: () {
+                                    setState(() {
+                                      _password.unfocus();
+                                    });
+                                    _validate();
+                                  },
                                   child: new Text(
                                     "LOGIN",
                                     style: new TextStyle(
@@ -216,7 +275,9 @@ class _state extends State<Login> {
               ),
             )
           ],
-        )
+        ),
+        new Offstage(child: new Container( color: new Color.fromRGBO(1, 1, 1 , 0.3), child: new Center(child: new CircularProgressIndicator(backgroundColor: Colors.transparent,),)),
+          offstage: _showLoader,)
       ],
     );
   }

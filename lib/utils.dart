@@ -46,7 +46,7 @@ showAlert(BuildContext context,{Widget title,Widget content, List<Widget> cupert
 
 }
 
-
+Duration timeoutDuration = new Duration(seconds: 60);
 double reducedHeight = 25.0;
 double buttonHeight = 48.0;
 

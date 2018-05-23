@@ -123,7 +123,7 @@ class _DashboardState extends State<Dashboard>
                         context) => new ResetPasswordScreen(user: widget.user,)));
               },
               child: new ListTile(
-                leading: new Icon(Icons.change_history),
+                leading: new Icon(Icons.lock_outline),
                 title: new Text("Change password",
                   style: new TextStyle(
                     fontSize: 16.0
