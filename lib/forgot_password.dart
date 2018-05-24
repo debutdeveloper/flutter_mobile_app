@@ -20,6 +20,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
   static final TextEditingController _emailController = new TextEditingController();
 
   String get _email => _emailController.text;
+  bool _showLoader = true;
 
   String _validateEmail(String value) {
     if (value.isEmpty) {
@@ -37,6 +38,10 @@ class _ForgotPasswordState extends State<ForgotPassword> {
       final credentials = {
         "email": _email.toLowerCase()
       };
+
+      setState(() {
+        _showLoader = false;
+      });
 
       try {
         var response = await http.put(forgetPasswordUrl,
@@ -137,6 +142,11 @@ class _ForgotPasswordState extends State<ForgotPassword> {
           ],
         );
       }
+
+      setState(() {
+        _showLoader = true;
+      });
+
     }
     _emailController.clear();
   }
@@ -144,106 +154,112 @@ class _ForgotPasswordState extends State<ForgotPassword> {
   @override
   Widget build(BuildContext context) {
     final Size _screenSize = MediaQuery.of(context).size;
-    return new Scaffold(
-      key: _scaffoldKey,
-      body: new SingleChildScrollView(
-        child: new Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            new Container(
-              child: new Center(
-                child: new CircleAvatar(
-                  backgroundColor: Colors.white,
-                  radius: 48.0,
-                  backgroundImage: new AssetImage("assets/logo.jpg"),
+    return new Stack(
+      children: <Widget>[
+        new Scaffold(
+          key: _scaffoldKey,
+          body: new SingleChildScrollView(
+            child: new Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                new Container(
+                  child: new Center(
+                    child: new CircleAvatar(
+                      backgroundColor: Colors.white,
+                      radius: 48.0,
+                      backgroundImage: new AssetImage("assets/logo.jpg"),
+                    ),
+                  ),
+                  width: _screenSize.width,
+                  height: _screenSize.height / 2.8,
+                  decoration: new BoxDecoration(
+                      gradient: new LinearGradient(colors: getColors())),
                 ),
-              ),
-              width: _screenSize.width,
-              height: _screenSize.height / 2.8,
-              decoration: new BoxDecoration(
-                  gradient: new LinearGradient(colors: getColors())),
-            ),
-            new Container(
-              child: new Padding(
-                padding: new EdgeInsets.all(24.0),
-                child: new Column(
-                  children: <Widget>[
-                    new SizedBox(height: 16.0),
-                    new Text(
-                      "Forgot Password?",
-                      style: new TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                          fontSize: titleFontSize),
-                    ),
-                    new SizedBox(height: 16.0),
-                    new Text(
-                      "We just need your registered Email Id to send you password reset instructions",
-                      textAlign: TextAlign.center,
-                    ),
-                    new SizedBox(height: 24.0),
-                    new Form(
-                      key: _forgotPasswordFormKey,
-                      child: new TextFormField(
-                        decoration: new InputDecoration(
-                            border: new UnderlineInputBorder(),
-                            suffixIcon: new Icon(Icons.email),
-                            hintText: "Registered Email ID"),
-                        controller: _emailController,
-                        validator: _validateEmail,
-                        focusNode: _emailIDField,
-                      ),
-                    ),
-                    new SizedBox(height: 32.0),
-                    new Container(
-                      decoration: new BoxDecoration(
-                        borderRadius:
-                            new BorderRadius.all(new Radius.circular(32.0)),
-                        gradient: new LinearGradient(
-                          colors: getColors(),
+                new Container(
+                  child: new Padding(
+                    padding: new EdgeInsets.all(24.0),
+                    child: new Column(
+                      children: <Widget>[
+                        new SizedBox(height: 16.0),
+                        new Text(
+                          "Forgot Password?",
+                          style: new TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                              fontSize: titleFontSize),
                         ),
-                      ),
-                      child: new ButtonTheme(
-                        minWidth: _screenSize.width,
-                        height: buttonHeight,
-                        child: new FlatButton(
-                          onPressed: () {
-                            print("Reset password button is pressed");
-                            setState(() {
-                              _emailIDField.unfocus();
-                            });
-                            _submit(context);
-                          },
-                          child: new Text(
-                            "RESET PASSWORD",
-                            style: new TextStyle(color: Colors.white,
-                              fontSize: buttonTitleFontSize
+                        new SizedBox(height: 16.0),
+                        new Text(
+                          "We just need your registered Email Id to send you password reset instructions",
+                          textAlign: TextAlign.center,
+                        ),
+                        new SizedBox(height: 24.0),
+                        new Form(
+                          key: _forgotPasswordFormKey,
+                          child: new TextFormField(
+                            decoration: new InputDecoration(
+                                border: new UnderlineInputBorder(),
+                                suffixIcon: new Icon(Icons.email),
+                                hintText: "Registered Email ID"),
+                            controller: _emailController,
+                            validator: _validateEmail,
+                            focusNode: _emailIDField,
+                          ),
+                        ),
+                        new SizedBox(height: 32.0),
+                        new Container(
+                          decoration: new BoxDecoration(
+                            borderRadius:
+                            new BorderRadius.all(new Radius.circular(32.0)),
+                            gradient: new LinearGradient(
+                              colors: getColors(),
                             ),
                           ),
-                          color: Colors.transparent,
-                          shape: new StadiumBorder(),
-                        ),
-                      ),
-                    ),
-                    new SizedBox(height: 64.0),
-                    new GestureDetector(
-                        onTap: () {
-                          print("Back to login page pressed");
-                          Navigator.of(context).pop();
-                        },
-                        child: new Text(
-                          "Back to Login Page",
-                          style: new TextStyle(
-                            fontSize: buttonTitleFontSize
+                          child: new ButtonTheme(
+                            minWidth: _screenSize.width,
+                            height: buttonHeight,
+                            child: new FlatButton(
+                              onPressed: () {
+                                print("Reset password button is pressed");
+                                setState(() {
+                                  _emailIDField.unfocus();
+                                });
+                                _submit(context);
+                              },
+                              child: new Text(
+                                "RESET PASSWORD",
+                                style: new TextStyle(color: Colors.white,
+                                    fontSize: buttonTitleFontSize
+                                ),
+                              ),
+                              color: Colors.transparent,
+                              shape: new StadiumBorder(),
+                            ),
                           ),
-                        ))
-                  ],
+                        ),
+                        new SizedBox(height: 64.0),
+                        new GestureDetector(
+                            onTap: () {
+                              print("Back to login page pressed");
+                              Navigator.of(context).pop();
+                            },
+                            child: new Text(
+                              "Back to Login Page",
+                              style: new TextStyle(
+                                  fontSize: buttonTitleFontSize
+                              ),
+                            ))
+                      ],
+                    ),
+                  ),
                 ),
-              ),
+              ],
             ),
-          ],
+          ),
         ),
-      ),
+        new Offstage(child: new Container( color: new Color.fromRGBO(1, 1, 1 , 0.3), child: new Center(child: new CircularProgressIndicator(backgroundColor: Colors.transparent,),)),
+          offstage: _showLoader,)
+      ],
     );
   }
 

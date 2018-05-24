@@ -24,12 +24,18 @@ class _AssetHistoryState extends State<AssetHistory> {
   List requestList;
   List<Request> listOfRequests = [];
   BuildContext _context;
+  bool _showLoader = true;
 
   Future getAssetHistory() async {
     print("getting asset history called");
     print("Getting Asset History");
 
     final assetHistoryURL = assetDetailsAPI + widget.asset.key;
+
+    setState(() {
+      _showLoader = false;
+    });
+
     try {
       var response = await http.get(assetHistoryURL,
           headers: {"Authorization": widget.user.data.token}).timeout(timeoutDuration);
@@ -91,6 +97,11 @@ class _AssetHistoryState extends State<AssetHistory> {
           ]
       );
     }
+
+    setState(() {
+      _showLoader = true;
+    });
+
   }
 
   @override
@@ -107,57 +118,63 @@ class _AssetHistoryState extends State<AssetHistory> {
     print(listOfRequests.length);
     _context = context;
     final _screenSize = MediaQuery.of(context).size;
-    return new Scaffold(
-      appBar: new AppBar(
-        title: new Text(
-          "Asset History",
-        ),
-      ),
-      body: new Container(
-        height: _screenSize.height,
-        width: _screenSize.width,
-        color: Colors.white,
-        child: new Column(
-          children: <Widget>[
-            new Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: new Card(
-                elevation: 4.0,
-                child: new Container(
-                  height: _screenSize.height * 0.60,
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 10.0, horizontal: 10.0),
-                  child: new ListView(children: getRequestDetails()),
-                ),
-              ),
+    return new Stack(
+      children: <Widget>[
+        new Scaffold(
+          appBar: new AppBar(
+            title: new Text(
+              "Asset History",
             ),
-            new Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: new Container(
-                decoration: new BoxDecoration(
-                    borderRadius: new BorderRadius.circular(32.0),
-                    gradient: new LinearGradient(colors: getColors())),
-                child: new ButtonTheme(
-                  minWidth: _screenSize.width,
-                  height: buttonHeight,
-                  child: new FlatButton(
-                    onPressed: () {
-                      Navigator.of(context).push(new MaterialPageRoute(
-                          builder: (context) => new RequestAsset(
-                              user: widget.user, asset: widget.asset)));
-                    },
-                    shape: new StadiumBorder(),
-                    child: new Text(
-                      "REQUEST",
-                      style: new TextStyle(color: Colors.white, fontSize: buttonTitleFontSize),
+          ),
+          body: new Container(
+            height: _screenSize.height,
+            width: _screenSize.width,
+            color: Colors.white,
+            child: new Column(
+              children: <Widget>[
+                new Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: new Card(
+                    elevation: 4.0,
+                    child: new Container(
+                      height: _screenSize.height * 0.60,
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 10.0, horizontal: 10.0),
+                      child: new ListView(children: getRequestDetails()),
                     ),
                   ),
                 ),
-              ),
+                new Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: new Container(
+                    decoration: new BoxDecoration(
+                        borderRadius: new BorderRadius.circular(32.0),
+                        gradient: new LinearGradient(colors: getColors())),
+                    child: new ButtonTheme(
+                      minWidth: _screenSize.width,
+                      height: buttonHeight,
+                      child: new FlatButton(
+                        onPressed: () {
+                          Navigator.of(context).push(new MaterialPageRoute(
+                              builder: (context) => new RequestAsset(
+                                  user: widget.user, asset: widget.asset)));
+                        },
+                        shape: new StadiumBorder(),
+                        child: new Text(
+                          "REQUEST",
+                          style: new TextStyle(color: Colors.white, fontSize: buttonTitleFontSize),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
-      ),
+        new Offstage(child: new Container( color: new Color.fromRGBO(1, 1, 1 , 0.3), child: new Center(child: new CircularProgressIndicator(backgroundColor: Colors.transparent,),)),
+          offstage: _showLoader,)
+      ],
     );
   }
 

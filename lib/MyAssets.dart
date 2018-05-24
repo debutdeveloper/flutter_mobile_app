@@ -20,12 +20,18 @@ class _CardViewState extends State<MyAssets> {
   List requestList;
   List<Request> listOfRequests = [];
   BuildContext _context;
+  bool _showLoader = true;
 
   Future getAssetHistory() async {
     print("getting asset history called");
     print("Getting Asset History");
 
     final assetHistoryURL = myAssetsAPI;
+
+    setState(() {
+      _showLoader = false;
+    });
+
     try {
       var response = await http.get(assetHistoryURL, headers: {
         "Authorization": widget.user.data.token
@@ -93,6 +99,11 @@ class _CardViewState extends State<MyAssets> {
             )
           ]);
     }
+
+    setState(() {
+      _showLoader = true;
+    });
+
   }
 
   @override
@@ -104,31 +115,35 @@ class _CardViewState extends State<MyAssets> {
 
   @override
   Widget build(BuildContext context) {
-    return new Material(
-        child: new ListView.builder(
-      padding: const EdgeInsets.all(8.0),
-      itemBuilder: (BuildContext context, int index) {
-        return listOfRequests.isEmpty
-            ? new Center(
-                child: new Text(
-                  'No Assets found',
-                  style: new TextStyle(color: Colors.grey,
-                  fontSize: 16.0
-                  ),
+    return new Stack(
+      children: <Widget>[
+        new ListView.builder(
+          padding: const EdgeInsets.all(8.0),
+          itemBuilder: (BuildContext context, int index) {
+            return listOfRequests.isEmpty
+                ? new Center(
+              child: new Text(
+                'No Assets found',
+                style: new TextStyle(color: Colors.grey,
+                    fontSize: 16.0
                 ),
-              )
-            : new Column(
-                children: <Widget>[
-                  new MyAssetCard(asset: listOfRequests[index],),
-                  const SizedBox(
-                    height: 12.0,
-                  ),
-                ],
-              );
-      },
-//    itemCount: listOfAssets == null ? 0 : listOfAssets.length,
-      itemCount: listOfRequests.isEmpty ? 1 : listOfRequests.length,
-    ));
+              ),
+            )
+                : new Column(
+              children: <Widget>[
+                new MyAssetCard(asset: listOfRequests[index],),
+                const SizedBox(
+                  height: 12.0,
+                ),
+              ],
+            );
+          },
+          itemCount: listOfRequests.isEmpty ? 1 : listOfRequests.length,
+        ),
+        new Offstage(child: new Container( color: new Color.fromRGBO(1, 1, 1 , 0.3), child: new Center(child: new CircularProgressIndicator(backgroundColor: Colors.transparent,),)),
+          offstage: _showLoader,)
+      ],
+    );
   }
 }
 

@@ -18,13 +18,17 @@ class Assets extends StatefulWidget {
 
 class _CardViewState extends State<Assets> {
 
-
+  bool _showLoader = true;
   List assetsList;
   List<Asset> listOfAssets = [];
 
   getAssetsList() async {
     print("GETASSETSLIST CALLED");
     print("Getting list");
+
+    setState(() {
+      _showLoader = false;
+    });
 
     try {
       var response = await http.get(assetsAPI,
@@ -85,6 +89,11 @@ class _CardViewState extends State<Assets> {
         ],
       );
     }
+
+    setState(() {
+      _showLoader = true;
+    });
+
   }
 
   @override
@@ -97,9 +106,15 @@ class _CardViewState extends State<Assets> {
   @override
   Widget build(BuildContext context) {
     print("ASSETS BUILD CALLED");
-    return new Container(
-        color: Colors.white,
-        child: getListView()
+    return new Stack(
+      children: <Widget>[
+        new Container(
+            color: Colors.white,
+            child: getListView()
+        ),
+        new Offstage(child: new Container( color: new Color.fromRGBO(1, 1, 1 , 0.3), child: new Center(child: new CircularProgressIndicator(backgroundColor: Colors.transparent,),)),
+          offstage: _showLoader,)
+      ],
     );
   }
 

@@ -30,12 +30,14 @@ class _State extends State<RequestAsset> {
       new TextEditingController();
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
   final GlobalKey<ScaffoldState> scaffoldKey = new GlobalKey<ScaffoldState>();
+  FocusNode _purposeFieldFocus = new FocusNode();
 
   String get _purpose => _purposeController.text;
   double priority = 0.0;
 
   bool rememberMe = false;
   bool errorsOnForm = false;
+  bool _showLoader = true;
 
   bool isStartTimeSelected = false;
   bool isEndTimeSelected = false;
@@ -262,7 +264,7 @@ class _State extends State<RequestAsset> {
     print("Date : ${new DateFormat("dd-MM-yyyy").format(new DateTime.now())}");
     if (isStartTimeSelected && isEndTimeSelected) {
       if (_formKey.currentState.validate()) {
-        final String requestURL = requestAPI + widget.asset.record.category.id;
+        final String requestURL = requestAPI;
         final credentials = {
           "description": _purpose,
           "start_time": "${new DateFormat("dd/MM/yyyy").format(new DateTime.now())} $_startTimeString",
@@ -280,11 +282,16 @@ class _State extends State<RequestAsset> {
           }
         };
 
+        setState(() {
+          _showLoader = false;
+        });
+
         try {
           var response = await http.post(requestURL,
               body: json.encode(credentials),
               headers: {
                 "Authorization": widget.user.data.token,
+                "Content-Type" : "application/json",
               }).timeout(timeoutDuration);
           print(response.body);
           print(json.encode(credentials));
@@ -303,6 +310,11 @@ class _State extends State<RequestAsset> {
           scaffoldKey.currentState.showSnackBar(new SnackBar(
               content: new Text("Connection time-out, Request not sent.")));
         }
+
+        setState(() {
+          _showLoader = true;
+        });
+
       }
     } else {
       showAlert(context,
@@ -328,279 +340,306 @@ class _State extends State<RequestAsset> {
                 child: new Text("OK"))
           ]);
     }
-    _purposeController.clear();
   }
 
   @override
   Widget build(BuildContext context) {
     print("Today is: $_today");
     var screenSize = MediaQuery.of(context).size;
+    return new Stack(
+      children: <Widget>[
+        new GestureDetector(
+          onTap: () {
+            print("on tap called");
+            _purposeFieldFocus.unfocus();
+          },
+//          onVerticalDragDown: (value) {
+//            print("on drag called");
+//            _purposeFieldFocus.unfocus();
+//          },
+          child: new Scaffold(
+            key: scaffoldKey,
+            appBar: new AppBar(
+              title: new Text("Request For Asset"),
+              leading: new IconButton(icon: new Icon(Icons.keyboard_arrow_left,size: 40.0,), onPressed: () {
+                _purposeFieldFocus.unfocus();
+                _purposeController.clear();
+                Navigator.pop(context);
+              }),
+              automaticallyImplyLeading: false,
+            ),
+            body: new SingleChildScrollView(
 
-    return new Scaffold(
-      key: scaffoldKey,
-      appBar: new AppBar(
-        title: new Text("Request For Asset"),
-      ),
-      body: new SingleChildScrollView(
-        child: new Container(
-            color: Colors.white,
-            height: screenSize.height,
-            width: screenSize.width,
-            child: new Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                new SizedBox(
-                  height: 24.0,
-                ),
-                new Padding(
-                  padding: new EdgeInsets.all(16.0),
-                  child: new Card(
-                      elevation: 4.0,
-                      color: Colors.white,
-                      shape: new RoundedRectangleBorder(
-                          borderRadius: new BorderRadius.circular(4.0)),
-                      child: new Padding(
+              child: new Container(
+                  color: Colors.white,
+                  height: screenSize.height,
+                  width: screenSize.width,
+                  child: new Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      new SizedBox(
+                        height: 24.0,
+                      ),
+                      new Padding(
                         padding: new EdgeInsets.all(16.0),
-                        child: new Form(
-                          key: _formKey,
-                          child: new Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              new Text(
-                                "REQUEST FOR ASSEST",
-                                style: new TextStyle(
-                                    fontSize: titleFontSize,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                              new SizedBox(
-                                height: 24.0,
-                              ),
+                        child: new Card(
+                            elevation: 4.0,
+                            color: Colors.white,
+                            shape: new RoundedRectangleBorder(
+                                borderRadius: new BorderRadius.circular(4.0)),
+                            child: new Padding(
+                              padding: new EdgeInsets.all(16.0),
+                              child: new Form(
+                                key: _formKey,
+                                child: new Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    new Text(
+                                      "REQUEST FOR ASSEST",
+                                      style: new TextStyle(
+                                          fontSize: titleFontSize,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    new SizedBox(
+                                      height: 24.0,
+                                    ),
 //
-                              new GestureDetector(
-                                onTap: () {
-                                  startTimePicker(context);
-                                },
-                                child: new Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 12.0),
-                                  height: 48.0,
-                                  decoration: new BoxDecoration(
-                                      borderRadius: new BorderRadius.all(
-                                          new Radius.circular(12.0)),
-                                      border: new Border.all(
-                                        color: Colors.grey,
-                                        width: 1.0,
-                                      )),
-                                  child: new Center(
-                                    child: new Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: <Widget>[
-                                        new Text(
-                                          'From (Today):',
-                                          style: new TextStyle(
-                                              fontSize:
-                                                  timePickerFieldFontSize),
+                                    new GestureDetector(
+                                      onTap: () {
+                                        _purposeFieldFocus.unfocus();
+                                        startTimePicker(context);
+                                      },
+                                      child: new Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 12.0),
+                                        height: 48.0,
+                                        decoration: new BoxDecoration(
+                                            borderRadius: new BorderRadius.all(
+                                                new Radius.circular(12.0)),
+                                            border: new Border.all(
+                                              color: Colors.grey,
+                                              width: 1.0,
+                                            )),
+                                        child: new Center(
+                                          child: new Row(
+                                            mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                            children: <Widget>[
+                                              new Text(
+                                                'From (Today):',
+                                                style: new TextStyle(
+                                                    fontSize:
+                                                    timePickerFieldFontSize),
+                                              ),
+                                              new Text(
+                                                _startTimeLabel,
+                                                style: new TextStyle(
+                                                    fontSize: timePickerFieldFontSize,
+                                                    fontWeight: FontWeight.bold),
+                                              )
+                                            ],
+                                          ),
                                         ),
-                                        new Text(
-                                          _startTimeLabel,
-                                          style: new TextStyle(
-                                              fontSize: timePickerFieldFontSize,
-                                              fontWeight: FontWeight.bold),
-                                        )
-                                      ],
+                                      ),
                                     ),
-                                  ),
-                                ),
-                              ),
-                              new SizedBox(
-                                height: 8.0,
-                              ),
-                              new GestureDetector(
-                                onTap: () {
-                                  endTimePicker(context);
-                                },
-                                child: new Container(
-                                  height: 48.0,
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 12.0),
-                                  decoration: new BoxDecoration(
-                                      borderRadius: new BorderRadius.all(
-                                          new Radius.circular(12.0)),
-                                      border: new Border.all(
-                                        color: Colors.grey,
-                                        width: 1.0,
-                                      )),
-                                  child: new Center(
-                                    child: new Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: <Widget>[
-                                        new Text(
-                                          'To (Today):',
-                                          style: new TextStyle(
-                                              fontSize:
-                                                  timePickerFieldFontSize),
+                                    new SizedBox(
+                                      height: 8.0,
+                                    ),
+                                    new GestureDetector(
+                                      onTap: () {
+                                        _purposeFieldFocus.unfocus();
+                                        endTimePicker(context);
+                                      },
+                                      child: new Container(
+                                        height: 48.0,
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 12.0),
+                                        decoration: new BoxDecoration(
+                                            borderRadius: new BorderRadius.all(
+                                                new Radius.circular(12.0)),
+                                            border: new Border.all(
+                                              color: Colors.grey,
+                                              width: 1.0,
+                                            )),
+                                        child: new Center(
+                                          child: new Row(
+                                            mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                            children: <Widget>[
+                                              new Text(
+                                                'To (Today):',
+                                                style: new TextStyle(
+                                                    fontSize:
+                                                    timePickerFieldFontSize),
+                                              ),
+                                              new Text(
+                                                _endTimeLabel,
+                                                style: new TextStyle(
+                                                    fontSize: timePickerFieldFontSize,
+                                                    fontWeight: FontWeight.bold),
+                                              )
+                                            ],
+                                          ),
                                         ),
-                                        new Text(
-                                          _endTimeLabel,
-                                          style: new TextStyle(
-                                              fontSize: timePickerFieldFontSize,
-                                              fontWeight: FontWeight.bold),
-                                        )
-                                      ],
+                                      ),
                                     ),
-                                  ),
-                                ),
-                              ),
-                              new SizedBox(
-                                height: 8.0,
-                              ),
-                              new TextFormField(
-                                  maxLines: 1,
-                                  initialValue: widget.user.data.emp_id,
-                                  enabled: false,
-                                  style: new TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 16.0,
-                                      fontWeight: FontWeight.bold),
-                                  decoration: new InputDecoration(
-                                    labelText: "Employee ID",
-                                    border: new OutlineInputBorder(
-                                      borderRadius:
-                                          new BorderRadius.circular(12.0),
+                                    new SizedBox(
+                                      height: 8.0,
                                     ),
-                                  )),
-                              new SizedBox(
-                                height: 8.0,
-                              ),
-                              new TextFormField(
-                                  maxLines: 5,
-                                  controller: _purposeController,
-                                  validator: _validatePurpose,
-                                  decoration: new InputDecoration(
-                                    hintText: "Purpose",
-                                    labelText: "Purpose",
-                                    border: new OutlineInputBorder(
-                                        borderRadius:
-                                            new BorderRadius.circular(12.0)),
-                                  )),
-                              new SizedBox(
-                                height: 8.0,
-                              ),
-                              new Container(
-                                padding: new EdgeInsets.only(
-                                    left: 4.0, right: 4.0, bottom: 4.0),
-                                decoration: new BoxDecoration(
-                                    borderRadius: new BorderRadius.all(
-                                        new Radius.circular(12.0)),
-                                    border: new Border.all(
-                                      color: Colors.grey,
-                                      width: 1.0,
-                                    )),
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 8.0),
-                                  child: new Row(
-                                    children: <Widget>[
-                                      new Text(
-                                        "Priority",
+                                    new TextFormField(
+                                        maxLines: 1,
+                                        initialValue: widget.user.data.emp_id,
+                                        enabled: false,
                                         style: new TextStyle(
-                                            fontSize: sliderFieldFontSize),
-                                      ),
-                                      new SizedBox(
-                                        width: 12.0,
-                                      ),
-                                      new Expanded(
-                                        child: new Column(
+                                            color: Colors.black,
+                                            fontSize: 16.0,
+                                            fontWeight: FontWeight.bold),
+                                        decoration: new InputDecoration(
+                                          labelText: "Employee ID",
+                                          border: new OutlineInputBorder(
+                                            borderRadius:
+                                            new BorderRadius.circular(12.0),
+                                          ),
+                                        )),
+                                    new SizedBox(
+                                      height: 8.0,
+                                    ),
+                                    new TextFormField(
+                                        maxLines: 5,
+                                        controller: _purposeController,
+                                        validator: _validatePurpose,
+                                        focusNode: _purposeFieldFocus,
+                                        onFieldSubmitted: (value) { _purposeFieldFocus.unfocus(); },
+                                        decoration: new InputDecoration(
+                                          hintText: "Purpose",
+                                          labelText: "Purpose",
+                                          border: new OutlineInputBorder(
+                                              borderRadius:
+                                              new BorderRadius.circular(12.0)),
+                                        )),
+                                    new SizedBox(
+                                      height: 8.0,
+                                    ),
+                                    new Container(
+                                      padding: new EdgeInsets.only(
+                                          left: 4.0, right: 4.0, bottom: 4.0),
+                                      decoration: new BoxDecoration(
+                                          borderRadius: new BorderRadius.all(
+                                              new Radius.circular(12.0)),
+                                          border: new Border.all(
+                                            color: Colors.grey,
+                                            width: 1.0,
+                                          )),
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 8.0),
+                                        child: new Row(
                                           children: <Widget>[
-                                            new Slider(
-                                              max: 2.0,
-                                              min: 0.0,
-                                              label: setSliderLabel(),
-                                              value: priority,
-                                              onChanged: (value) {
-                                                setState(() {
-                                                  priority = value;
-                                                });
-                                              },
-                                              divisions: 2,
+                                            new Text(
+                                              "Priority",
+                                              style: new TextStyle(
+                                                  fontSize: sliderFieldFontSize),
                                             ),
-                                            new Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: <Widget>[
-                                                new Text(
-                                                  "Low",
-                                                  style: new TextStyle(
-                                                      color: priority == 0.0
-                                                          ? Colors.blue
-                                                          : Colors.black,
-                                                      fontSize:
-                                                          descriptionFontSize),
-                                                ),
-                                                new Text(
-                                                  "Medium",
-                                                  style: new TextStyle(
-                                                      color: priority == 1.0
-                                                          ? Colors.blue
-                                                          : Colors.black,
-                                                      fontSize:
-                                                          descriptionFontSize),
-                                                ),
-                                                new Text(
-                                                  "High",
-                                                  style: new TextStyle(
-                                                      color: priority == 2.0
-                                                          ? Colors.blue
-                                                          : Colors.black,
-                                                      fontSize:
-                                                          descriptionFontSize),
-                                                ),
-                                              ],
+                                            new SizedBox(
+                                              width: 12.0,
+                                            ),
+                                            new Expanded(
+                                              child: new Column(
+                                                children: <Widget>[
+                                                  new Slider(
+                                                    max: 2.0,
+                                                    min: 0.0,
+                                                    label: setSliderLabel(),
+                                                    value: priority,
+                                                    onChanged: (value) {
+                                                      _purposeFieldFocus.unfocus();
+                                                      setState(() {
+                                                        priority = value;
+                                                      });
+                                                    },
+                                                    divisions: 2,
+                                                  ),
+                                                  new Row(
+                                                    mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                    children: <Widget>[
+                                                      new Text(
+                                                        "Low",
+                                                        style: new TextStyle(
+                                                            color: priority == 0.0
+                                                                ? Colors.blue
+                                                                : Colors.black,
+                                                            fontSize:
+                                                            descriptionFontSize),
+                                                      ),
+                                                      new Text(
+                                                        "Medium",
+                                                        style: new TextStyle(
+                                                            color: priority == 1.0
+                                                                ? Colors.blue
+                                                                : Colors.black,
+                                                            fontSize:
+                                                            descriptionFontSize),
+                                                      ),
+                                                      new Text(
+                                                        "High",
+                                                        style: new TextStyle(
+                                                            color: priority == 2.0
+                                                                ? Colors.blue
+                                                                : Colors.black,
+                                                            fontSize:
+                                                            descriptionFontSize),
+                                                      ),
+                                                    ],
+                                                  )
+                                                ],
+                                              ),
                                             )
                                           ],
                                         ),
-                                      )
-                                    ],
-                                  ),
+                                      ),
+                                    )
+                                  ],
                                 ),
-                              )
-                            ],
+                              ),
+                            )),
+                      ),
+                      new Padding(
+                        padding:
+                        const EdgeInsets.only(top: 16.0, left: 64.0, right: 64.0),
+                        child: new Container(
+                          decoration: new BoxDecoration(
+                              borderRadius: new BorderRadius.circular(32.0),
+                              gradient: new LinearGradient(colors: getColors())),
+                          child: new ButtonTheme(
+                            minWidth: screenSize.width,
+                            height: buttonHeight,
+                            child: new FlatButton(
+                              onPressed: () {
+                                _requestForAsset();
+                              },
+                              shape: new StadiumBorder(),
+                              child: new Text(
+                                "REQUEST",
+                                style: new TextStyle(
+                                    color: Colors.white,
+                                    fontSize: buttonTitleFontSize),
+                              ),
+                            ),
                           ),
                         ),
-                      )),
-                ),
-                new Padding(
-                  padding:
-                      const EdgeInsets.only(top: 16.0, left: 64.0, right: 64.0),
-                  child: new Container(
-                    decoration: new BoxDecoration(
-                        borderRadius: new BorderRadius.circular(32.0),
-                        gradient: new LinearGradient(colors: getColors())),
-                    child: new ButtonTheme(
-                      minWidth: screenSize.width,
-                      height: buttonHeight,
-                      child: new FlatButton(
-                        onPressed: () {
-                          _requestForAsset();
-                        },
-                        shape: new StadiumBorder(),
-                        child: new Text(
-                          "REQUEST",
-                          style: new TextStyle(
-                              color: Colors.white,
-                              fontSize: buttonTitleFontSize),
-                        ),
                       ),
-                    ),
-                  ),
-                ),
-              ],
-            )),
-      ),
+                    ],
+                  )),
+            ),
+          ),
+        ),
+        new Offstage(child: new Container( color: new Color.fromRGBO(1, 1, 1 , 0.3), child: new Center(child: new CircularProgressIndicator(backgroundColor: Colors.transparent,),)),
+          offstage: _showLoader,)
+      ],
     );
   }
 

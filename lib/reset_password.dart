@@ -32,6 +32,7 @@ class ResetPasswordScreenState extends State<ResetPasswordScreen> {
   FocusNode _confirmNewPasswordField = new FocusNode();
 
   final _resetPasswordFormKey = new GlobalKey<FormState>();
+  bool _showLoader = true;
 
   Size _screenSize;
 
@@ -49,6 +50,10 @@ class ResetPasswordScreenState extends State<ResetPasswordScreen> {
         "new_password": _newPassword,
         "confirm_password": _confirmPassword
       };
+
+      setState(() {
+        _showLoader = false;
+      });
 
       try {
         var response = await http.put(resetPasswordUrl,
@@ -127,6 +132,11 @@ class ResetPasswordScreenState extends State<ResetPasswordScreen> {
             ),
             content: new Text('Connection time-out'));
       }
+
+      setState(() {
+        _showLoader = true;
+      });
+
     }
   }
 
@@ -176,154 +186,160 @@ class ResetPasswordScreenState extends State<ResetPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     _screenSize = MediaQuery.of(context).size;
-    return new Scaffold(
-      body: new SingleChildScrollView(
-        child: new Column(
-          children: <Widget>[
-            new Container(
-                height: _screenSize.height / 2.8,
-                decoration: new BoxDecoration(
-                    color: Colors.blue,
-                    gradient: new LinearGradient(
-                      begin: Alignment.centerLeft,
-                      end: Alignment.centerRight,
-                      colors: getColors(),
-                      tileMode: TileMode.repeated,
+    return new Stack(
+      children: <Widget>[
+        new Scaffold(
+          body: new SingleChildScrollView(
+            child: new Column(
+              children: <Widget>[
+                new Container(
+                    height: _screenSize.height / 2.8,
+                    decoration: new BoxDecoration(
+                        color: Colors.blue,
+                        gradient: new LinearGradient(
+                          begin: Alignment.centerLeft,
+                          end: Alignment.centerRight,
+                          colors: getColors(),
+                          tileMode: TileMode.repeated,
+                        )),
+                    alignment: FractionalOffset.center,
+                    child: new Container(
+                      child: new CircleAvatar(
+                        backgroundColor: Colors.white,
+                        radius: 48.0,
+                        backgroundImage: new AssetImage("assets/logo.jpg"),
+                      ),
                     )),
-                alignment: FractionalOffset.center,
-                child: new Container(
-                  child: new CircleAvatar(
-                    backgroundColor: Colors.white,
-                    radius: 48.0,
-                    backgroundImage: new AssetImage("assets/logo.jpg"),
-                  ),
-                )),
-            new Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: new Container(
-                //height: _screenSize.height / 2.8,
-                child: new Form(
-                  key: _resetPasswordFormKey,
-                  child: new Column(
-                    children: <Widget>[
-                      new Text(
-                        'Reset Password',
-                        style: new TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
-                            fontSize: titleFontSize),
-                      ),
-                      new SizedBox(height: 16.0),
-                      new Padding(
-                        padding:
-                            const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 0.0),
-                        child: new TextFormField(
-                            controller: _oldPasswordController,
-                            validator: _validateOldPassword,
-                            obscureText: true,
-                            focusNode: _oldPasswordField,
-                            onFieldSubmitted: (value) {
-                              FocusScope
-                                  .of(context)
-                                  .requestFocus(_newPasswordField);
-                            },
-                            decoration: new InputDecoration(
-                              hintText: "Old Password",
-                              labelText: "Old Password",
-                              border: new UnderlineInputBorder(),
-                              suffixIcon: new Icon(Icons.lock),
-                            )),
-                      ),
-                      new SizedBox(height: 16.0),
-                      new Padding(
-                        padding:
-                            const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 0.0),
-                        child: new TextFormField(
-                            controller: _newPasswordController,
-                            validator: _validateNewPassword,
-                            focusNode: _newPasswordField,
-                            obscureText: true,
-                            onFieldSubmitted: (value) {
-                              FocusScope
-                                  .of(context)
-                                  .requestFocus(_confirmNewPasswordField);
-                            },
-                            decoration: new InputDecoration(
-                              hintText: "New Password",
-                              labelText: "New Password",
-                              border: new UnderlineInputBorder(),
-                              suffixIcon: new Icon(Icons.lock),
-                            )),
-                      ),
-                      new SizedBox(height: 16.0),
-                      new Padding(
-                        padding:
-                            const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 0.0),
-                        child: new TextFormField(
-                          controller: _confirmPasswordController,
-                          validator: _validateConfirmPassword,
-                          focusNode: _confirmNewPasswordField,
-                          obscureText: true,
-                          decoration: new InputDecoration(
-                            hintText: "Confirm Password",
-                            labelText: "Confirm Password",
-                            border: new UnderlineInputBorder(),
-                            suffixIcon: new Icon(Icons.lock),
-                          ),
-                        ),
-                      ),
-                      new SizedBox(height: 32.0),
-                      new Padding(
-                        padding:
-                            const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 0.0),
-                        child: new Container(
-                            height: buttonHeight,
-                            decoration: new BoxDecoration(
-                                color: Colors.blue,
-                                gradient: new LinearGradient(
-                                  colors: getColors(),
-                                ),
-                                borderRadius: new BorderRadius.circular(30.0)),
-                            child: new ButtonTheme(
-                              minWidth: _screenSize.width,
-                              child: new FlatButton(
-                                onPressed: () {
-                                  setState(() {
-                                    _oldPasswordField.unfocus();
-                                    _newPasswordField.unfocus();
-                                    _confirmNewPasswordField.unfocus();
-                                  });
-                                  _submit(context);
-                                },
-                                color: Colors.transparent,
-                                child: new Text(
-                                  'RESET PASSWORD',
-                                  style: new TextStyle(
-                                      color: Colors.white,
-                                      fontSize: buttonTitleFontSize),
-                                ),
-                              ),
-                            )),
-                      ),
-                      new SizedBox(height: 24.0),
-                      new FlatButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          child: new Text(
-                            "Back",
+                new Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: new Container(
+                    //height: _screenSize.height / 2.8,
+                    child: new Form(
+                      key: _resetPasswordFormKey,
+                      child: new Column(
+                        children: <Widget>[
+                          new Text(
+                            'Reset Password',
                             style: new TextStyle(
-                              fontSize: buttonTitleFontSize,
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                                fontSize: titleFontSize),
+                          ),
+                          new SizedBox(height: 16.0),
+                          new Padding(
+                            padding:
+                            const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 0.0),
+                            child: new TextFormField(
+                                controller: _oldPasswordController,
+                                validator: _validateOldPassword,
+                                obscureText: true,
+                                focusNode: _oldPasswordField,
+                                onFieldSubmitted: (value) {
+                                  FocusScope
+                                      .of(context)
+                                      .requestFocus(_newPasswordField);
+                                },
+                                decoration: new InputDecoration(
+                                  hintText: "Old Password",
+                                  labelText: "Old Password",
+                                  border: new UnderlineInputBorder(),
+                                  suffixIcon: new Icon(Icons.lock),
+                                )),
+                          ),
+                          new SizedBox(height: 16.0),
+                          new Padding(
+                            padding:
+                            const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 0.0),
+                            child: new TextFormField(
+                                controller: _newPasswordController,
+                                validator: _validateNewPassword,
+                                focusNode: _newPasswordField,
+                                obscureText: true,
+                                onFieldSubmitted: (value) {
+                                  FocusScope
+                                      .of(context)
+                                      .requestFocus(_confirmNewPasswordField);
+                                },
+                                decoration: new InputDecoration(
+                                  hintText: "New Password",
+                                  labelText: "New Password",
+                                  border: new UnderlineInputBorder(),
+                                  suffixIcon: new Icon(Icons.lock),
+                                )),
+                          ),
+                          new SizedBox(height: 16.0),
+                          new Padding(
+                            padding:
+                            const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 0.0),
+                            child: new TextFormField(
+                              controller: _confirmPasswordController,
+                              validator: _validateConfirmPassword,
+                              focusNode: _confirmNewPasswordField,
+                              obscureText: true,
+                              decoration: new InputDecoration(
+                                hintText: "Confirm Password",
+                                labelText: "Confirm Password",
+                                border: new UnderlineInputBorder(),
+                                suffixIcon: new Icon(Icons.lock),
+                              ),
                             ),
-                          ))
-                    ],
+                          ),
+                          new SizedBox(height: 32.0),
+                          new Padding(
+                            padding:
+                            const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 0.0),
+                            child: new Container(
+                                height: buttonHeight,
+                                decoration: new BoxDecoration(
+                                    color: Colors.blue,
+                                    gradient: new LinearGradient(
+                                      colors: getColors(),
+                                    ),
+                                    borderRadius: new BorderRadius.circular(30.0)),
+                                child: new ButtonTheme(
+                                  minWidth: _screenSize.width,
+                                  child: new FlatButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        _oldPasswordField.unfocus();
+                                        _newPasswordField.unfocus();
+                                        _confirmNewPasswordField.unfocus();
+                                      });
+                                      _submit(context);
+                                    },
+                                    color: Colors.transparent,
+                                    child: new Text(
+                                      'RESET PASSWORD',
+                                      style: new TextStyle(
+                                          color: Colors.white,
+                                          fontSize: buttonTitleFontSize),
+                                    ),
+                                  ),
+                                )),
+                          ),
+                          new SizedBox(height: 24.0),
+                          new FlatButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              child: new Text(
+                                "Back",
+                                style: new TextStyle(
+                                  fontSize: buttonTitleFontSize,
+                                ),
+                              ))
+                        ],
+                      ),
+                    ),
                   ),
-                ),
-              ),
-            )
-          ],
+                )
+              ],
+            ),
+          ),
         ),
-      ),
+          new Offstage(child: new Container( color: new Color.fromRGBO(1, 1, 1 , 0.3), child: new Center(child: new CircularProgressIndicator(backgroundColor: Colors.transparent,),)),
+            offstage: _showLoader,)
+      ],
     );
   }
 }
