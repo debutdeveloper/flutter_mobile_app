@@ -27,6 +27,7 @@ class ResetPasswordScreenState extends State<ResetPasswordScreen> {
   String get _newPassword => _newPasswordController.text;
   String get _confirmPassword => _confirmPasswordController.text;
 
+  FocusNode _oldPasswordField = new FocusNode();
   FocusNode _newPasswordField = new FocusNode();
   FocusNode _confirmNewPasswordField = new FocusNode();
 
@@ -220,6 +221,7 @@ class ResetPasswordScreenState extends State<ResetPasswordScreen> {
                             controller: _oldPasswordController,
                             validator: _validateOldPassword,
                             obscureText: true,
+                            focusNode: _oldPasswordField,
                             onFieldSubmitted: (value) {
                               FocusScope
                                   .of(context)
@@ -286,6 +288,11 @@ class ResetPasswordScreenState extends State<ResetPasswordScreen> {
                               minWidth: _screenSize.width,
                               child: new FlatButton(
                                 onPressed: () {
+                                  setState(() {
+                                    _oldPasswordField.unfocus();
+                                    _newPasswordField.unfocus();
+                                    _confirmNewPasswordField.unfocus();
+                                  });
                                   _submit(context);
                                 },
                                 color: Colors.transparent,

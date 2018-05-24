@@ -121,6 +121,7 @@ class _LoginState extends State<Login> {
 
       setState(() {
         _showLoader = true;
+        _pass.clear();
       });
 
     }

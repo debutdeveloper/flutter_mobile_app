@@ -15,9 +15,9 @@ class ForgotPassword extends StatefulWidget {
 class _ForgotPasswordState extends State<ForgotPassword> {
   GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey();
   final _forgotPasswordFormKey = new GlobalKey<FormState>();
+  FocusNode _emailIDField = new FocusNode();
 
-  static final TextEditingController _emailController =
-      new TextEditingController();
+  static final TextEditingController _emailController = new TextEditingController();
 
   String get _email => _emailController.text;
 
@@ -191,6 +191,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                             hintText: "Registered Email ID"),
                         controller: _emailController,
                         validator: _validateEmail,
+                        focusNode: _emailIDField,
                       ),
                     ),
                     new SizedBox(height: 32.0),
@@ -208,6 +209,9 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                         child: new FlatButton(
                           onPressed: () {
                             print("Reset password button is pressed");
+                            setState(() {
+                              _emailIDField.unfocus();
+                            });
                             _submit(context);
                           },
                           child: new Text(

@@ -50,15 +50,13 @@ class _State extends State<RequestAsset> {
   String _endTimeString =
       '${new TimeOfDay.now().hour}:${new TimeOfDay.now().minute}:00';
 
-  String _today = new DateFormat.yMd().format(new DateTime.now()).toString();
+  String _today = new DateFormat("dd/MM/yyyy").format(new DateTime.now());
 
   Future startTimePicker(BuildContext context) async {
     final TimeOfDay time = await showTimePicker(
         context: context, initialTime: new TimeOfDay.now());
 
     /// Check selected date
-    //  && time.hour < _actualEndTime.hour
-    //&& (time.hour >= new TimeOfDay.now().hour) && (time.minute >= new TimeOfDay.now().minute)
     if (time != null) {
       if (time.hour == new TimeOfDay.now().hour) {
         if (time.minute > new TimeOfDay.now().minute) {
@@ -261,24 +259,25 @@ class _State extends State<RequestAsset> {
   }
 
   _requestForAsset() async {
+    print("Date : ${new DateFormat("dd-MM-yyyy").format(new DateTime.now())}");
     if (isStartTimeSelected && isEndTimeSelected) {
       if (_formKey.currentState.validate()) {
         final String requestURL = requestAPI + widget.asset.record.category.id;
-        final Map<String, String> credentials = {
+        final credentials = {
           "description": _purpose,
-          "start_time": "$_today $_startTimeString",
-          "end_time": "$_today $_endTimeString",
+          "start_time": "${new DateFormat("dd/MM/yyyy").format(new DateTime.now())} $_startTimeString",
+          "end_time": "${new DateFormat("dd/MM/yyyy").format(new DateTime.now())} $_endTimeString",
           "priority": priority.round().toString(),
-          "user": json.encode({
+          "user": {
             "id": widget.user.id,
             "first_name": widget.user.data.first_name,
             "last_name": widget.user.data.last_name
-          }),
-          "asset": json.encode({
+          },
+          "asset": {
             "id": widget.asset.record.category.id,
             "name": widget.asset.record.name,
             "description": widget.asset.record.description
-          })
+          }
         };
 
         try {
@@ -286,9 +285,9 @@ class _State extends State<RequestAsset> {
               body: json.encode(credentials),
               headers: {
                 "Authorization": widget.user.data.token,
-                "Content-Type" : "application/json"
               }).timeout(timeoutDuration);
           print(response.body);
+          print(json.encode(credentials));
 
           if (response.statusCode == 200) {
             print("SUCCESSFULLY REQUEST SENT");
@@ -329,11 +328,12 @@ class _State extends State<RequestAsset> {
                 child: new Text("OK"))
           ]);
     }
+    _purposeController.clear();
   }
 
   @override
   Widget build(BuildContext context) {
-    print(_today);
+    print("Today is: $_today");
     var screenSize = MediaQuery.of(context).size;
 
     return new Scaffold(
