@@ -199,14 +199,17 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                           new SizedBox(height: 24.0),
                           new Form(
                             key: _forgotPasswordFormKey,
-                            child: new TextFormField(
-                              decoration: new InputDecoration(
-                                  border: new UnderlineInputBorder(),
-                                  suffixIcon: new Icon(Icons.email),
-                                  hintText: "Registered Email ID"),
-                              controller: _emailController,
-                              validator: _validateEmail,
+                            child: new EnsureVisibleWhenFocused(
                               focusNode: _emailIDField,
+                              child: new TextFormField(
+                                decoration: new InputDecoration(
+                                    border: new UnderlineInputBorder(),
+                                    suffixIcon: new Icon(Icons.email),
+                                    hintText: "Registered Email ID"),
+                                controller: _emailController,
+                                validator: _validateEmail,
+                                focusNode: _emailIDField,
+                              ),
                             ),
                           ),
                           new SizedBox(height: 32.0),

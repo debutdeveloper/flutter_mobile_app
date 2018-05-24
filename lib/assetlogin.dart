@@ -216,29 +216,35 @@ class _LoginState extends State<Login> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          new TextFormField(
-                              controller: _user,
-                              validator: _validateEmail,
-                              focusNode: _email,
-                              onFieldSubmitted: (value) {
-                                FocusScope.of(context).requestFocus(_password);
-                              },
-                              decoration: new InputDecoration(
-                                hintText: "Email ID",
-                                border: new UnderlineInputBorder(),
-                                suffixIcon: new Icon(Icons.email),
-                              )),
+                          new EnsureVisibleWhenFocused(
+                            focusNode: _email,
+                            child: new TextFormField(
+                                controller: _user,
+                                validator: _validateEmail,
+                                focusNode: _email,
+                                onFieldSubmitted: (value) {
+                                  FocusScope.of(context).requestFocus(_password);
+                                },
+                                decoration: new InputDecoration(
+                                  hintText: "Email ID",
+                                  border: new UnderlineInputBorder(),
+                                  suffixIcon: new Icon(Icons.email),
+                                )),
+                          ),
                           new SizedBox(height: 16.0),
-                          new TextFormField(
-                            controller: _pass,
-                            validator: _validatePassword,
+                          new EnsureVisibleWhenFocused(
                             focusNode: _password,
-                            decoration: new InputDecoration(
-                              hintText: "Password",
-                              border: new UnderlineInputBorder(),
-                              suffixIcon: new Icon(Icons.lock),
+                            child: new TextFormField(
+                              controller: _pass,
+                              validator: _validatePassword,
+                              focusNode: _password,
+                              decoration: new InputDecoration(
+                                hintText: "Password",
+                                border: new UnderlineInputBorder(),
+                                suffixIcon: new Icon(Icons.lock),
+                              ),
+                              obscureText: _obscureText,
                             ),
-                            obscureText: _obscureText,
                           ),
                           new SizedBox(height: 48.0),
                           new Center(

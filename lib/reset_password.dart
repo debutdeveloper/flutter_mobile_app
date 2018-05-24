@@ -268,58 +268,67 @@ class ResetPasswordScreenState extends State<ResetPasswordScreen> {
                             new Padding(
                               padding:
                               const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 0.0),
-                              child: new TextFormField(
-                                  controller: _oldPasswordController,
-                                  validator: _validateOldPassword,
-                                  obscureText: true,
-                                  focusNode: _oldPasswordField,
-                                  onFieldSubmitted: (value) {
-                                    FocusScope
-                                        .of(context)
-                                        .requestFocus(_newPasswordField);
-                                  },
-                                  decoration: new InputDecoration(
-                                    hintText: "Old Password",
-                                    labelText: "Old Password",
-                                    border: new UnderlineInputBorder(),
-                                    suffixIcon: new Icon(Icons.lock),
-                                  )),
+                              child: new EnsureVisibleWhenFocused(
+                                focusNode: _oldPasswordField,
+                                child: new TextFormField(
+                                    controller: _oldPasswordController,
+                                    validator: _validateOldPassword,
+                                    obscureText: true,
+                                    focusNode: _oldPasswordField,
+                                    onFieldSubmitted: (value) {
+                                      FocusScope
+                                          .of(context)
+                                          .requestFocus(_newPasswordField);
+                                    },
+                                    decoration: new InputDecoration(
+                                      hintText: "Old Password",
+                                      labelText: "Old Password",
+                                      border: new UnderlineInputBorder(),
+                                      suffixIcon: new Icon(Icons.lock),
+                                    )),
+                              ),
                             ),
                             new SizedBox(height: 16.0),
                             new Padding(
                               padding:
                               const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 0.0),
-                              child: new TextFormField(
-                                  controller: _newPasswordController,
-                                  validator: _validateNewPassword,
-                                  focusNode: _newPasswordField,
-                                  obscureText: true,
-                                  onFieldSubmitted: (value) {
-                                    FocusScope
-                                        .of(context)
-                                        .requestFocus(_confirmNewPasswordField);
-                                  },
-                                  decoration: new InputDecoration(
-                                    hintText: "New Password",
-                                    labelText: "New Password",
-                                    border: new UnderlineInputBorder(),
-                                    suffixIcon: new Icon(Icons.lock),
-                                  )),
+                              child: new EnsureVisibleWhenFocused(
+                                focusNode: _newPasswordField,
+                                child: new TextFormField(
+                                    controller: _newPasswordController,
+                                    validator: _validateNewPassword,
+                                    focusNode: _newPasswordField,
+                                    obscureText: true,
+                                    onFieldSubmitted: (value) {
+                                      FocusScope
+                                          .of(context)
+                                          .requestFocus(_confirmNewPasswordField);
+                                    },
+                                    decoration: new InputDecoration(
+                                      hintText: "New Password",
+                                      labelText: "New Password",
+                                      border: new UnderlineInputBorder(),
+                                      suffixIcon: new Icon(Icons.lock),
+                                    )),
+                              ),
                             ),
                             new SizedBox(height: 16.0),
                             new Padding(
                               padding:
                               const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 0.0),
-                              child: new TextFormField(
-                                controller: _confirmPasswordController,
-                                validator: _validateConfirmPassword,
+                              child: new EnsureVisibleWhenFocused(
                                 focusNode: _confirmNewPasswordField,
-                                obscureText: true,
-                                decoration: new InputDecoration(
-                                  hintText: "Confirm Password",
-                                  labelText: "Confirm Password",
-                                  border: new UnderlineInputBorder(),
-                                  suffixIcon: new Icon(Icons.lock),
+                                child: new TextFormField(
+                                  controller: _confirmPasswordController,
+                                  validator: _validateConfirmPassword,
+                                  focusNode: _confirmNewPasswordField,
+                                  obscureText: true,
+                                  decoration: new InputDecoration(
+                                    hintText: "Confirm Password",
+                                    labelText: "Confirm Password",
+                                    border: new UnderlineInputBorder(),
+                                    suffixIcon: new Icon(Icons.lock),
+                                  ),
                                 ),
                               ),
                             ),

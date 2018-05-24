@@ -167,6 +167,7 @@ class _DashboardState extends State<Dashboard>
         controller: tabController,
       ),
       body: new TabBarView(
+        physics: new NeverScrollableScrollPhysics(),
         children: [
           new Assets(user: widget.user),
           new MyAssets(widget.user),

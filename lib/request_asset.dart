@@ -564,19 +564,22 @@ class _State extends State<RequestAsset> {
                                     new SizedBox(
                                       height: 8.0,
                                     ),
-                                    new TextFormField(
-                                        maxLines: 5,
-                                        controller: _purposeController,
-                                        validator: _validatePurpose,
-                                        focusNode: _purposeFieldFocus,
-                                        onFieldSubmitted: (value) { _purposeFieldFocus.unfocus(); },
-                                        decoration: new InputDecoration(
-                                          hintText: "Purpose",
-                                          labelText: "Purpose",
-                                          border: new OutlineInputBorder(
-                                              borderRadius:
-                                              new BorderRadius.circular(12.0)),
-                                        )),
+                                    new EnsureVisibleWhenFocused(
+                                      focusNode: _purposeFieldFocus,
+                                      child: new TextFormField(
+                                          maxLines: 5,
+                                          controller: _purposeController,
+                                          validator: _validatePurpose,
+                                          focusNode: _purposeFieldFocus,
+                                          onFieldSubmitted: (value) { _purposeFieldFocus.unfocus(); },
+                                          decoration: new InputDecoration(
+                                            hintText: "Purpose",
+                                            labelText: "Purpose",
+                                            border: new OutlineInputBorder(
+                                                borderRadius:
+                                                new BorderRadius.circular(12.0)),
+                                          )),
+                                    ),
                                     new SizedBox(
                                       height: 8.0,
                                     ),
