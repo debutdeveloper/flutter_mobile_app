@@ -18,6 +18,7 @@ class Dashboard extends StatefulWidget {
 class _DashboardState extends State<Dashboard>
     with TickerProviderStateMixin {
   TabController tabController;
+  final PageStorageKey _tabBarKey = new PageStorageKey("assets");
 
   String _allAssets = "All Assets";
   String _MyAssets = "My Assets";
@@ -148,7 +149,7 @@ class _DashboardState extends State<Dashboard>
         ),
       ),
       bottomNavigationBar: new TabBar(
-        key: new PageStorageKey("assets"),
+        //key: _tabBarKey,
         labelStyle: new TextStyle(fontSize: descriptionFontSize, color: Colors.white),
         unselectedLabelColor: Colors.black,
         indicator: new BoxDecoration(
@@ -167,6 +168,7 @@ class _DashboardState extends State<Dashboard>
         controller: tabController,
       ),
       body: new TabBarView(
+        //key: _tabBarKey,
         physics: new NeverScrollableScrollPhysics(),
         children: [
           new Assets(user: widget.user),

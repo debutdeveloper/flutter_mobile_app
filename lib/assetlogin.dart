@@ -67,11 +67,17 @@ class _LoginState extends State<Login> {
           var newUser = new CurrentUser.fromJSON(userJson);
 
           if (newUser.data.is_random_password) {
-            Navigator.of(context).push(new MaterialPageRoute(
-                builder: (context) => new ResetPasswordScreen(user: newUser)));
+            Navigator.of(context).pushAndRemoveUntil(
+              new MaterialPageRoute(
+                  builder: (context) => new ResetPasswordScreen(user: newUser)),
+                  (Route<dynamic> newRoute) => false,
+            );
           } else {
-            Navigator.of(context).push(new MaterialPageRoute(
-                builder: (context) => new Dashboard(newUser)));
+            Navigator.of(context).pushAndRemoveUntil(
+              new MaterialPageRoute(
+                  builder: (context) => new Dashboard(newUser)),
+                  (Route<dynamic> newRoute) => false,
+            );
           }
         } else {
           var errorJson = json.decode(response.body);
