@@ -37,8 +37,9 @@ class _AssetHistoryState extends State<AssetHistory> {
     });
 
     try {
-      var response = await http.get(assetHistoryURL,
-          headers: {"Authorization": widget.user.data.token}).timeout(timeoutDuration);
+      var response = await http.get(assetHistoryURL, headers: {
+        "Authorization": widget.user.data.token
+      }).timeout(timeoutDuration);
 
       if (response.statusCode == 200) {
         setState(() {
@@ -53,55 +54,59 @@ class _AssetHistoryState extends State<AssetHistory> {
         });
       } else {
         var errorJson = json.decode(response.body);
-        showAlert(
-            _context,
-            title: new Icon(Icons.error, color: Colors.red,),
+        showAlert(_context,
+            title: new Icon(
+              Icons.error,
+              color: Colors.red,
+            ),
             content: new Text(errorJson["message"]),
             cupertinoActions: <Widget>[
-              new CupertinoDialogAction(child: new Text('Ok'),
-                onPressed: (){
+              new CupertinoDialogAction(
+                child: new Text('Ok'),
+                onPressed: () {
                   Navigator.pop(_context);
                 },
                 isDefaultAction: true,
               ),
             ],
             materialActions: <Widget>[
-              new FlatButton(onPressed: (){
-                Navigator.pop(_context);
-              },
+              new FlatButton(
+                onPressed: () {
+                  Navigator.pop(_context);
+                },
                 child: new Text('Ok'),
               )
-            ]
-        );
+            ]);
       }
-    }
-    catch (e) {
-      showAlert(
-          _context,
-          title: new Icon(Icons.error, color: Colors.red,),
+    } catch (e) {
+      showAlert(_context,
+          title: new Icon(
+            Icons.error,
+            color: Colors.red,
+          ),
           content: new Text('Connection time-out'),
           cupertinoActions: <Widget>[
-            new CupertinoDialogAction(child: new Text('Ok'),
-              onPressed: (){
+            new CupertinoDialogAction(
+              child: new Text('Ok'),
+              onPressed: () {
                 Navigator.pop(_context);
               },
               isDefaultAction: true,
             ),
           ],
           materialActions: <Widget>[
-            new FlatButton(onPressed: (){
-              Navigator.pop(_context);
-            },
+            new FlatButton(
+              onPressed: () {
+                Navigator.pop(_context);
+              },
               child: new Text('Ok'),
             )
-          ]
-      );
+          ]);
     }
 
     setState(() {
       _showLoader = true;
     });
-
   }
 
   @override
@@ -113,7 +118,6 @@ class _AssetHistoryState extends State<AssetHistory> {
 
   @override
   Widget build(BuildContext context) {
-
     print("Build callled");
     print(listOfRequests.length);
     _context = context;
@@ -125,6 +129,15 @@ class _AssetHistoryState extends State<AssetHistory> {
             title: new Text(
               "Asset History",
             ),
+            leading: new IconButton(
+                icon: new Icon(
+                  Icons.keyboard_arrow_left,
+                  size: 40.0,
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                }),
+            automaticallyImplyLeading: false,
           ),
           body: new Container(
             height: _screenSize.height,
@@ -162,7 +175,9 @@ class _AssetHistoryState extends State<AssetHistory> {
                         shape: new StadiumBorder(),
                         child: new Text(
                           "REQUEST",
-                          style: new TextStyle(color: Colors.white, fontSize: buttonTitleFontSize),
+                          style: new TextStyle(
+                              color: Colors.white,
+                              fontSize: buttonTitleFontSize),
                         ),
                       ),
                     ),
@@ -172,8 +187,16 @@ class _AssetHistoryState extends State<AssetHistory> {
             ),
           ),
         ),
-        new Offstage(child: new Container( color: new Color.fromRGBO(1, 1, 1 , 0.3), child: new Center(child: new CircularProgressIndicator(backgroundColor: Colors.transparent,),)),
-          offstage: _showLoader,)
+        new Offstage(
+          child: new Container(
+              color: new Color.fromRGBO(1, 1, 1, 0.3),
+              child: new Center(
+                child: new CircularProgressIndicator(
+                  backgroundColor: Colors.transparent,
+                ),
+              )),
+          offstage: _showLoader,
+        )
       ],
     );
   }
@@ -189,7 +212,8 @@ class _AssetHistoryState extends State<AssetHistory> {
       ));
     } else {
       for (var request in listOfRequests) {
-        var username = '${request.value.user.first_name} ${request.value.user.last_name}';
+        var username =
+            '${request.value.user.first_name} ${request.value.user.last_name}';
         var requestDate = getDate(request.value.start_timing);
         var from = getTime(request.value.start_timing);
         var upto = getTime(request.value.end_timing);
@@ -243,8 +267,6 @@ class RequestDetails extends StatelessWidget {
     );
   }
 }
-
-
 
 //
 //class AssetHistory extends StatefulWidget {

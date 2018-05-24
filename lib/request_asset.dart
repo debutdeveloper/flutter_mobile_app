@@ -48,9 +48,9 @@ class _State extends State<RequestAsset> {
   String _endTimeLabel = 'Select time';
 
   String _startTimeString =
-      '${new TimeOfDay.now().hour}:${new TimeOfDay.now().minute}:00';
+      '${new TimeOfDay.now().toString().substring(10,15)}:00';
   String _endTimeString =
-      '${new TimeOfDay.now().hour}:${new TimeOfDay.now().minute}:00';
+      '${new TimeOfDay.now().toString().substring(10,15)}:00';
 
   String _today = new DateFormat("dd/MM/yyyy").format(new DateTime.now());
 
@@ -64,7 +64,7 @@ class _State extends State<RequestAsset> {
         if (time.minute > new TimeOfDay.now().minute) {
           setState(() {
             _startTimeLabel = time.format(context);
-            _startTimeString = '${time.hour}:${time.minute}:00';
+            _startTimeString = '${time.toString().substring(10,15)}:00';
             _actualStartTime = time;
             isStartTimeSelected = true;
             _endTimeLabel = "Select date";
@@ -97,7 +97,7 @@ class _State extends State<RequestAsset> {
       } else if (time.hour > new TimeOfDay.now().hour) {
         setState(() {
           _startTimeLabel = time.format(context);
-          _startTimeString = '${time.hour}:${time.minute}:00';
+          _startTimeString = '${time.toString().substring(10,15)}:00';
           _actualStartTime = time;
           isStartTimeSelected = true;
           isEndTimeSelected = false;
@@ -167,7 +167,7 @@ class _State extends State<RequestAsset> {
           setState(() {
             _endTimeLabel = time.format(context);
             isEndTimeSelected = true;
-            _endTimeString = '${time.hour}:${time.minute}:00';
+            _endTimeString = '${time.toString().substring(10,15)}:00';
           });
         } else {
           print("Failed 1");
@@ -198,7 +198,7 @@ class _State extends State<RequestAsset> {
         setState(() {
           _endTimeLabel = time.format(context);
           isEndTimeSelected = true;
-          _endTimeString = '${time.hour}:${time.minute}:00';
+          _endTimeString = '${time.toString().substring(10,15)}:00';
         });
       } else {
         print("Failed 2");
@@ -267,8 +267,8 @@ class _State extends State<RequestAsset> {
         final String requestURL = requestAPI;
         final credentials = {
           "description": _purpose,
-          "start_time": "${new DateFormat("dd/MM/yyyy").format(new DateTime.now())} $_startTimeString",
-          "end_time": "${new DateFormat("dd/MM/yyyy").format(new DateTime.now())} $_endTimeString",
+          "start_time": "$_today $_startTimeString",
+          "end_time": "$_today $_endTimeString",
           "priority": priority.round().toString(),
           "user": {
             "id": widget.user.id,
@@ -297,18 +297,76 @@ class _State extends State<RequestAsset> {
           print(json.encode(credentials));
 
           if (response.statusCode == 200) {
+            var responseJson = json.decode(response.body);
             print("SUCCESSFULLY REQUEST SENT");
-            scaffoldKey.currentState.showSnackBar(
-                new SnackBar(content: new Text("Requested Successfully")));
+            showAlert(context,
+              title: new Title(color: Colors.blue, child: new Text("Success")),
+              content: new Text(responseJson["message"]),
+              cupertinoActions: <Widget>[
+                new CupertinoDialogAction(child: new Text("OK"),onPressed: () {
+                  _purposeController.clear();
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                  },)
+              ],
+              materialActions: <Widget>[
+                new FlatButton(onPressed: () {
+                  _purposeController.clear();
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                  },
+                    child: new Text("OK"))
+              ],
+            );
           } else {
-            scaffoldKey.currentState.showSnackBar(new SnackBar(
-                content: new Text("Something went wrong, Request not sent.")));
+            var errorJson= json.decode(response.body);
+            showAlert(context,
+              title: new Icon(
+                Icons.error,
+                color: Colors.red,
+              ),
+              content: new Text(errorJson["message"]),
+              cupertinoActions: <Widget>[
+                new CupertinoDialogAction(child: new Text("OK"),onPressed: () {
+                  Navigator.pop(context);
+                },)
+              ],
+              materialActions: <Widget>[
+                new FlatButton(onPressed: () {
+                  Navigator.pop(context);
+                },
+                    child: new Text("OK"))
+              ],
+            );
             print(response.statusCode);
           }
         } catch (e) {
-          print(e);
-          scaffoldKey.currentState.showSnackBar(new SnackBar(
-              content: new Text("Connection time-out, Request not sent.")));
+          showAlert(
+            context,
+            title: new Icon(
+              Icons.error,
+              color: Colors.red,
+            ),
+            content: new Text('Connection time-out'),
+            cupertinoActions: <Widget>[
+              new CupertinoDialogAction(
+                child: new Text("OK"),
+                isDefaultAction: true,
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+            materialActions: <Widget>[
+              new FlatButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: new Text("OK"))
+            ],
+          );
         }
 
         setState(() {

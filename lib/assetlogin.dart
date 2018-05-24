@@ -31,6 +31,7 @@ class _LoginState extends State<Login> {
 
   bool _showLoader = true;
 
+  FocusNode _email = new FocusNode();
   FocusNode _password = new FocusNode();
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
   final GlobalKey<ScaffoldState> scaffoldKey = new GlobalKey<ScaffoldState>();
@@ -42,7 +43,6 @@ class _LoginState extends State<Login> {
   }
 
   void _validate() async {
-    //print(new DateFormat.yMMMd().format(new DateTime.now()));
     if (_formKey.currentState.validate()) {
       final String loginURL = loginAPI;
       final credentials = {
@@ -55,8 +55,9 @@ class _LoginState extends State<Login> {
         _showLoader = false;
       });
 
-      try{
-        var response = await http.post(loginURL, body: credentials, headers: {}).timeout(timeoutDuration);
+      try {
+        var response = await http.post(loginURL,
+            body: credentials, headers: {}).timeout(timeoutDuration);
         print(response.body);
 
         if (response.statusCode == 200) {
@@ -74,8 +75,12 @@ class _LoginState extends State<Login> {
           }
         } else {
           var errorJson = json.decode(response.body);
-          showAlert(_context,
-            title: new Icon(Icons.error,color: Colors.red,),
+          showAlert(
+            _context,
+            title: new Icon(
+              Icons.error,
+              color: Colors.red,
+            ),
             content: new Text(errorJson["message"]),
             cupertinoActions: <Widget>[
               new CupertinoDialogAction(
@@ -95,10 +100,13 @@ class _LoginState extends State<Login> {
             ],
           );
         }
-      }
-      catch(e){
-        showAlert(_context,
-          title: new Icon(Icons.error,color: Colors.red,),
+      } catch (e) {
+        showAlert(
+          _context,
+          title: new Icon(
+            Icons.error,
+            color: Colors.red,
+          ),
           content: new Text('Connection time-out'),
           cupertinoActions: <Widget>[
             new CupertinoDialogAction(
@@ -123,7 +131,6 @@ class _LoginState extends State<Login> {
         _showLoader = true;
         _pass.clear();
       });
-
     }
   }
 
@@ -157,24 +164,30 @@ class _LoginState extends State<Login> {
     return new Stack(
       fit: StackFit.expand,
       children: <Widget>[
-        new Column(
-          mainAxisSize: MainAxisSize.max,
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            new Container(
-              height: screenSize.height / 2 - reducedHeight,
-              width: screenSize.width,
-              child: new DecoratedBox(
-                  decoration: new BoxDecoration(
-                      gradient: new LinearGradient(colors: getColors()))),
-            ),
-            new Container(
-              height: screenSize.height / 2 + reducedHeight,
-              width: screenSize.width,
-              color: Colors.white,
-            ),
-          ],
+        new GestureDetector(
+          onTap: () {
+            _email.unfocus();
+            _password.unfocus();
+          },
+          child: new Column(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              new Container(
+                height: screenSize.height / 2 - reducedHeight,
+                width: screenSize.width,
+                child: new DecoratedBox(
+                    decoration: new BoxDecoration(
+                        gradient: new LinearGradient(colors: getColors()))),
+              ),
+              new Container(
+                height: screenSize.height / 2 + reducedHeight,
+                width: screenSize.width,
+                color: Colors.white,
+              ),
+            ],
+          ),
         ),
         new Column(
           mainAxisSize: MainAxisSize.min,
@@ -206,6 +219,7 @@ class _LoginState extends State<Login> {
                           new TextFormField(
                               controller: _user,
                               validator: _validateEmail,
+                              focusNode: _email,
                               onFieldSubmitted: (value) {
                                 FocusScope.of(context).requestFocus(_password);
                               },
@@ -239,15 +253,14 @@ class _LoginState extends State<Login> {
                                 child: new FlatButton(
                                   shape: new StadiumBorder(),
                                   onPressed: () {
-                                    setState(() {
-                                      _password.unfocus();
-                                    });
+                                    _password.unfocus();
                                     _validate();
                                   },
                                   child: new Text(
                                     "LOGIN",
                                     style: new TextStyle(
-                                        color: Colors.white, fontSize: buttonTitleFontSize),
+                                        color: Colors.white,
+                                        fontSize: buttonTitleFontSize),
                                   ),
                                 ),
                               ),
@@ -270,15 +283,24 @@ class _LoginState extends State<Login> {
                   },
                   child: new Text(
                     "Forgot Password?",
-                    style: new TextStyle(fontSize: buttonTitleFontSize, color: Colors.black),
+                    style: new TextStyle(
+                        fontSize: buttonTitleFontSize, color: Colors.black),
                   ),
                 ),
               ),
             )
           ],
         ),
-        new Offstage(child: new Container( color: new Color.fromRGBO(1, 1, 1 , 0.3), child: new Center(child: new CircularProgressIndicator(backgroundColor: Colors.transparent,),)),
-          offstage: _showLoader,)
+        new Offstage(
+          child: new Container(
+              color: new Color.fromRGBO(1, 1, 1, 0.3),
+              child: new Center(
+                child: new CircularProgressIndicator(
+                  backgroundColor: Colors.transparent,
+                ),
+              )),
+          offstage: _showLoader,
+        )
       ],
     );
   }

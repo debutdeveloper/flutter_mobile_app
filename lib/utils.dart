@@ -6,11 +6,11 @@ import 'package:intl/intl.dart';
 /// Static properties
 
 /// Custom UI Properties
-double titleFontSize = 18.0; 
-double subTitleFontSize = 12.0; 
-double buttonTitleFontSize = 16.0; 
-double descriptionFontSize = 12.0; 
-double timePickerFieldFontSize = 16.0; 
+double titleFontSize = 18.0;
+double subTitleFontSize = 12.0;
+double buttonTitleFontSize = 16.0;
+double descriptionFontSize = 12.0;
+double timePickerFieldFontSize = 16.0;
 double sliderFieldFontSize = 16.0;
 
 /// API URLs
@@ -23,8 +23,6 @@ String assetDetailsAPI = "$baseURL/request/requests/";
 String requestAPI = "$baseURL/request/";
 String myAssetsAPI = "$baseURL/request/approved-requests";
 
-
-
 getColors() {
   return [
     new Color.fromRGBO(23, 88, 232, 1.0),
@@ -34,10 +32,8 @@ getColors() {
 
 getDecorationBox() {
   return new DecoratedBox(
-      decoration:
-      new BoxDecoration(gradient: getGradient()));
+      decoration: new BoxDecoration(gradient: getGradient()));
 }
-
 
 getGradient() {
   return new LinearGradient(colors: getColors());
@@ -45,26 +41,32 @@ getGradient() {
 
 // Custom Alert
 
-showAlert(BuildContext context,{Widget title,Widget content, List<Widget> cupertinoActions, List<Widget> materialActions}){
-
+showAlert(BuildContext context,
+    {Widget title,
+    Widget content,
+    List<Widget> cupertinoActions,
+    List<Widget> materialActions}) {
   var cupertinoAlert = new CupertinoAlertDialog(
     content: content,
     title: title,
-    actions: cupertinoActions
+    actions: cupertinoActions,
   );
 
   var materialAlert = new AlertDialog(
     title: title,
     content: content,
-    actions: materialActions
+    actions: materialActions,
   );
 
   defaultTargetPlatform == TargetPlatform.iOS
-      ? showDialog(context: context,
-      builder: (BuildContext context) => cupertinoAlert)
-      : showDialog(context: context,
-      builder: (BuildContext context) => materialAlert);
-
+      ? showDialog(
+          context: context,
+          builder: (BuildContext context) => cupertinoAlert,
+          barrierDismissible: false)
+      : showDialog(
+          context: context,
+          builder: (BuildContext context) => materialAlert,
+          barrierDismissible: false);
 }
 
 Duration timeoutDuration = new Duration(seconds: 60);
@@ -79,14 +81,14 @@ bool isEmailValid(String email) {
   return regExp.hasMatch(email);
 }
 
-String getDate(String date){
+String getDate(String date) {
   String dateString = '';
   var tempDate = new DateFormat.yMMMd().format(DateTime.parse(date));
   dateString = tempDate.toString();
   return dateString;
 }
 
-String getTime(String time){
+String getTime(String time) {
   String timeString;
   var tempTime = new DateFormat.jm().format(DateTime.parse(time));
   timeString = tempTime.toString();

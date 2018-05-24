@@ -17,7 +17,8 @@ class _ForgotPasswordState extends State<ForgotPassword> {
   final _forgotPasswordFormKey = new GlobalKey<FormState>();
   FocusNode _emailIDField = new FocusNode();
 
-  static final TextEditingController _emailController = new TextEditingController();
+  static final TextEditingController _emailController =
+      new TextEditingController();
 
   String get _email => _emailController.text;
   bool _showLoader = true;
@@ -35,17 +36,16 @@ class _ForgotPasswordState extends State<ForgotPassword> {
   _submit(BuildContext context) async {
     if (_forgotPasswordFormKey.currentState.validate()) {
       final String forgetPasswordUrl = forgetPasswordAPI;
-      final credentials = {
-        "email": _email.toLowerCase()
-      };
+      final credentials = {"email": _email.toLowerCase()};
 
       setState(() {
         _showLoader = false;
       });
 
       try {
-        var response = await http.put(forgetPasswordUrl,
-            body: credentials).timeout(timeoutDuration);
+        var response = await http
+            .put(forgetPasswordUrl, body: credentials)
+            .timeout(timeoutDuration);
         print("Reset password response : ${json.decode(response.body)}");
 
         print("ENTERED EMAIL : $_email");
@@ -62,6 +62,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                 child: new Text("Login"),
                 isDefaultAction: true,
                 onPressed: () {
+                  _emailController.clear();
                   Navigator.of(context).pushAndRemoveUntil(
                         new MaterialPageRoute(
                             builder: (context) => new Login()),
@@ -73,6 +74,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
             materialActions: <Widget>[
               new FlatButton(
                   onPressed: () {
+                    _emailController.clear();
                     Navigator.of(context).pushAndRemoveUntil(
                           new MaterialPageRoute(
                               builder: (context) => new Login()),
@@ -87,13 +89,17 @@ class _ForgotPasswordState extends State<ForgotPassword> {
           var errorJson = json.decode(response.body);
           showAlert(
             context,
-            title: new Title(color: Colors.blue, child: new Icon(Icons.error, color:  Colors.red,)),
+            title: new Icon(
+              Icons.error,
+              color: Colors.red,
+            ),
             content: new Text(errorJson["message"]),
             cupertinoActions: <Widget>[
               new CupertinoDialogAction(
-                child: new Text("Ok"),
+                child: new Text("OK"),
                 isDefaultAction: true,
                 onPressed: () {
+                  FocusScope.of(context).requestFocus(_emailIDField);
                   Navigator.of(context).pop();
                 },
               ),
@@ -101,13 +107,10 @@ class _ForgotPasswordState extends State<ForgotPassword> {
             materialActions: <Widget>[
               new FlatButton(
                   onPressed: () {
-                    Navigator.of(context).pushAndRemoveUntil(
-                          new MaterialPageRoute(
-                              builder: (context) => new Login()),
-                          (Route<dynamic> newRoute) => false,
-                        );
+                    FocusScope.of(context).requestFocus(_emailIDField);
+                    Navigator.of(context).pop();
                   },
-                  child: new Text("Login"))
+                  child: new Text("OK"))
             ],
           );
         }
@@ -115,30 +118,28 @@ class _ForgotPasswordState extends State<ForgotPassword> {
         print("Exception occured");
         showAlert(
           context,
-          title: new Title(color: Colors.blue, child: new Text("Success")),
+          title: new Icon(
+            Icons.error,
+            color: Colors.red,
+          ),
           content: new Text('Connection time-out'),
           cupertinoActions: <Widget>[
             new CupertinoDialogAction(
-              child: new Text("Login"),
+              child: new Text("OK"),
               isDefaultAction: true,
               onPressed: () {
-                Navigator.of(context).pushAndRemoveUntil(
-                      new MaterialPageRoute(builder: (context) => new Login()),
-                      (Route<dynamic> newRoute) => false,
-                    );
+                FocusScope.of(context).requestFocus(_emailIDField);
+                Navigator.of(context).pop();
               },
             ),
           ],
           materialActions: <Widget>[
             new FlatButton(
                 onPressed: () {
-                  Navigator.of(context).pushAndRemoveUntil(
-                        new MaterialPageRoute(
-                            builder: (context) => new Login()),
-                        (Route<dynamic> newRoute) => false,
-                      );
+                  FocusScope.of(context).requestFocus(_emailIDField);
+                  Navigator.of(context).pop();
                 },
-                child: new Text("Login"))
+                child: new Text("OK"))
           ],
         );
       }
@@ -146,9 +147,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
       setState(() {
         _showLoader = true;
       });
-
     }
-    _emailController.clear();
   }
 
   @override
@@ -156,109 +155,119 @@ class _ForgotPasswordState extends State<ForgotPassword> {
     final Size _screenSize = MediaQuery.of(context).size;
     return new Stack(
       children: <Widget>[
-        new Scaffold(
-          key: _scaffoldKey,
-          body: new SingleChildScrollView(
-            child: new Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                new Container(
-                  child: new Center(
-                    child: new CircleAvatar(
-                      backgroundColor: Colors.white,
-                      radius: 48.0,
-                      backgroundImage: new AssetImage("assets/logo.jpg"),
+        new GestureDetector(
+          onTap: () {
+            _emailIDField.unfocus();
+          },
+          child: new Scaffold(
+            key: _scaffoldKey,
+            body: new SingleChildScrollView(
+              child: new Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  new Container(
+                    child: new Center(
+                      child: new CircleAvatar(
+                        backgroundColor: Colors.white,
+                        radius: 48.0,
+                        backgroundImage: new AssetImage("assets/logo.jpg"),
+                      ),
                     ),
+                    width: _screenSize.width,
+                    height: _screenSize.height / 2.8,
+                    decoration: new BoxDecoration(
+                        gradient: new LinearGradient(colors: getColors())),
                   ),
-                  width: _screenSize.width,
-                  height: _screenSize.height / 2.8,
-                  decoration: new BoxDecoration(
-                      gradient: new LinearGradient(colors: getColors())),
-                ),
-                new Container(
-                  child: new Padding(
-                    padding: new EdgeInsets.all(24.0),
-                    child: new Column(
-                      children: <Widget>[
-                        new SizedBox(height: 16.0),
-                        new Text(
-                          "Forgot Password?",
-                          style: new TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
-                              fontSize: titleFontSize),
-                        ),
-                        new SizedBox(height: 16.0),
-                        new Text(
-                          "We just need your registered Email Id to send you password reset instructions",
-                          textAlign: TextAlign.center,
-                        ),
-                        new SizedBox(height: 24.0),
-                        new Form(
-                          key: _forgotPasswordFormKey,
-                          child: new TextFormField(
-                            decoration: new InputDecoration(
-                                border: new UnderlineInputBorder(),
-                                suffixIcon: new Icon(Icons.email),
-                                hintText: "Registered Email ID"),
-                            controller: _emailController,
-                            validator: _validateEmail,
-                            focusNode: _emailIDField,
+                  new Container(
+                    child: new Padding(
+                      padding: new EdgeInsets.all(24.0),
+                      child: new Column(
+                        children: <Widget>[
+                          new SizedBox(height: 16.0),
+                          new Text(
+                            "Forgot Password?",
+                            style: new TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                                fontSize: titleFontSize),
                           ),
-                        ),
-                        new SizedBox(height: 32.0),
-                        new Container(
-                          decoration: new BoxDecoration(
-                            borderRadius:
-                            new BorderRadius.all(new Radius.circular(32.0)),
-                            gradient: new LinearGradient(
-                              colors: getColors(),
+                          new SizedBox(height: 16.0),
+                          new Text(
+                            "We just need your registered Email Id to send you password reset instructions",
+                            textAlign: TextAlign.center,
+                          ),
+                          new SizedBox(height: 24.0),
+                          new Form(
+                            key: _forgotPasswordFormKey,
+                            child: new TextFormField(
+                              decoration: new InputDecoration(
+                                  border: new UnderlineInputBorder(),
+                                  suffixIcon: new Icon(Icons.email),
+                                  hintText: "Registered Email ID"),
+                              controller: _emailController,
+                              validator: _validateEmail,
+                              focusNode: _emailIDField,
                             ),
                           ),
-                          child: new ButtonTheme(
-                            minWidth: _screenSize.width,
-                            height: buttonHeight,
-                            child: new FlatButton(
-                              onPressed: () {
-                                print("Reset password button is pressed");
-                                setState(() {
+                          new SizedBox(height: 32.0),
+                          new Container(
+                            decoration: new BoxDecoration(
+                              borderRadius: new BorderRadius.all(
+                                  new Radius.circular(32.0)),
+                              gradient: new LinearGradient(
+                                colors: getColors(),
+                              ),
+                            ),
+                            child: new ButtonTheme(
+                              minWidth: _screenSize.width,
+                              height: buttonHeight,
+                              child: new FlatButton(
+                                onPressed: () {
+                                  print("Reset password button is pressed");
                                   _emailIDField.unfocus();
-                                });
-                                _submit(context);
+                                  _submit(context);
+                                },
+                                child: new Text(
+                                  "RESET PASSWORD",
+                                  style: new TextStyle(
+                                      color: Colors.white,
+                                      fontSize: buttonTitleFontSize),
+                                ),
+                                color: Colors.transparent,
+                                shape: new StadiumBorder(),
+                              ),
+                            ),
+                          ),
+                          new SizedBox(height: 64.0),
+                          new GestureDetector(
+                              onTap: () {
+                                print("Back to login page pressed");
+                                Navigator.of(context).pop();
                               },
                               child: new Text(
-                                "RESET PASSWORD",
-                                style: new TextStyle(color: Colors.white,
-                                    fontSize: buttonTitleFontSize
-                                ),
-                              ),
-                              color: Colors.transparent,
-                              shape: new StadiumBorder(),
-                            ),
-                          ),
-                        ),
-                        new SizedBox(height: 64.0),
-                        new GestureDetector(
-                            onTap: () {
-                              print("Back to login page pressed");
-                              Navigator.of(context).pop();
-                            },
-                            child: new Text(
-                              "Back to Login Page",
-                              style: new TextStyle(
-                                  fontSize: buttonTitleFontSize
-                              ),
-                            ))
-                      ],
+                                "Back to Login Page",
+                                style: new TextStyle(
+                                    fontSize: buttonTitleFontSize),
+                              ))
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
-        new Offstage(child: new Container( color: new Color.fromRGBO(1, 1, 1 , 0.3), child: new Center(child: new CircularProgressIndicator(backgroundColor: Colors.transparent,),)),
-          offstage: _showLoader,)
+        new Offstage(
+          child: new Container(
+              color: new Color.fromRGBO(1, 1, 1, 0.3),
+              child: new Center(
+                child: new CircularProgressIndicator(
+                  backgroundColor: Colors.transparent,
+                ),
+              )),
+          offstage: _showLoader,
+        )
       ],
     );
   }
