@@ -19,12 +19,6 @@ class RequestAsset extends StatefulWidget {
   _State createState() => new _State();
 }
 
-enum RequestPriority {
-  high,
-  medium,
-  low,
-}
-
 class _State extends State<RequestAsset> {
   static final TextEditingController _purposeController =
       new TextEditingController();
@@ -455,7 +449,7 @@ class _State extends State<RequestAsset> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: <Widget>[
                                     new Text(
-                                      "REQUEST FOR ASSEST",
+                                      "REQUEST FOR ASSET",
                                       style: new TextStyle(
                                           fontSize: titleFontSize,
                                           fontWeight: FontWeight.bold),

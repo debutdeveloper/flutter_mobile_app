@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:debut_assets/Assets.dart';
 import 'package:debut_assets/MyAssets.dart';
+import 'package:debut_assets/Notifications.dart';
 import 'package:debut_assets/models/User.dart';
 import 'package:debut_assets/reset_password.dart';
 import 'package:debut_assets/utils.dart';
@@ -21,7 +22,8 @@ class _DashboardState extends State<Dashboard>
   final PageStorageKey _tabBarKey = new PageStorageKey("assets");
 
   String _allAssets = "All Assets";
-  String _MyAssets = "My Assets";
+  String _myAssets = "My Assets";
+  String _notifications = "Notifications";
 
   String _appTitle = 'ALL ASSETS';
   int _tabIndex = 0;
@@ -33,7 +35,10 @@ class _DashboardState extends State<Dashboard>
           _appTitle = _allAssets;
           break;
         case 1:
-          _appTitle = _MyAssets;
+          _appTitle = _myAssets;
+          break;
+        case 2:
+          _appTitle = _notifications;
           break;
       }
     });
@@ -43,7 +48,7 @@ class _DashboardState extends State<Dashboard>
   void initState() {
     // TODO: implement initState
     super.initState();
-    tabController = new TabController(length: 2, vsync: this);
+    tabController = new TabController(length: 3, vsync: this);
     tabController.addListener(() {
       if (tabController.indexIsChanging) {
         int index = tabController.index;
@@ -161,8 +166,12 @@ class _DashboardState extends State<Dashboard>
             text: _allAssets,
           ),
           new Tab(
-            icon: new Icon(Icons.folder),
-            text: _MyAssets,
+            icon: new Icon(Icons.list),
+            text: _myAssets,
+          ),
+          new Tab(
+            icon: new Icon(Icons.notification_important),
+            text: _notifications,
           ),
         ],
         controller: tabController,
@@ -173,6 +182,7 @@ class _DashboardState extends State<Dashboard>
         children: [
           new Assets(user: widget.user),
           new MyAssets(widget.user),
+          new Notifications()
         ],
         controller: tabController,
       ),

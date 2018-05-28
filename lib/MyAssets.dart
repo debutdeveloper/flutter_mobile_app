@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:debut_assets/handOverDevice.dart';
 import 'package:debut_assets/models/User.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
@@ -7,6 +8,8 @@ import 'package:intl/intl.dart';
 import 'package:debut_assets/models/Request.dart';
 import 'package:debut_assets/utils.dart';
 import 'dart:convert';
+
+import 'package:path/path.dart';
 
 class MyAssets extends StatefulWidget {
   final CurrentUser user;
@@ -29,6 +32,7 @@ class _CardViewState extends State<MyAssets> {
     final assetHistoryURL = myAssetsAPI;
 
     setState(() {
+      print("Show loader");
       _showLoader = false;
     });
 
@@ -38,6 +42,7 @@ class _CardViewState extends State<MyAssets> {
       }).timeout(timeoutDuration);
 
       if (response.statusCode == 200) {
+        print("response 200");
         setState(() {
           var assetHistoryJson = json.decode(response.body);
           requestList = assetHistoryJson["requests"];
@@ -101,6 +106,7 @@ class _CardViewState extends State<MyAssets> {
     }
 
     setState(() {
+      print("Hide loader");
       _showLoader = true;
     });
 
@@ -152,6 +158,14 @@ class MyAssetCard extends StatelessWidget {
   final Request asset;
   MyAssetCard({@required this.asset});
 
+  _popupMenuAction(int value, BuildContext context) {
+    switch (value) {
+      case 0:
+        Navigator.push(context, new MaterialPageRoute(builder: (context)=>new HandOverAsset()));
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return new Card(
@@ -190,12 +204,23 @@ class MyAssetCard extends StatelessWidget {
                         ),
                       ),
                     ),
-                    new IconButton(
-                        icon: new Icon(
-                          Icons.more_vert,
-                          color: Colors.blue,
+                    new PopupMenuButton(
+                      itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+                        new PopupMenuItem(
+                          child: new Text("Handover"),
+                          value: 0,
+                          enabled: true,
                         ),
-                        onPressed: () {}),
+                      ],
+                      icon: new Icon(Icons.more_vert),
+                      onSelected: (value) {
+                        _popupMenuAction(value, context);
+                      },
+                      elevation: 50.0,
+                      onCanceled: () {
+                        print("Cancelled");
+                      },
+                    )
                   ],
                 ),
                 new Padding(padding: const EdgeInsets.only(top: 8.0)),
