@@ -65,6 +65,7 @@ class _LoginState extends State<Login> {
 
           var userJson = json.decode(response.body);
           var newUser = new CurrentUser.fromJSON(userJson);
+          authorizationToken = newUser.data.token;
 
           if (newUser.data.is_random_password) {
             Navigator.of(context).pushAndRemoveUntil(

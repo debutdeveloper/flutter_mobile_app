@@ -37,6 +37,7 @@ class _CardViewState extends State<MyAssets> {
     });
 
     try {
+      print("inside try");
       var response = await http.get(assetHistoryURL, headers: {
         "Authorization": widget.user.data.token
       }).timeout(timeoutDuration);
@@ -54,6 +55,7 @@ class _CardViewState extends State<MyAssets> {
           }
         });
       } else {
+        print("response !200");
         var errorJson = json.decode(response.body);
         showAlert(_context,
             title: new Icon(
@@ -79,7 +81,9 @@ class _CardViewState extends State<MyAssets> {
               )
             ]);
       }
-    } catch (e) {
+    }
+    catch (e) {
+      print("inside catch");
       showAlert(_context,
           title: new Icon(
             Icons.error,
@@ -137,7 +141,7 @@ class _CardViewState extends State<MyAssets> {
             )
                 : new Column(
               children: <Widget>[
-                new MyAssetCard(asset: listOfRequests[index],),
+                new MyAssetCard(asset: listOfRequests[index],user: widget.user,),
                 const SizedBox(
                   height: 12.0,
                 ),
@@ -156,13 +160,90 @@ class _CardViewState extends State<MyAssets> {
 class MyAssetCard extends StatelessWidget {
 
   final Request asset;
-  MyAssetCard({@required this.asset});
+  final CurrentUser user;
+  MyAssetCard({@required this.asset, @required this.user});
 
   _popupMenuAction(int value, BuildContext context) {
     switch (value) {
       case 0:
-        Navigator.push(context, new MaterialPageRoute(builder: (context)=>new HandOverAsset()));
+        _handoverToNextRequest(context);
+        //Navigator.push(context, new MaterialPageRoute(builder: (context)=>new HandOverAsset()));
         break;
+    }
+  }
+
+  _handoverToNextRequest(BuildContext context) async {
+    String url = nextRequestAPI;
+    var credentials = {
+      "asset_id":asset.value.currentAsset.id,
+    };
+
+    try {
+      print("inside try");
+      print("asset-id:${asset.value.currentAsset.id}");
+      var response = await http.post(url, body: credentials, headers: {
+        "Authorization": user.data.token
+      }).timeout(timeoutDuration);
+
+      if (response.statusCode == 200) {
+        print("response 200");
+        var responseData = json.decode(response.body);
+        print("Next request response: ${responseData["request"]}");
+        Request nextRequest = new Request.fromJSON(responseData["request"]);
+        Navigator.push(context, new MaterialPageRoute(builder: (context)=>new HandOverAsset(request: nextRequest,)));
+      } else {
+        print("response !200");
+        var errorJson = json.decode(response.body);
+        showAlert(context,
+            title: new Icon(
+              Icons.error,
+              color: Colors.red,
+            ),
+            content: new Text(errorJson["message"]),
+            cupertinoActions: <Widget>[
+              new CupertinoDialogAction(
+                child: new Text('OK'),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                isDefaultAction: true,
+              ),
+            ],
+            materialActions: <Widget>[
+              new FlatButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: new Text('OK'),
+              )
+            ]);
+      }
+    }
+    catch (e) {
+      print("inside catch");
+      showAlert(context,
+          title: new Icon(
+            Icons.error,
+            color: Colors.red,
+          ),
+          content: new Text('Connection time-out'),
+          cupertinoActions: <Widget>[
+            new CupertinoDialogAction(
+              child: new Text('OK'),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              isDefaultAction: true,
+            ),
+          ],
+          materialActions: <Widget>[
+            new FlatButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: new Text('OK'),
+            )
+          ]);
     }
   }
 

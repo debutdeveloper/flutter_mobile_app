@@ -9,6 +9,7 @@ import 'package:intl/intl.dart';
 /// Static properties
 
 /// Custom UI Properties
+String authorizationToken;
 double titleFontSize = 18.0;
 double subTitleFontSize = 12.0;
 double buttonTitleFontSize = 16.0;
@@ -25,6 +26,10 @@ String assetsAPI = "$baseURL/asset";
 String assetDetailsAPI = "$baseURL/request/requests/";
 String requestAPI = "$baseURL/request/";
 String myAssetsAPI = "$baseURL/request/approved-requests";
+String nextRequestAPI = "$baseURL/request/next-request/";
+String handoverAPI = "$baseURL/request/handover";
+String notificationAPI = "$baseURL/notifications";
+
 
 getColors() {
   return [
