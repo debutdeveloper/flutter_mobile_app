@@ -141,7 +141,7 @@ class AssetCard extends StatelessWidget {
           height: 40.0,
           child: new RaisedButton(
             child: new Text(
-              'VIEW DETAIS',
+              'VIEW DETAILS',
               style: new TextStyle(fontSize: buttonTitleFontSize),
             ),
             color: Colors.blueAccent,

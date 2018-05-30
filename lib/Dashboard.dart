@@ -1,25 +1,43 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:debut_assets/Assets.dart';
 import 'package:debut_assets/MyAssets.dart';
 import 'package:debut_assets/Notifications.dart';
+import 'package:debut_assets/constants.dart';
 import 'package:debut_assets/models/User.dart';
 import 'package:debut_assets/reset_password.dart';
 import 'package:debut_assets/utils.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 import 'assetlogin.dart';
 
 class Dashboard extends StatefulWidget {
+
   final CurrentUser user;
+
   Dashboard(this.user);
+
+
   @override
-  _DashboardState createState() => new _DashboardState();
+  _DashboardState createState() {
+    return new _DashboardState();
+  }
 }
 
 class _DashboardState extends State<Dashboard>
     with TickerProviderStateMixin {
   TabController tabController;
-  final PageStorageKey _tabBarKey = new PageStorageKey("assets");
+  var user;
+
+  Future<CurrentUser> setUpUser() async {
+    var prefs = await SharedPreferences.getInstance();
+    var jsonStringFromLocal = prefs.getString(Constants.USER);
+    print(" Json From SharedPreferences ::: ${jsonStringFromLocal.toString()}");
+    var jsonDecoded = json.decode(jsonStringFromLocal);
+    return new CurrentUser.fromJSON(jsonDecoded);
+  }
 
   String _allAssets = "All Assets";
   String _myAssets = "My Assets";
@@ -47,7 +65,12 @@ class _DashboardState extends State<Dashboard>
   @override
   void initState() {
     // TODO: implement initState
-    super.initState();
+//    setUpUser().then((value){
+//      super.initState();
+//      user=value;
+//
+//    });
+
     tabController = new TabController(length: 3, vsync: this);
     tabController.addListener(() {
       if (tabController.indexIsChanging) {
@@ -57,31 +80,8 @@ class _DashboardState extends State<Dashboard>
         _getAppTitle();
       }
     });
-
-
-    print(widget.user.data.first_name);
-//    _askedToLead();
   }
 
-  Future<Null> _askedToLead() async {
-    await showDialog(
-        context: context,
-        child: new SimpleDialog(
-          title: const Text('Alert'),
-          children: <Widget>[
-            new Text(
-              "Welcome ${widget.user.data.first_name} to Debut Assets",
-              style: new TextStyle(fontSize: 24.0, color: Colors.teal),
-            ),
-            new SimpleDialogOption(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text('OK'),
-            ),
-          ],
-        ));
-  }
 
   @override
   void dispose() {
@@ -105,11 +105,12 @@ class _DashboardState extends State<Dashboard>
               decoration: new BoxDecoration(
                 gradient: getGradient()
               ),
-              accountName: new Text(widget.user.data.first_name + " " + widget.user.data.last_name),
-              accountEmail: new Text(widget.user.data.email),
+              accountName: new Text(
+                  user.data.first_name + " " + user.data.last_name),
+              accountEmail: new Text(user.data.email),
               currentAccountPicture: new CircleAvatar(
                 backgroundColor: new Color.fromRGBO(170, 210, 234, 1.0),
-                child: new Text(widget.user.data.first_name[0],
+                child: new Text(user.data.first_name[0],
                   style: new TextStyle(
                     fontSize: 40.0,
                     color: new Color.fromRGBO(33, 96, 232, 1.0)
@@ -120,8 +121,8 @@ class _DashboardState extends State<Dashboard>
             new InkWell(
               onTap: () {
                 Navigator.of(context).push(new MaterialPageRoute(
-                    builder: (
-                        context) => new ResetPasswordScreen(user: widget.user,)));
+                    builder: (context) =>
+                    new ResetPasswordScreen(user: user,)));
               },
               child: new ListTile(
                 leading: new Icon(Icons.lock_outline),
@@ -180,8 +181,8 @@ class _DashboardState extends State<Dashboard>
         //key: _tabBarKey,
         physics: new NeverScrollableScrollPhysics(),
         children: [
-          new Assets(user: widget.user),
-          new MyAssets(widget.user),
+          new Assets(user: user),
+          new MyAssets(user),
           new Notifications()
         ],
         controller: tabController,

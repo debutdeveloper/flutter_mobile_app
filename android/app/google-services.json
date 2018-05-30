@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "892562809453",
+    "firebase_url": "https://debut-assets.firebaseio.com",
+    "project_id": "debut-assets",
+    "storage_bucket": "debut-assets.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:892562809453:android:9edb4a13eac2b0ad",
+        "android_client_info": {
+          "package_name": "com.flutter.debutassets"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "892562809453-d584e5m79msg3rog4625qrpiegb9j9f0.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "892562809453-d584e5m79msg3rog4625qrpiegb9j9f0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBtqy22XymGZEZgBtU-sZ9fSkXqCTltDs0"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

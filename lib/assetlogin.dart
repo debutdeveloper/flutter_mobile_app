@@ -1,16 +1,18 @@
 import 'dart:convert';
-import 'package:debut_assets/reset_password.dart';
 
 import 'package:debut_assets/Dashboard.dart';
+import 'package:debut_assets/constants.dart';
 import 'package:debut_assets/forgot_password.dart';
 import 'package:debut_assets/models/User.dart';
+import 'package:debut_assets/reset_password.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'utils.dart';
-
 class Login extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
@@ -21,9 +23,12 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   static final TextEditingController _user = new TextEditingController();
   static final TextEditingController _pass = new TextEditingController();
+  FirebaseMessaging messaging;
 
   String username = _user.text;
   String password = _pass.text;
+
+  String deviceToken;
 
   bool rememberMe = false;
   bool errorsOnForm = false;
@@ -42,13 +47,39 @@ class _LoginState extends State<Login> {
     return true;
   }
 
+  @override
+  void initState() {
+    super.initState();
+    messaging = new FirebaseMessaging();
+    messaging.configure(
+      onMessage: (Map<String, dynamic> message) {
+        print(message);
+      },
+      onLaunch: (Map<String, dynamic> message) {
+        print(message);
+      },
+      onResume: (Map<String, dynamic> message) {
+        print(message);
+      },
+    );
+
+    messaging.requestNotificationPermissions(
+        const IosNotificationSettings(sound: true, badge: true, alert: true));
+    messaging.onIosSettingsRegistered
+        .listen((IosNotificationSettings settings) {});
+    messaging.getToken().then((token) {
+      print(token);
+      deviceToken = token;
+    });
+  }
+
   void _validate() async {
     if (_formKey.currentState.validate()) {
       final String loginURL = loginAPI;
       final credentials = {
         "email": username.toLowerCase(),
         "password": password,
-        "device_token": "abrakadabra"
+        "device_token": deviceToken
       };
 
       setState(() {
@@ -58,19 +89,22 @@ class _LoginState extends State<Login> {
       try {
         var response = await http.post(loginURL,
             body: credentials, headers: {}).timeout(timeoutDuration);
-        print(response.body);
-
         if (response.statusCode == 200) {
           print("SUCCESSFULLY LOGIN");
 
-          var userJson = json.decode(response.body);
-          var newUser = new CurrentUser.fromJSON(userJson);
-          authorizationToken = newUser.data.token;
+          var prefs = await SharedPreferences.getInstance();
+          var body = response.body;
+          prefs.setString(Constants.USER, body);
+          prefs.setBool(Constants.IS_LOGGED_IN, true);
+          print("Resposne Body :::: $body");
 
+          var userJson = json.decode(body);
+          var newUser = new CurrentUser.fromJSON(userJson);
           if (newUser.data.is_random_password) {
             Navigator.of(context).pushAndRemoveUntil(
               new MaterialPageRoute(
-                  builder: (context) => new ResetPasswordScreen(user: newUser)),
+                  builder: (context) =>
+                  new ResetPasswordScreen(user: newUser)),
                   (Route<dynamic> newRoute) => false,
             );
           } else {
@@ -108,6 +142,8 @@ class _LoginState extends State<Login> {
           );
         }
       } catch (e) {
+        print(e);
+
         showAlert(
           _context,
           title: new Icon(
@@ -136,7 +172,7 @@ class _LoginState extends State<Login> {
 
       setState(() {
         _showLoader = true;
-        _pass.clear();
+//        _pass.clear();
       });
     }
   }
@@ -223,35 +259,31 @@ class _LoginState extends State<Login> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          new EnsureVisibleWhenFocused(
-                            focusNode: _email,
-                            child: new TextFormField(
-                                controller: _user,
-                                validator: _validateEmail,
-                                focusNode: _email,
-                                onFieldSubmitted: (value) {
-                                  FocusScope.of(context).requestFocus(_password);
-                                },
-                                decoration: new InputDecoration(
-                                  hintText: "Email ID",
-                                  border: new UnderlineInputBorder(),
-                                  suffixIcon: new Icon(Icons.email),
-                                )),
-                          ),
-                          new SizedBox(height: 16.0),
-                          new EnsureVisibleWhenFocused(
-                            focusNode: _password,
-                            child: new TextFormField(
-                              controller: _pass,
-                              validator: _validatePassword,
-                              focusNode: _password,
+                          new TextFormField(
+                              controller: _user,
+                              validator: _validateEmail,
+                              focusNode: _email,
+                              onFieldSubmitted: (value) {
+                                FocusScope
+                                    .of(context)
+                                    .requestFocus(_password);
+                              },
                               decoration: new InputDecoration(
-                                hintText: "Password",
+                                hintText: "Email ID",
                                 border: new UnderlineInputBorder(),
-                                suffixIcon: new Icon(Icons.lock),
-                              ),
-                              obscureText: _obscureText,
+                                suffixIcon: new Icon(Icons.email),
+                              )),
+                          new SizedBox(height: 16.0),
+                          new TextFormField(
+                            controller: _pass,
+                            validator: _validatePassword,
+                            focusNode: _password,
+                            decoration: new InputDecoration(
+                              hintText: "Password",
+                              border: new UnderlineInputBorder(),
+                              suffixIcon: new Icon(Icons.lock),
                             ),
+                            obscureText: _obscureText,
                           ),
                           new SizedBox(height: 48.0),
                           new Center(
