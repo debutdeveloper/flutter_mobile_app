@@ -14,11 +14,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'assetlogin.dart';
 
 class Dashboard extends StatefulWidget {
-
   final CurrentUser user;
 
   Dashboard(this.user);
-
 
   @override
   _DashboardState createState() {
@@ -26,8 +24,7 @@ class Dashboard extends StatefulWidget {
   }
 }
 
-class _DashboardState extends State<Dashboard>
-    with TickerProviderStateMixin {
+class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
   TabController tabController;
   var user;
 
@@ -71,6 +68,7 @@ class _DashboardState extends State<Dashboard>
 //
 //    });
 
+    user = widget.user;
     tabController = new TabController(length: 3, vsync: this);
     tabController.addListener(() {
       if (tabController.indexIsChanging) {
@@ -81,7 +79,6 @@ class _DashboardState extends State<Dashboard>
       }
     });
   }
-
 
   @override
   void dispose() {
@@ -102,19 +99,17 @@ class _DashboardState extends State<Dashboard>
         child: new ListView(
           children: <Widget>[
             new UserAccountsDrawerHeader(
-              decoration: new BoxDecoration(
-                gradient: getGradient()
-              ),
-              accountName: new Text(
-                  user.data.first_name + " " + user.data.last_name),
+              decoration: new BoxDecoration(gradient: getGradient()),
+              accountName:
+              new Text(user.data.first_name + " " + user.data.last_name),
               accountEmail: new Text(user.data.email),
               currentAccountPicture: new CircleAvatar(
                 backgroundColor: new Color.fromRGBO(170, 210, 234, 1.0),
-                child: new Text(user.data.first_name[0],
+                child: new Text(
+                  user.data.first_name[0],
                   style: new TextStyle(
-                    fontSize: 40.0,
-                    color: new Color.fromRGBO(33, 96, 232, 1.0)
-                  ),
+                      fontSize: 40.0,
+                      color: new Color.fromRGBO(33, 96, 232, 1.0)),
                 ),
               ),
             ),
@@ -122,32 +117,31 @@ class _DashboardState extends State<Dashboard>
               onTap: () {
                 Navigator.of(context).push(new MaterialPageRoute(
                     builder: (context) =>
-                    new ResetPasswordScreen(user: user,)));
+                    new ResetPasswordScreen(
+                      user: user,
+                    )));
               },
               child: new ListTile(
                 leading: new Icon(Icons.lock_outline),
-                title: new Text("Reset password",
-                  style: new TextStyle(
-                    fontSize: buttonTitleFontSize
-                  ),
+                title: new Text(
+                  "Reset password",
+                  style: new TextStyle(fontSize: buttonTitleFontSize),
                 ),
               ),
             ),
             new Divider(),
             new InkWell(
               onTap: () {
-                Navigator.of(context).pushAndRemoveUntil(new MaterialPageRoute(
-                    builder: (context) => new Login()
-                ),
-                      (Route<dynamic> newRoute)=>false,
+                Navigator.of(context).pushAndRemoveUntil(
+                  new MaterialPageRoute(builder: (context) => new Login()),
+                      (Route<dynamic> newRoute) => false,
                 );
               },
               child: new ListTile(
                 leading: new Icon(Icons.power_settings_new),
-                title: new Text("Logout",
-                  style: new TextStyle(
-                      fontSize: buttonTitleFontSize
-                  ),
+                title: new Text(
+                  "Logout",
+                  style: new TextStyle(fontSize: buttonTitleFontSize),
                 ),
               ),
             )
@@ -156,7 +150,8 @@ class _DashboardState extends State<Dashboard>
       ),
       bottomNavigationBar: new TabBar(
         //key: _tabBarKey,
-        labelStyle: new TextStyle(fontSize: descriptionFontSize, color: Colors.white),
+        labelStyle:
+        new TextStyle(fontSize: descriptionFontSize, color: Colors.white),
         unselectedLabelColor: Colors.black,
         indicator: new BoxDecoration(
           gradient: getGradient(),
