@@ -170,7 +170,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                       child: new CircleAvatar(
                         backgroundColor: Colors.white,
                         radius: 48.0,
-                        backgroundImage: new AssetImage("assets/logo.jpg"),
+                        backgroundImage: new AssetImage("assets/logo.png"),
                       ),
                     ),
                     width: _screenSize.width,

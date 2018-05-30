@@ -1,15 +1,10 @@
-import 'dart:async';
-import 'dart:convert';
-
 import 'package:debut_assets/Assets.dart';
 import 'package:debut_assets/MyAssets.dart';
 import 'package:debut_assets/Notifications.dart';
-import 'package:debut_assets/constants.dart';
 import 'package:debut_assets/models/User.dart';
 import 'package:debut_assets/reset_password.dart';
 import 'package:debut_assets/utils.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'assetlogin.dart';
 
@@ -26,15 +21,7 @@ class Dashboard extends StatefulWidget {
 
 class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
   TabController tabController;
-  var user;
 
-  Future<CurrentUser> setUpUser() async {
-    var prefs = await SharedPreferences.getInstance();
-    var jsonStringFromLocal = prefs.getString(Constants.USER);
-    print(" Json From SharedPreferences ::: ${jsonStringFromLocal.toString()}");
-    var jsonDecoded = json.decode(jsonStringFromLocal);
-    return new CurrentUser.fromJSON(jsonDecoded);
-  }
 
   String _allAssets = "All Assets";
   String _myAssets = "My Assets";
@@ -61,14 +48,7 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
 
   @override
   void initState() {
-    // TODO: implement initState
-//    setUpUser().then((value){
-//      super.initState();
-//      user=value;
-//
-//    });
-
-    user = widget.user;
+    super.initState();
     tabController = new TabController(length: 3, vsync: this);
     tabController.addListener(() {
       if (tabController.indexIsChanging) {
@@ -101,12 +81,13 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
             new UserAccountsDrawerHeader(
               decoration: new BoxDecoration(gradient: getGradient()),
               accountName:
-              new Text(user.data.first_name + " " + user.data.last_name),
-              accountEmail: new Text(user.data.email),
+              new Text(widget.user.data.first_name + " " +
+                  widget.user.data.last_name),
+              accountEmail: new Text(widget.user.data.email),
               currentAccountPicture: new CircleAvatar(
                 backgroundColor: new Color.fromRGBO(170, 210, 234, 1.0),
                 child: new Text(
-                  user.data.first_name[0],
+                  widget.user.data.first_name[0],
                   style: new TextStyle(
                       fontSize: 40.0,
                       color: new Color.fromRGBO(33, 96, 232, 1.0)),
@@ -118,7 +99,7 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
                 Navigator.of(context).push(new MaterialPageRoute(
                     builder: (context) =>
                     new ResetPasswordScreen(
-                      user: user,
+                      user: widget.user,
                     )));
               },
               child: new ListTile(
@@ -176,8 +157,8 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
         //key: _tabBarKey,
         physics: new NeverScrollableScrollPhysics(),
         children: [
-          new Assets(user: user),
-          new MyAssets(user),
+          new Assets(user: widget.user),
+          new MyAssets(widget.user),
           new Notifications()
         ],
         controller: tabController,

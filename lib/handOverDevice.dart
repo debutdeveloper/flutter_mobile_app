@@ -1,20 +1,18 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:debut_assets/models/Request.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'package:debut_assets/models/Asset.dart';
-import 'package:debut_assets/models/User.dart';
 import 'package:debut_assets/utils.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
 class HandOverAsset extends StatefulWidget {
   final Request request;
-//  final Asset asset;
-//
-  HandOverAsset({@required this.request});
+  final CurrentAsset asset;
+
+  HandOverAsset({@required this.asset, this.request});
 
   @override
   _HandOverAssetState createState() => new _HandOverAssetState();
@@ -34,6 +32,8 @@ class _HandOverAssetState extends State<HandOverAsset> {
   bool errorsOnForm = false;
   bool _showLoader = true;
 
+  bool empOffStage = true;
+
   bool isStartTimeSelected = false;
   bool isEndTimeSelected = false;
 
@@ -49,6 +49,13 @@ class _HandOverAssetState extends State<HandOverAsset> {
       '${new TimeOfDay.now().toString().substring(10,15)}:00';
 
   String _today = new DateFormat("dd/MM/yyyy").format(new DateTime.now());
+
+  @override
+  void initState() {
+    if (widget.request != null) {
+      empOffStage = false;
+    }
+  }
 
   Future startTimePicker(BuildContext context) async {
     final TimeOfDay time = await showTimePicker(
@@ -258,142 +265,120 @@ class _HandOverAssetState extends State<HandOverAsset> {
 
   _handoverAsset(BuildContext context) async {
     print("Date : ${new DateFormat("dd-MM-yyyy").format(new DateTime.now())}");
-    if (isStartTimeSelected && isEndTimeSelected) {
-      if (_formKey.currentState.validate()) {
-        final String url = handoverAPI;
-        final credentials = {
-          "description": widget.request.value.currentAsset.description,
-          "start_time": widget.request.value.start_timing,
-          "end_time": widget.request.value.start_timing,
-          "priority": widget.request.value.priority,
-          "user": {
-            "id": widget.request.value.user.id,
-            "first_name": widget.request.value.user.first_name,
-            "last_name": widget.request.value.user.last_name
-          },
-          "asset": {
-            "id": widget.request.value.currentAsset.id,
-            "name": widget.request.value.currentAsset.name,
-            "description": widget.request.value.currentAsset.description
-          }
-        };
+    final String url = handoverAPI;
 
-        setState(() {
-          _showLoader = false;
-        });
+    final credentials = {
+      "description": widget.request?.value?.currentAsset?.description,
+      "start_time": widget.request?.value?.start_timing,
+      "end_time": widget.request?.value?.start_timing,
+      "priority": widget.request?.value?.priority,
+      "user": {
+        "id": widget.request?.value?.user?.id,
+        "first_name": widget.request?.value?.user?.first_name,
+        "last_name": widget.request?.value?.user?.last_name
+      },
+      "asset": widget.asset
+    };
 
-        try {
-          var response = await http.put(url,
-              body: json.encode(credentials),
-              headers: {
-                "Authorization": authorizationToken,
-                "Content-Type" : "application/json",
-              }).timeout(timeoutDuration);
-          print(response.body);
-          print(json.encode(credentials));
+    setState(() {
+      _showLoader = false;
+    });
 
-          if (response.statusCode == 200) {
-            var responseJson = json.decode(response.body);
-            print("HANDOVER SUCCESSFULLY");
-            showAlert(context,
-              title: new Title(color: Colors.blue, child: new Text("Success")),
-              content: new Text(responseJson["message"]),
-              cupertinoActions: <Widget>[
-                new CupertinoDialogAction(child: new Text("OK"),onPressed: () {
-                  _purposeController.clear();
-                  Navigator.pop(context);
-                  Navigator.pop(context);
-                  Navigator.pop(context);
-                },)
-              ],
-              materialActions: <Widget>[
-                new FlatButton(onPressed: () {
-                  _purposeController.clear();
-                  Navigator.pop(context);
-                  Navigator.pop(context);
-                  Navigator.pop(context);
-                },
-                    child: new Text("OK"))
-              ],
-            );
-          } else {
-            var errorJson= json.decode(response.body);
-            showAlert(context,
-              title: new Icon(
-                Icons.error,
-                color: Colors.red,
-              ),
-              content: new Text(errorJson["message"]),
-              cupertinoActions: <Widget>[
-                new CupertinoDialogAction(child: new Text("OK"),onPressed: () {
-                  Navigator.pop(context);
-                },)
-              ],
-              materialActions: <Widget>[
-                new FlatButton(onPressed: () {
-                  Navigator.pop(context);
-                },
-                    child: new Text("OK"))
-              ],
-            );
-            print(response.statusCode);
-          }
-        } catch (e) {
-          showAlert(
-            context,
-            title: new Icon(
-              Icons.error,
-              color: Colors.red,
-            ),
-            content: new Text('Connection time-out'),
-            cupertinoActions: <Widget>[
-              new CupertinoDialogAction(
-                child: new Text("OK"),
-                isDefaultAction: true,
+    try {
+      var response =
+      await http.put(url, body: json.encode(credentials), headers: {
+        "Authorization": authorizationToken,
+        "Content-Type": "application/json",
+      }).timeout(timeoutDuration);
+      print(response.body);
+      print(json.encode(credentials));
+
+      if (response.statusCode == 200) {
+        var responseJson = json.decode(response.body);
+        print("HANDOVER SUCCESSFULLY");
+        showAlert(
+          context,
+          title: new Title(color: Colors.blue, child: new Text("Success")),
+          content: new Text(responseJson["message"]),
+          cupertinoActions: <Widget>[
+            new CupertinoDialogAction(
+              child: new Text("OK"),
+              onPressed: () {
+                _purposeController.clear();
+                Navigator.pop(context);
+                Navigator.pop(context);
+                Navigator.pop(context);
+              },
+            )
+          ],
+          materialActions: <Widget>[
+            new FlatButton(
                 onPressed: () {
-                  Navigator.of(context).pop();
+                  _purposeController.clear();
+                  Navigator.pop(context);
+                  Navigator.pop(context);
+                  Navigator.pop(context);
                 },
-              ),
-            ],
-            materialActions: <Widget>[
-              new FlatButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: new Text("OK"))
-            ],
-          );
-        }
-
-        setState(() {
-          _showLoader = true;
-        });
-
-      }
-    } else {
-      showAlert(context,
+                child: new Text("OK"))
+          ],
+        );
+      } else {
+        var errorJson = json.decode(response.body);
+        showAlert(
+          context,
           title: new Icon(
             Icons.error,
             color: Colors.red,
           ),
-          content: new Text("All fields are required"),
-          materialActions: <Widget>[
+          content: new Text(errorJson["message"]),
+          cupertinoActions: <Widget>[
             new CupertinoDialogAction(
               child: new Text("OK"),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.pop(context);
               },
-              isDefaultAction: true,
-            ),
+            )
           ],
-          cupertinoActions: <Widget>[
+          materialActions: <Widget>[
             new FlatButton(
                 onPressed: () {
-                  Navigator.of(context).pop();
+                  Navigator.pop(context);
                 },
                 child: new Text("OK"))
-          ]);
+          ],
+        );
+        print(response.statusCode);
+      }
+    } catch (e) {
+      showAlert(
+        context,
+        title: new Icon(
+          Icons.error,
+          color: Colors.red,
+        ),
+        content: new Text('Connection time-out'),
+        cupertinoActions: <Widget>[
+          new CupertinoDialogAction(
+            child: new Text("OK"),
+            isDefaultAction: true,
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+        materialActions: <Widget>[
+          new FlatButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: new Text("OK"))
+        ],
+      );
     }
+
+    setState(() {
+      _showLoader = true;
+    });
   }
 
   @override
@@ -415,15 +400,19 @@ class _HandOverAssetState extends State<HandOverAsset> {
             key: scaffoldKey,
             appBar: new AppBar(
               title: new Text("HANDOVER ASSET"),
-              leading: new IconButton(icon: new Icon(Icons.keyboard_arrow_left,size: 40.0,), onPressed: () {
-                _purposeFieldFocus.unfocus();
-                _purposeController.clear();
-                Navigator.pop(context);
-              }),
+              leading: new IconButton(
+                  icon: new Icon(
+                    Icons.keyboard_arrow_left,
+                    size: 40.0,
+                  ),
+                  onPressed: () {
+                    _purposeFieldFocus.unfocus();
+                    _purposeController.clear();
+                    Navigator.pop(context);
+                  }),
               automaticallyImplyLeading: false,
             ),
             body: new SingleChildScrollView(
-
               child: new Container(
                   color: Colors.white,
                   //height: screenSize.height,
@@ -461,12 +450,12 @@ class _HandOverAssetState extends State<HandOverAsset> {
                                       height: 24.0,
                                     ),
                                     new Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      mainAxisAlignment:
+                                      MainAxisAlignment.center,
                                       mainAxisSize: MainAxisSize.min,
                                       children: <Widget>[
                                         new Flexible(
-                                          child:
-                                          new RadioListTile(
+                                          child: new RadioListTile(
                                             selected: false,
                                             value: "Admin",
                                             groupValue: _handOverAssetTo,
@@ -476,23 +465,26 @@ class _HandOverAssetState extends State<HandOverAsset> {
                                               });
                                               print("$value");
                                             },
-                                            title:
-                                            new Text("Admin"),
+                                            title: new Text("Admin"),
                                           ),
                                         ),
                                         new Flexible(
-                                          child:
-                                          new RadioListTile(
-                                            value: "Employee",
-                                            groupValue: _handOverAssetTo,
-                                            onChanged: (value) {
-                                              setState(() {
-                                                _handOverAssetTo = value;
-                                              });
-                                              print("$value");
-                                            },
-                                            title:
-                                            new Text("${widget.request.value.user.first_name} ${widget.request.value.user.last_name}" ?? "Emp"),
+                                          child: new Offstage(
+                                            offstage: empOffStage,
+                                            child: new RadioListTile(
+                                              value: "Employee",
+                                              groupValue: _handOverAssetTo,
+                                              onChanged: (value) {
+                                                setState(() {
+                                                  _handOverAssetTo = value;
+                                                });
+                                                print("$value");
+                                              },
+                                              title: new Text(
+                                                  "${widget.request?.value?.user
+                                                      ?.first_name}" ??
+                                                      "Emp"),
+                                            ),
                                           ),
                                         )
                                       ],
@@ -705,12 +697,13 @@ class _HandOverAssetState extends State<HandOverAsset> {
                             )),
                       ),
                       new Padding(
-                        padding:
-                        const EdgeInsets.only(top: 16.0, left: 64.0, right: 64.0),
+                        padding: const EdgeInsets.only(
+                            top: 16.0, left: 64.0, right: 64.0),
                         child: new Container(
                           decoration: new BoxDecoration(
                               borderRadius: new BorderRadius.circular(32.0),
-                              gradient: new LinearGradient(colors: getColors())),
+                              gradient:
+                              new LinearGradient(colors: getColors())),
                           child: new ButtonTheme(
                             minWidth: screenSize.width,
                             height: buttonHeight,
@@ -734,8 +727,16 @@ class _HandOverAssetState extends State<HandOverAsset> {
             ),
           ),
         ),
-        new Offstage(child: new Container( color: new Color.fromRGBO(1, 1, 1 , 0.3), child: new Center(child: new CircularProgressIndicator(backgroundColor: Colors.transparent,),)),
-          offstage: _showLoader,)
+        new Offstage(
+          child: new Container(
+              color: new Color.fromRGBO(1, 1, 1, 0.3),
+              child: new Center(
+                child: new CircularProgressIndicator(
+                  backgroundColor: Colors.transparent,
+                ),
+              )),
+          offstage: _showLoader,
+        )
       ],
     );
   }

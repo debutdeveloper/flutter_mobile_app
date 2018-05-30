@@ -1,15 +1,13 @@
 import 'dart:async';
-import 'package:debut_assets/handOverDevice.dart';
-import 'package:debut_assets/models/User.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:http/http.dart' as http;
-import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:debut_assets/models/Request.dart';
-import 'package:debut_assets/utils.dart';
 import 'dart:convert';
 
-import 'package:path/path.dart';
+import 'package:debut_assets/handOverDevice.dart';
+import 'package:debut_assets/models/Request.dart';
+import 'package:debut_assets/models/User.dart';
+import 'package:debut_assets/utils.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class MyAssets extends StatefulWidget {
   final CurrentUser user;
@@ -188,9 +186,18 @@ class MyAssetCard extends StatelessWidget {
       if (response.statusCode == 200) {
         print("response 200");
         var responseData = json.decode(response.body);
-        print("Next request response: ${responseData["request"]}");
-        Request nextRequest = new Request.fromJSON(responseData["request"]);
-        Navigator.push(context, new MaterialPageRoute(builder: (context)=>new HandOverAsset(request: nextRequest,)));
+        Map<String, dynamic> req = responseData["request"];
+        if (req.length > 0) {
+          print("Next request response: $req");
+          Request nextRequest = new Request.fromJSON(req);
+          Navigator.push(context, new MaterialPageRoute(
+              builder: (context) => new HandOverAsset(
+                asset: asset.value.currentAsset, request: nextRequest,)));
+        } else {
+          Navigator.push(context, new MaterialPageRoute(
+              builder: (context) => new HandOverAsset(
+                  asset: asset.value.currentAsset)));
+        }
       } else {
         print("response !200");
         var errorJson = json.decode(response.body);
@@ -227,7 +234,7 @@ class MyAssetCard extends StatelessWidget {
             Icons.error,
             color: Colors.red,
           ),
-          content: new Text('Connection time-out'),
+          content: new Text(e),
           cupertinoActions: <Widget>[
             new CupertinoDialogAction(
               child: new Text('OK'),

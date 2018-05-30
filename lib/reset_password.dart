@@ -2,9 +2,8 @@ import 'dart:convert';
 
 import 'package:debut_assets/assetlogin.dart';
 import 'package:debut_assets/models/User.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import 'utils.dart';
@@ -246,7 +245,7 @@ class ResetPasswordScreenState extends State<ResetPasswordScreen> {
                         child: new CircleAvatar(
                           backgroundColor: Colors.white,
                           radius: 48.0,
-                          backgroundImage: new AssetImage("assets/logo.jpg"),
+                          backgroundImage: new AssetImage("assets/logo.png"),
                         ),
                       )),
                   new Padding(

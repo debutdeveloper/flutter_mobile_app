@@ -100,6 +100,7 @@ class _LoginState extends State<Login> {
 
           var userJson = json.decode(body);
           var newUser = new CurrentUser.fromJSON(userJson);
+          authorizationToken = newUser.data.token;
           if (newUser.data.is_random_password) {
             Navigator.of(context).pushAndRemoveUntil(
               new MaterialPageRoute(
@@ -240,7 +241,7 @@ class _LoginState extends State<Login> {
                 child: new CircleAvatar(
               backgroundColor: Colors.white,
               radius: 48.0,
-              backgroundImage: new AssetImage("assets/logo.jpg"),
+                  backgroundImage: new AssetImage("assets/logo.png"),
             )),
             new Padding(
               padding: new EdgeInsets.all(16.0),
@@ -355,12 +356,12 @@ class _LoginState extends State<Login> {
 //"status": 1,
 //"message": "User created successfully",
 //"data": {
-//"user_id": "bbumv1uu9us7j0j8rjgg",
-//"first_name": "lakhwinder",
+//"user_id": "1wdcnc0jhsugy4s",
+//"first_name": "Lakhwinder",
 //"last_name": "Singh",
-//"email": "lakhwinder.singh@debutinfotech.com",
-//"generated_password": "bbumv1uu9us7j0j8rjg0",
-//"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImJidW12MXV1OXVzN2owajhyamdnIiwiZW1haWwiOiJsYWtod2luZGVyLnNpbmdoQGRlYnV0aW5mb3RlY2guY29tIiwiaWF0IjoxNTI2NTU4NTk5LCJleHAiOjE1MjY2NDQ5OTl9.pJlKzKEAFSprJ4V2EFUq4Aqvn5r6VP4Rq3Z-4ELJ6qc"
+//"email": "ls@gmail.com",
+//"generated_password": "1wdcnc0jhsugy4t",
+//"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjF3ZGNuYzBqaHN1Z3k0cyIsImVtYWlsIjoibHNAZ21haWwuY29tIiwiZmlyc3RfbmFtZSI6Ikxha2h3aW5kZXIiLCJsYXN0X25hbWUiOiJTaW5naCIsImlhdCI6MTUyNzY2ODY1MiwiZXhwIjoxNTI3NzU1MDUyfQ.VnyYLkzdGSZZ83IDeNNJKrkU2wIKiEL9bZWRISGOr74"
 //},
 //"event_status": "VALID"
 //}
