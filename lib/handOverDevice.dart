@@ -262,12 +262,12 @@ class _HandOverAssetState extends State<HandOverAsset> {
       if (_formKey.currentState.validate()) {
         final String url = handoverAPI;
         final credentials = {
-          "description": _purpose,
-          "start_time": "$_today $_startTimeString",
-          "end_time": "$_today $_endTimeString",
-          "priority": priority.round().toString(),
+          "description": widget.request.value.currentAsset.description,
+          "start_time": widget.request.value.start_timing,
+          "end_time": widget.request.value.start_timing,
+          "priority": widget.request.value.priority,
           "user": {
-            "id": widget.request.id,
+            "id": widget.request.value.user.id,
             "first_name": widget.request.value.user.first_name,
             "last_name": widget.request.value.user.last_name
           },

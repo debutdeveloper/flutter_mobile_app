@@ -221,6 +221,7 @@ class MyAssetCard extends StatelessWidget {
     }
     catch (e) {
       print("inside catch");
+      print("Exception: $e");
       showAlert(context,
           title: new Icon(
             Icons.error,
