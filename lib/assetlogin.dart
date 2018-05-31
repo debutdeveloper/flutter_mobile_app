@@ -5,7 +5,6 @@ import 'package:debut_assets/constants.dart';
 import 'package:debut_assets/forgot_password.dart';
 import 'package:debut_assets/models/User.dart';
 import 'package:debut_assets/reset_password.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -23,12 +22,10 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   static final TextEditingController _user = new TextEditingController();
   static final TextEditingController _pass = new TextEditingController();
-  FirebaseMessaging messaging;
 
   String username = _user.text;
   String password = _pass.text;
 
-  String deviceToken;
 
   bool rememberMe = false;
   bool errorsOnForm = false;
@@ -47,31 +44,7 @@ class _LoginState extends State<Login> {
     return true;
   }
 
-  @override
-  void initState() {
-    super.initState();
-    messaging = new FirebaseMessaging();
-    messaging.configure(
-      onMessage: (Map<String, dynamic> message) {
-        print(message);
-      },
-      onLaunch: (Map<String, dynamic> message) {
-        print(message);
-      },
-      onResume: (Map<String, dynamic> message) {
-        print(message);
-      },
-    );
 
-    messaging.requestNotificationPermissions(
-        const IosNotificationSettings(sound: true, badge: true, alert: true));
-    messaging.onIosSettingsRegistered
-        .listen((IosNotificationSettings settings) {});
-    messaging.getToken().then((token) {
-      print(token);
-      deviceToken = token;
-    });
-  }
 
   void _validate() async {
     if (_formKey.currentState.validate()) {

@@ -234,7 +234,7 @@ class MyAssetCard extends StatelessWidget {
             Icons.error,
             color: Colors.red,
           ),
-          content: new Text(e),
+          content: new Text("Error Occured"),
           cupertinoActions: <Widget>[
             new CupertinoDialogAction(
               child: new Text('OK'),
