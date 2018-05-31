@@ -20,7 +20,6 @@ class MyAssets extends StatefulWidget {
 class _CardViewState extends State<MyAssets> {
   List requestList;
   List<Request> listOfRequests = [];
-  BuildContext _context;
   bool _showLoader = true;
 
   Future getAssetHistory() async {
@@ -55,7 +54,7 @@ class _CardViewState extends State<MyAssets> {
       } else {
         print("response !200");
         var errorJson = json.decode(response.body);
-        showAlert(_context,
+        showAlert(context,
             title: new Icon(
               Icons.error,
               color: Colors.red,
@@ -65,7 +64,7 @@ class _CardViewState extends State<MyAssets> {
               new CupertinoDialogAction(
                 child: new Text('Ok'),
                 onPressed: () {
-                  Navigator.pop(_context);
+                  Navigator.pop(context);
                 },
                 isDefaultAction: true,
               ),
@@ -73,7 +72,7 @@ class _CardViewState extends State<MyAssets> {
             materialActions: <Widget>[
               new FlatButton(
                 onPressed: () {
-                  Navigator.pop(_context);
+                  Navigator.pop(context);
                 },
                 child: new Text('Ok'),
               )
@@ -82,7 +81,7 @@ class _CardViewState extends State<MyAssets> {
     }
     catch (e) {
       print("inside catch");
-      showAlert(_context,
+      showAlert(context,
           title: new Icon(
             Icons.error,
             color: Colors.red,
@@ -92,7 +91,7 @@ class _CardViewState extends State<MyAssets> {
             new CupertinoDialogAction(
               child: new Text('Ok'),
               onPressed: () {
-                Navigator.pop(_context);
+                Navigator.pop(context);
               },
               isDefaultAction: true,
             ),
@@ -100,7 +99,7 @@ class _CardViewState extends State<MyAssets> {
           materialActions: <Widget>[
             new FlatButton(
               onPressed: () {
-                Navigator.pop(_context);
+                Navigator.pop(context);
               },
               child: new Text('Ok'),
             )
@@ -176,9 +175,9 @@ class MyAssetCard extends StatelessWidget {
       "asset_id":asset.value.currentAsset.id,
     };
 
+
     try {
-      print("inside try");
-      print("asset-id:${asset.value.currentAsset.id}");
+      print("request : $credentials");
       var response = await http.post(url, body: credentials, headers: {
         "Authorization": user.data.token
       }).timeout(timeoutDuration);

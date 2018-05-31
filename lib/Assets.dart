@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:convert';
 
 import 'package:debut_assets/AssetCard.dart';
@@ -98,14 +97,12 @@ class _CardViewState extends State<Assets> {
 
   @override
   void initState() {
-    print("ASSETS INIT CALLED");
+    getAssetsList();
     super.initState();
-    this.getAssetsList();
   }
 
   @override
   Widget build(BuildContext context) {
-    print("ASSETS BUILD CALLED");
     return new Stack(
       children: <Widget>[
         new Container(

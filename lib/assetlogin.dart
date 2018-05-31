@@ -102,14 +102,14 @@ class _LoginState extends State<Login> {
                 child: new Text("OK"),
                 isDefaultAction: true,
                 onPressed: () {
-                  Navigator.of(context).pop();
+                  Navigator.pop(context);
                 },
               ),
             ],
             materialActions: <Widget>[
               new FlatButton(
                   onPressed: () {
-                    Navigator.of(context).pop();
+                    Navigator.pop(context);
                   },
                   child: new Text("OK"))
             ],
@@ -130,14 +130,14 @@ class _LoginState extends State<Login> {
               child: new Text("OK"),
               isDefaultAction: true,
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.pop(context);
               },
             ),
           ],
           materialActions: <Widget>[
             new FlatButton(
                 onPressed: () {
-                  Navigator.of(context).pop();
+                  Navigator.pop(context);
                 },
                 child: new Text("OK"))
           ],
@@ -175,7 +175,6 @@ class _LoginState extends State<Login> {
   @override
   Widget build(BuildContext context) {
     _context = context;
-
     var screenSize = MediaQuery.of(context).size;
 
     return new Stack(

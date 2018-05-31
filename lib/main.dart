@@ -48,7 +48,7 @@ class Splash extends StatefulWidget {
   _SplashState createState() => new _SplashState();
 }
 
-class _SplashState extends State<Splash> with SingleTickerProviderStateMixin {
+class _SplashState extends State<Splash> {
   BuildContext buildContext;
 
   @override
@@ -67,6 +67,7 @@ class _SplashState extends State<Splash> with SingleTickerProviderStateMixin {
           var jsonStringFromLocal = prefs.getString(Constants.USER);
           var jsonDecoded = json.decode(jsonStringFromLocal);
           CurrentUser user = new CurrentUser.fromJSON(jsonDecoded);
+          authorizationToken = user.data.token;
           Navigator.of(buildContext).pushAndRemoveUntil(
             new MaterialPageRoute(
                 builder: (context) => new Dashboard(user)),

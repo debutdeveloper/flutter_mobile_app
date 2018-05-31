@@ -78,7 +78,7 @@ showAlert(BuildContext context,
           barrierDismissible: false);
 }
 
-Duration timeoutDuration = new Duration(seconds: 60);
+Duration timeoutDuration = new Duration(seconds: 30);
 double reducedHeight = 25.0;
 double buttonHeight = 48.0;
 
