@@ -4,16 +4,17 @@ import 'package:debut_assets/models/User.dart';
 import 'package:debut_assets/utils.dart';
 import 'package:flutter/material.dart';
 
-
 class AssetCard extends StatelessWidget {
 //  final Map cardModel;
   final Asset asset;
   final CurrentUser user;
 
-  AssetCard({@required this.asset,@required this.user});
+  AssetCard({@required this.asset, @required this.user});
 
   Widget get spacer {
-    return const SizedBox(height: 16.0,);
+    return const SizedBox(
+      height: 16.0,
+    );
   }
 
   @override
@@ -48,8 +49,7 @@ class AssetCard extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                new Padding(
-                    padding: const EdgeInsets.only(top: 8.0)),
+                new Padding(padding: const EdgeInsets.only(top: 8.0)),
                 new Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -69,9 +69,7 @@ class AssetCard extends StatelessWidget {
                                     fontWeight: FontWeight.bold)),
                           ],
                         ),
-                        new Padding(
-                            padding:
-                            const EdgeInsets.only(top: 4.0)),
+                        new Padding(padding: const EdgeInsets.only(top: 4.0)),
                         new Row(
                           children: <Widget>[
                             new Text('Status - ',
@@ -107,9 +105,7 @@ class AssetCard extends StatelessWidget {
                                     fontWeight: FontWeight.bold)),
                           ],
                         ),
-                        new Padding(
-                            padding:
-                            const EdgeInsets.only(top: 4.0)),
+                        new Padding(padding: const EdgeInsets.only(top: 4.0)),
                         new Row(
                           children: <Widget>[
                             new Text('Available - ',
@@ -147,7 +143,11 @@ class AssetCard extends StatelessWidget {
             color: Colors.blueAccent,
             onPressed: () {
               Navigator.of(context).push(new MaterialPageRoute(
-                  builder: (context) => new AssetHistory(user: user,asset: asset,)));
+                  builder: (context) =>
+                  new AssetHistory(
+                    user: user,
+                    asset: asset,
+                  )));
             },
             textColor: Colors.white,
           ),

@@ -16,89 +16,78 @@ class Assets extends StatefulWidget {
 }
 
 class _CardViewState extends State<Assets> {
-
   bool _showLoader = true;
-  List assetsList;
   List<Asset> listOfAssets = [];
 
   getAssetsList() async {
     print("GETASSETSLIST CALLED");
-    print("Getting list");
 
     setState(() {
       _showLoader = false;
     });
 
     try {
-      var response = await http.get(assetsAPI,
-          headers: {"Authorization": widget.user.data.token}).timeout(timeoutDuration);
+      var response = await http.get(assetsAPI, headers: {
+        "Authorization": authorizationToken
+      }).timeout(timeoutDuration);
       if (response.statusCode == 200) {
-        var listData = json.decode(response.body);
+        var body = json.decode(response.body);
+        print(body);
+        var listData = body;
+        var assetsListJSON = listData["assets"];
+        List<Asset> assetsList = [];
+        print("Asset list : ${assetsListJSON.length}");
+        for (var assetJSON in assetsListJSON) {
+          Asset asset = new Asset.fromJSON(assetJSON);
+          assetsList.add(asset);
+        }
+        listOfAssets.clear();
         setState(() {
-          assetsList = listData["assets"];
-          print("Asset list : ${assetsList.length}");
-          for (var assetJSON in assetsList) {
-            print("Asset json: ${assetJSON}");
-
-            Asset asset = new Asset.fromJSON(assetJSON);
-            listOfAssets.add(asset);
-          }
+          listOfAssets = assetsList;
         });
       } else {
-        showAlert(context,
-          title: new Icon(Icons.error,color: Colors.red,),
-          content: new Text("Assets not found!"),
-          cupertinoActions: <Widget>[
-            new CupertinoDialogAction(
-              child: new Text("OK"),
-              isDefaultAction: true,
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            )
-          ],
-          materialActions: <Widget>[
-            new FlatButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: new Text("OK"))
-          ],
-        );
+        alert("Assets not found!", true);
       }
     } catch (e) {
-      showAlert(context,
-        title: new Icon(Icons.error,color: Colors.red,),
-        content: new Text("Connection time-out"),
-        cupertinoActions: <Widget>[
-          new CupertinoDialogAction(
-            child: new Text("OK"),
-            isDefaultAction: true,
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          )
-        ],
-        materialActions: <Widget>[
-          new FlatButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: new Text("OK"))
-        ],
-      );
+      alert("Connection time-out", true);
     }
 
     setState(() {
       _showLoader = true;
     });
+  }
 
+  void alert(String message, bool isFail) {
+    showAlert(
+      context,
+      title: new Icon(
+        isFail ? Icons.error : Icons.tag_faces,
+        color: isFail ? Colors.red : Colors.green,
+      ),
+      content: new Text(message),
+      cupertinoActions: <Widget>[
+        new CupertinoDialogAction(
+          child: new Text("OK"),
+          isDefaultAction: true,
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        )
+      ],
+      materialActions: <Widget>[
+        new FlatButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: new Text("OK"))
+      ],
+    );
   }
 
   @override
   void initState() {
-    getAssetsList();
     super.initState();
+    getAssetsList();
   }
 
   @override
@@ -106,28 +95,31 @@ class _CardViewState extends State<Assets> {
     return new Stack(
       children: <Widget>[
         new Container(
-            color: Colors.white,
-            child: getListView()
-        ),
-        new Offstage(child: new Container( color: new Color.fromRGBO(1, 1, 1 , 0.3), child: new Center(child: new CircularProgressIndicator(backgroundColor: Colors.transparent,),)),
-          offstage: _showLoader,)
+            color: Colors.black12,
+            child: listOfAssets.length > 0
+                ? getListView()
+                : getNoDataView("No Asset Found")),
+        new Offstage(
+          child: new Container(
+              color: new Color.fromRGBO(1, 1, 1, 0.3),
+              child: new Center(
+                child: new CircularProgressIndicator(
+                  backgroundColor: Colors.transparent,
+                ),
+              )),
+          offstage: _showLoader,
+        )
       ],
     );
   }
 
   Widget getListView() {
     return new ListView.builder(
-
       padding: new EdgeInsets.all(8.0),
       itemBuilder: (buildContext, index) {
-        return new Column(
-          children: <Widget>[
-            new AssetCard(
-            asset: listOfAssets[index],
-              user: widget.user,
-            ),
-            const SizedBox(height: 12.0,),
-          ],
+        return new AssetCard(
+          asset: listOfAssets[index],
+          user: widget.user,
         );
       },
       itemCount: listOfAssets == null ? 0 : listOfAssets.length,

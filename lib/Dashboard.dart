@@ -22,7 +22,6 @@ class Dashboard extends StatefulWidget {
 class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
   TabController tabController;
 
-
   String _allAssets = "All Assets";
   String _myAssets = "My Assets";
   String _notifications = "Notifications";
@@ -71,17 +70,15 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
     return new Scaffold(
       appBar: new AppBar(
         title: new Text(_appTitle),
-        flexibleSpace: new Container(
-          child: getDecorationBox(),
-        ),
+        backgroundColor: new Color.fromRGBO(23, 88, 232, 1.0),
       ),
       drawer: new Drawer(
         child: new ListView(
           children: <Widget>[
             new UserAccountsDrawerHeader(
               decoration: new BoxDecoration(gradient: getGradient()),
-              accountName:
-              new Text(widget.user.data.first_name + " " +
+              accountName: new Text(widget.user.data.first_name +
+                  " " +
                   widget.user.data.last_name),
               accountEmail: new Text(widget.user.data.email),
               currentAccountPicture: new CircleAvatar(

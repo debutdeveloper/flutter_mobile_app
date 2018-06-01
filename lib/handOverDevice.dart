@@ -18,14 +18,13 @@ class HandOverAsset extends StatefulWidget {
 }
 
 class _HandOverAssetState extends State<HandOverAsset> {
-
   bool _showLoader = true;
   bool empOffStage = true;
   int _handOverAssetTo = 1;
 
   @override
   void initState() {
-    if (widget.request != null) {
+    if (widget.request != null && widget.request.id != null) {
       empOffStage = false;
     }
   }
@@ -45,6 +44,7 @@ class _HandOverAssetState extends State<HandOverAsset> {
         "last_name": widget.request?.value?.user?.last_name
       },
       "request_id": widget?.request?.id,
+      "old_request_id": widget?.request?.old_request_id,
       "asset": {
         "id": widget.asset.id,
         "description": widget.asset.description,
@@ -70,81 +70,20 @@ class _HandOverAssetState extends State<HandOverAsset> {
       if (response.statusCode == 200) {
         var responseJson = json.decode(response.body);
         print("HANDOVER SUCCESSFULLY");
-        showAlert(
-          context,
-          title: new Title(color: Colors.blue, child: const Text("Success")),
-          content: const Text("Success"),
-          cupertinoActions: <Widget>[
-            new CupertinoDialogAction(
-              child: new Text("OK"),
-              onPressed: () {
-
-                Navigator.pop(context);
-                Navigator.pop(context);
-
-              },
-            )
-          ],
-          materialActions: <Widget>[
-            new FlatButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  Navigator.pop(context);
-                },
-                child: new Text("OK"))
-          ],
-        );
+        alert("Success", false, () {
+          Navigator.of(context).pop();
+          Navigator.of(context).pop();
+        });
       } else {
         var errorJson = json.decode(response.body);
-        showAlert(
-          context,
-          title: new Icon(
-            Icons.error,
-            color: Colors.red,
-          ),
-          content: new Text(errorJson["message"]),
-          cupertinoActions: <Widget>[
-            new CupertinoDialogAction(
-              child: new Text("OK"),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            )
-          ],
-          materialActions: <Widget>[
-            new FlatButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: new Text("OK"))
-          ],
-        );
+        alert(errorJson["message"], true, () {
+          Navigator.of(context).pop();
+        });
       }
     } catch (e) {
-      showAlert(
-        context,
-        title: new Icon(
-          Icons.error,
-          color: Colors.red,
-        ),
-        content: new Text('Connection time-out'),
-        cupertinoActions: <Widget>[
-          new CupertinoDialogAction(
-            child: new Text("OK"),
-            isDefaultAction: true,
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-        ],
-        materialActions: <Widget>[
-          new FlatButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: new Text("OK"))
-        ],
-      );
+      alert('Connection time-out', true, () {
+        Navigator.of(context).pop();
+      });
     }
 
     setState(() {
@@ -209,8 +148,7 @@ class _HandOverAssetState extends State<HandOverAsset> {
                                     height: 24.0,
                                   ),
                                   new Column(
-                                    mainAxisAlignment:
-                                    MainAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.center,
                                     mainAxisSize: MainAxisSize.min,
                                     children: <Widget>[
                                       new Flexible(
@@ -259,8 +197,7 @@ class _HandOverAssetState extends State<HandOverAsset> {
                       child: new Container(
                         decoration: new BoxDecoration(
                             borderRadius: new BorderRadius.circular(32.0),
-                            gradient:
-                            new LinearGradient(colors: getColors())),
+                            gradient: new LinearGradient(colors: getColors())),
                         child: new ButtonTheme(
                           minWidth: screenSize.width,
                           height: buttonHeight,
@@ -297,5 +234,32 @@ class _HandOverAssetState extends State<HandOverAsset> {
     );
   }
 
-
+  void alert(String message, bool isFail, f) {
+    showAlert(
+      context,
+      title: new Icon(
+        isFail ? Icons.error : Icons.tag_faces,
+        color: isFail ? Colors.red : Colors.green,
+      ),
+      content: new Text(message),
+      cupertinoActions: <Widget>[
+        new CupertinoDialogAction(
+          child: new Text("OK"),
+          isDefaultAction: true,
+          onPressed: () {
+            f();
+          },
+        ),
+      ],
+      materialActions: <Widget>[
+        new FlatButton(
+            onPressed: () {
+              f();
+            },
+            child: new Text("OK"))
+      ],
+    );
+  }
 }
+
+typedef void f();

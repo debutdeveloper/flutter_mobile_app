@@ -5,8 +5,8 @@ class CurrentAsset {
   String id;
   String name;
 
-  CurrentAsset.fromJSON(Map<String,dynamic> json){
-    description  = json["description"];
+  CurrentAsset.fromJSON(Map<String, dynamic> json) {
+    description = json["description"];
     id = json["id"];
     name = json["name"];
   }
@@ -17,10 +17,10 @@ class User {
   String id;
   String last_name;
 
-  User.fromJSON(Map<String,dynamic> json){
+  User.fromJSON(Map<String, dynamic> json) {
     first_name = json["first_name"];
-    id= json["id"];
-    last_name= json["last_name"];
+    id = json["id"];
+    last_name = json["last_name"];
   }
 }
 
@@ -54,7 +54,10 @@ class Value {
 
 class Request {
   String id;
+  String old_request_id;
   Value value;
+
+  Request(this.old_request_id);
 
   Request.fromJSON(Map<String, dynamic> json) {
     id = json["id"];

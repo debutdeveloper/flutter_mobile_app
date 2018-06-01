@@ -1,12 +1,12 @@
 import 'dart:async';
-
-import 'package:flutter/cupertino.dart';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
+
 import 'package:debut_assets/models/Asset.dart';
 import 'package:debut_assets/models/User.dart';
 import 'package:debut_assets/utils.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
 class RequestAsset extends StatefulWidget {
@@ -64,7 +64,6 @@ class _State extends State<RequestAsset> {
             _endTimeLabel = "Select date";
           });
         } else {
-          print("failed 1");
           showAlert(context,
               title: new Icon(
                 Icons.error,
@@ -255,14 +254,28 @@ class _State extends State<RequestAsset> {
   }
 
   _requestForAsset() async {
-    print("Date : ${new DateFormat("dd-MM-yyyy").format(new DateTime.now())}");
+    print(
+        "Date : ${new DateFormat("dd-MM-yyyy").format(
+            new DateTime.now().toUtc())}");
     if (isStartTimeSelected && isEndTimeSelected) {
       if (_formKey.currentState.validate()) {
+        var utcStartTime = new DateFormat("dd/MM/yyyy HH:mm:ss")
+            .parse(_today + " " + _startTimeString)
+            .toUtc();
+        var utcEndTime = new DateFormat("dd/MM/yyyy HH:mm:ss")
+            .parse(_today + " " + _endTimeString)
+            .toUtc();
+        var formatter = new DateFormat("dd/MM/yyyy HH:mm:ss");
+        var formattedStartDate =
+        formatter.format(utcStartTime).toString().substring(0, 19);
+        var formattedEndDate =
+        formatter.format(utcEndTime).toString().substring(0, 19);
+
         final String requestURL = requestAPI;
         final credentials = {
           "description": _purpose,
-          "start_time": "$_today $_startTimeString",
-          "end_time": "$_today $_endTimeString",
+          "start_time": formattedStartDate,
+          "end_time": formattedEndDate,
           "priority": priority.round().toString(),
           "user": {
             "id": widget.user.id,
@@ -270,67 +283,77 @@ class _State extends State<RequestAsset> {
             "last_name": widget.user.data.last_name
           },
           "asset": {
-            "id": widget.asset.record.category.id,
+            "id": widget.asset.key,
             "name": widget.asset.record.name,
             "description": widget.asset.record.description
           }
         };
+
+        print(json.encode(credentials));
 
         setState(() {
           _showLoader = false;
         });
 
         try {
-          var response = await http.post(requestURL,
-              body: json.encode(credentials),
-              headers: {
-                "Authorization": widget.user.data.token,
-                "Content-Type" : "application/json",
-              }).timeout(timeoutDuration);
+          var response = await http
+              .post(requestURL, body: json.encode(credentials), headers: {
+            "Authorization": widget.user.data.token,
+            "Content-Type": "application/json",
+          }).timeout(timeoutDuration);
           print(response.body);
-          print(json.encode(credentials));
 
           if (response.statusCode == 200) {
             var responseJson = json.decode(response.body);
             print("SUCCESSFULLY REQUEST SENT");
-            showAlert(context,
+            showAlert(
+              context,
               title: new Title(color: Colors.blue, child: new Text("Success")),
               content: new Text(responseJson["message"]),
               cupertinoActions: <Widget>[
-                new CupertinoDialogAction(child: new Text("OK"),onPressed: () {
-                  _purposeController.clear();
-                  Navigator.pop(context);
-                  Navigator.pop(context);
-                  Navigator.pop(context);
-                  },)
+                new CupertinoDialogAction(
+                  child: new Text("OK"),
+                  onPressed: () {
+                    _purposeController.clear();
+                    Navigator.pop(context);
+                    Navigator.pop(context);
+                    Navigator.pop(context);
+                  },
+                )
               ],
               materialActions: <Widget>[
-                new FlatButton(onPressed: () {
-                  _purposeController.clear();
-                  Navigator.pop(context);
-                  Navigator.pop(context);
-                  Navigator.pop(context);
-                  },
+                new FlatButton(
+                    onPressed: () {
+                      _purposeController.clear();
+                      Navigator.pop(context);
+                      Navigator.pop(context);
+                      Navigator.pop(context);
+                    },
                     child: new Text("OK"))
               ],
             );
           } else {
-            var errorJson= json.decode(response.body);
-            showAlert(context,
+            var errorJson = json.decode(response.body);
+            showAlert(
+              context,
               title: new Icon(
                 Icons.error,
                 color: Colors.red,
               ),
               content: new Text(errorJson["message"]),
               cupertinoActions: <Widget>[
-                new CupertinoDialogAction(child: new Text("OK"),onPressed: () {
-                  Navigator.pop(context);
-                },)
+                new CupertinoDialogAction(
+                  child: new Text("OK"),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                )
               ],
               materialActions: <Widget>[
-                new FlatButton(onPressed: () {
-                  Navigator.pop(context);
-                },
+                new FlatButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
                     child: new Text("OK"))
               ],
             );
@@ -366,7 +389,6 @@ class _State extends State<RequestAsset> {
         setState(() {
           _showLoader = true;
         });
-
       }
     } else {
       showAlert(context,
@@ -413,15 +435,19 @@ class _State extends State<RequestAsset> {
             key: scaffoldKey,
             appBar: new AppBar(
               title: new Text("Request For Asset"),
-              leading: new IconButton(icon: new Icon(Icons.keyboard_arrow_left,size: 40.0,), onPressed: () {
-                _purposeFieldFocus.unfocus();
-                _purposeController.clear();
-                Navigator.pop(context);
-              }),
+              leading: new IconButton(
+                  icon: new Icon(
+                    Icons.keyboard_arrow_left,
+                    size: 40.0,
+                  ),
+                  onPressed: () {
+                    _purposeFieldFocus.unfocus();
+                    _purposeController.clear();
+                    Navigator.pop(context);
+                  }),
               automaticallyImplyLeading: false,
             ),
             body: new SingleChildScrollView(
-
               child: new Container(
                   color: Colors.white,
                   height: screenSize.height,
@@ -488,8 +514,10 @@ class _State extends State<RequestAsset> {
                                               new Text(
                                                 _startTimeLabel,
                                                 style: new TextStyle(
-                                                    fontSize: timePickerFieldFontSize,
-                                                    fontWeight: FontWeight.bold),
+                                                    fontSize:
+                                                    timePickerFieldFontSize,
+                                                    fontWeight:
+                                                    FontWeight.bold),
                                               )
                                             ],
                                           ),
@@ -529,8 +557,10 @@ class _State extends State<RequestAsset> {
                                               new Text(
                                                 _endTimeLabel,
                                                 style: new TextStyle(
-                                                    fontSize: timePickerFieldFontSize,
-                                                    fontWeight: FontWeight.bold),
+                                                    fontSize:
+                                                    timePickerFieldFontSize,
+                                                    fontWeight:
+                                                    FontWeight.bold),
                                               )
                                             ],
                                           ),
@@ -565,13 +595,16 @@ class _State extends State<RequestAsset> {
                                           controller: _purposeController,
                                           validator: _validatePurpose,
                                           focusNode: _purposeFieldFocus,
-                                          onFieldSubmitted: (value) { _purposeFieldFocus.unfocus(); },
+                                          onFieldSubmitted: (value) {
+                                            _purposeFieldFocus.unfocus();
+                                          },
                                           decoration: new InputDecoration(
                                             hintText: "Purpose",
                                             labelText: "Purpose",
                                             border: new OutlineInputBorder(
                                                 borderRadius:
-                                                new BorderRadius.circular(12.0)),
+                                                new BorderRadius.circular(
+                                                    12.0)),
                                           )),
                                     ),
                                     new SizedBox(
@@ -595,7 +628,8 @@ class _State extends State<RequestAsset> {
                                             new Text(
                                               "Priority",
                                               style: new TextStyle(
-                                                  fontSize: sliderFieldFontSize),
+                                                  fontSize:
+                                                  sliderFieldFontSize),
                                             ),
                                             new SizedBox(
                                               width: 12.0,
@@ -609,7 +643,8 @@ class _State extends State<RequestAsset> {
                                                     label: setSliderLabel(),
                                                     value: priority,
                                                     onChanged: (value) {
-                                                      _purposeFieldFocus.unfocus();
+                                                      _purposeFieldFocus
+                                                          .unfocus();
                                                       setState(() {
                                                         priority = value;
                                                       });
@@ -624,7 +659,8 @@ class _State extends State<RequestAsset> {
                                                       new Text(
                                                         "Low",
                                                         style: new TextStyle(
-                                                            color: priority == 0.0
+                                                            color: priority ==
+                                                                0.0
                                                                 ? Colors.blue
                                                                 : Colors.black,
                                                             fontSize:
@@ -633,7 +669,8 @@ class _State extends State<RequestAsset> {
                                                       new Text(
                                                         "Medium",
                                                         style: new TextStyle(
-                                                            color: priority == 1.0
+                                                            color: priority ==
+                                                                1.0
                                                                 ? Colors.blue
                                                                 : Colors.black,
                                                             fontSize:
@@ -642,7 +679,8 @@ class _State extends State<RequestAsset> {
                                                       new Text(
                                                         "High",
                                                         style: new TextStyle(
-                                                            color: priority == 2.0
+                                                            color: priority ==
+                                                                2.0
                                                                 ? Colors.blue
                                                                 : Colors.black,
                                                             fontSize:
@@ -663,12 +701,13 @@ class _State extends State<RequestAsset> {
                             )),
                       ),
                       new Padding(
-                        padding:
-                        const EdgeInsets.only(top: 16.0, left: 64.0, right: 64.0),
+                        padding: const EdgeInsets.only(
+                            top: 16.0, left: 64.0, right: 64.0),
                         child: new Container(
                           decoration: new BoxDecoration(
                               borderRadius: new BorderRadius.circular(32.0),
-                              gradient: new LinearGradient(colors: getColors())),
+                              gradient:
+                              new LinearGradient(colors: getColors())),
                           child: new ButtonTheme(
                             minWidth: screenSize.width,
                             height: buttonHeight,
@@ -692,8 +731,16 @@ class _State extends State<RequestAsset> {
             ),
           ),
         ),
-        new Offstage(child: new Container( color: new Color.fromRGBO(1, 1, 1 , 0.3), child: new Center(child: new CircularProgressIndicator(backgroundColor: Colors.transparent,),)),
-          offstage: _showLoader,)
+        new Offstage(
+          child: new Container(
+              color: new Color.fromRGBO(1, 1, 1, 0.3),
+              child: new Center(
+                child: new CircularProgressIndicator(
+                  backgroundColor: Colors.transparent,
+                ),
+              )),
+          offstage: _showLoader,
+        )
       ],
     );
   }

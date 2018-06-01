@@ -30,7 +30,7 @@ String myAssetsAPI = "$baseURL/request/approved-requests";
 String nextRequestAPI = "$baseURL/request/next-request/";
 String handoverAPI = "$baseURL/request/handover";
 String notificationAPI = "$baseURL/notifications";
-
+String handoverActionAPI = "$baseURL/request/handover-action";
 
 getColors() {
   return [
@@ -48,6 +48,25 @@ getGradient() {
   return new LinearGradient(colors: getColors());
 }
 
+Widget getNoDataView(String message) {
+  return new Container(
+    color: Colors.black12,
+    child: new Center(
+        child: new Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            new Icon(
+              Icons.sentiment_dissatisfied,
+              size: 64.0,
+            ),
+            new Text(
+              message,
+              style: new TextStyle(fontSize: 32.0),
+            ),
+          ],
+        )),
+  );
+}
 // Custom Alert
 
 showAlert(BuildContext context,
@@ -93,6 +112,13 @@ bool isEmailValid(String email) {
 String getDate(String date) {
   String dateString = '';
   var tempDate = new DateFormat.yMMMd().format(DateTime.parse(date));
+  dateString = tempDate.toString();
+  return dateString;
+}
+
+String getDateForNotifications(String date) {
+  String dateString = '';
+  var tempDate = new DateFormat.jm().format(DateTime.parse(date));
   dateString = tempDate.toString();
   return dateString;
 }

@@ -23,139 +23,124 @@ class _CardViewState extends State<MyAssets> {
   bool _showLoader = true;
 
   Future getAssetHistory() async {
-    print("getting asset history called");
-    print("Getting Asset History");
-
     final assetHistoryURL = myAssetsAPI;
-
     setState(() {
-      print("Show loader");
       _showLoader = false;
     });
 
     try {
-      print("inside try");
       var response = await http.get(assetHistoryURL, headers: {
-        "Authorization": widget.user.data.token
+        "Authorization": authorizationToken
       }).timeout(timeoutDuration);
 
       if (response.statusCode == 200) {
-        print("response 200");
+        print(response.body);
+        var assetHistoryJson = json.decode(response.body);
+        var requestListJson = assetHistoryJson["requests"];
+        List<Request> listOfRequests = [];
+        for (var requestJSON in requestListJson) {
+          Request request = new Request.fromJSON(requestJSON);
+          listOfRequests.add(request);
+        }
+        this.listOfRequests.clear();
         setState(() {
-          var assetHistoryJson = json.decode(response.body);
-          requestList = assetHistoryJson["requests"];
-          print('REQUESTLIST LENGTH :${requestList.length}');
-          for (var requestJSON in requestList) {
-            print("Request json: $requestJSON");
-            Request request = new Request.fromJSON(requestJSON);
-            listOfRequests.add(request);
-          }
+          this.listOfRequests = listOfRequests;
         });
       } else {
         print("response !200");
         var errorJson = json.decode(response.body);
-        showAlert(context,
-            title: new Icon(
-              Icons.error,
-              color: Colors.red,
-            ),
-            content: new Text(errorJson["message"]),
-            cupertinoActions: <Widget>[
-              new CupertinoDialogAction(
-                child: new Text('Ok'),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                isDefaultAction: true,
-              ),
-            ],
-            materialActions: <Widget>[
-              new FlatButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: new Text('Ok'),
-              )
-            ]);
+        alert(errorJson["message"], true);
       }
-    }
-    catch (e) {
+    } catch (e) {
       print("inside catch");
-      showAlert(context,
-          title: new Icon(
-            Icons.error,
-            color: Colors.red,
-          ),
-          content: new Text('Connection time-out'),
-          cupertinoActions: <Widget>[
-            new CupertinoDialogAction(
-              child: new Text('Ok'),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              isDefaultAction: true,
-            ),
-          ],
-          materialActions: <Widget>[
-            new FlatButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: new Text('Ok'),
-            )
-          ]);
+      alert('Connection time-out', true);
     }
 
     setState(() {
       print("Hide loader");
       _showLoader = true;
     });
+  }
 
+  void alert(String message, bool isFail) {
+    showAlert(
+      context,
+      title: new Icon(
+        isFail ? Icons.error : Icons.tag_faces,
+        color: isFail ? Colors.red : Colors.green,
+      ),
+      content: new Text(message),
+      cupertinoActions: <Widget>[
+        new CupertinoDialogAction(
+          child: new Text("OK"),
+          isDefaultAction: true,
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+      ],
+      materialActions: <Widget>[
+        new FlatButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: new Text("OK"))
+      ],
+    );
   }
 
   @override
   void initState() {
-    print("ASSET DETAILS INIT CALLED");
     super.initState();
     getAssetHistory();
   }
 
+  Widget getMyAssetList() {
+    return new ListView.builder(
+      padding: const EdgeInsets.all(8.0),
+      itemBuilder: (BuildContext context, int index) {
+        return new Column(
+          children: <Widget>[
+            new MyAssetCard(
+              asset: listOfRequests[index],
+              user: widget.user,
+            ),
+            const SizedBox(
+              height: 12.0,
+            ),
+          ],
+        );
+      },
+      itemCount: listOfRequests.isEmpty ? 1 : listOfRequests.length,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return new Stack(
-      children: <Widget>[
-        new ListView.builder(
-          padding: const EdgeInsets.all(8.0),
-          itemBuilder: (BuildContext context, int index) {
-            return listOfRequests.isEmpty
-                ? new Center(
-              child: new Text(
-                'No Assets found',
-                style: new TextStyle(color: Colors.grey,
-                    fontSize: 16.0
-                ),
-              ),
-            )
-                : new Column(
-              children: <Widget>[
-                new MyAssetCard(asset: listOfRequests[index],user: widget.user,),
-                const SizedBox(
-                  height: 12.0,
-                ),
-              ],
-            );
-          },
-          itemCount: listOfRequests.isEmpty ? 1 : listOfRequests.length,
-        ),
-        new Offstage(child: new Container( color: new Color.fromRGBO(1, 1, 1 , 0.3), child: new Center(child: new CircularProgressIndicator(backgroundColor: Colors.transparent,),)),
-          offstage: _showLoader,)
-      ],
+    return new Container(
+      color: Colors.black12,
+      child: new Stack(
+        children: <Widget>[
+          listOfRequests.length > 0
+              ? getMyAssetList()
+              : getNoDataView("No Asset Found"),
+          new Offstage(
+            child: new Container(
+                color: new Color.fromRGBO(1, 1, 1, 0.3),
+                child: new Center(
+                  child: new CircularProgressIndicator(
+                    backgroundColor: Colors.transparent,
+                  ),
+                )),
+            offstage: _showLoader,
+          )
+        ],
+      ),
     );
   }
 }
 
 class MyAssetCard extends StatelessWidget {
-
   final Request asset;
   final CurrentUser user;
   MyAssetCard({@required this.asset, @required this.user});
@@ -172,30 +157,43 @@ class MyAssetCard extends StatelessWidget {
   _handoverToNextRequest(BuildContext context) async {
     String url = nextRequestAPI;
     var credentials = {
-      "asset_id":asset.value.currentAsset.id,
+      "asset_id": asset.value.currentAsset.id,
     };
-
 
     try {
       print("request : $credentials");
       var response = await http.post(url, body: credentials, headers: {
-        "Authorization": user.data.token
+        "Authorization": authorizationToken
       }).timeout(timeoutDuration);
 
+      print(authorizationToken);
       if (response.statusCode == 200) {
         print("response 200");
+        print(response.body);
         var responseData = json.decode(response.body);
         Map<String, dynamic> req = responseData["request"];
         if (req.length > 0) {
           print("Next request response: $req");
           Request nextRequest = new Request.fromJSON(req);
-          Navigator.push(context, new MaterialPageRoute(
-              builder: (context) => new HandOverAsset(
-                asset: asset.value.currentAsset, request: nextRequest,)));
+          nextRequest.old_request_id = asset.id;
+          Navigator.push(
+              context,
+              new MaterialPageRoute(
+                  builder: (context) =>
+                  new HandOverAsset(
+                    asset: asset.value.currentAsset,
+                    request: nextRequest,
+                  )));
         } else {
-          Navigator.push(context, new MaterialPageRoute(
-              builder: (context) => new HandOverAsset(
-                  asset: asset.value.currentAsset)));
+          Request oldRequestId = new Request(asset.id);
+          Navigator.push(
+              context,
+              new MaterialPageRoute(
+                  builder: (context) =>
+                  new HandOverAsset(
+                    asset: asset.value.currentAsset,
+                    request: oldRequestId,
+                  )));
         }
       } else {
         print("response !200");
@@ -224,8 +222,7 @@ class MyAssetCard extends StatelessWidget {
               )
             ]);
       }
-    }
-    catch (e) {
+    } catch (e) {
       print("inside catch");
       print("Exception: $e");
       showAlert(context,
@@ -262,11 +259,9 @@ class MyAssetCard extends StatelessWidget {
           borderRadius: new BorderRadius.all(new Radius.circular(8.0))),
       child: new Padding(
         padding: const EdgeInsets.only(top: 8.0),
-        child: new Row(
-          children: <Widget>[
+        child: new Row(children: <Widget>[
           new Padding(
-            padding:
-                const EdgeInsets.only(left: 12.0, top: 4.0, right: 12.0),
+            padding: const EdgeInsets.only(left: 12.0, top: 4.0, right: 12.0),
             child: new CircleAvatar(
               minRadius: 36.0,
               child: new Text(
@@ -331,8 +326,7 @@ class MyAssetCard extends StatelessWidget {
                                     fontWeight: FontWeight.bold)),
                           ],
                         ),
-                        new Padding(
-                            padding: const EdgeInsets.only(top: 2.0)),
+                        new Padding(padding: const EdgeInsets.only(top: 2.0)),
                         new Row(
                           children: <Widget>[
                             new Text('Return time -',
@@ -347,8 +341,7 @@ class MyAssetCard extends StatelessWidget {
                                 )),
                           ],
                         ),
-                        new Padding(
-                            padding: const EdgeInsets.only(top: 2.0)),
+                        new Padding(padding: const EdgeInsets.only(top: 2.0)),
                         new Row(
                           children: <Widget>[
                             new Text('Retrun date - ',
@@ -362,13 +355,11 @@ class MyAssetCard extends StatelessWidget {
                                     fontWeight: FontWeight.w400)),
                           ],
                         ),
-                        new Padding(
-                            padding: const EdgeInsets.only(top: 16.0)),
+                        new Padding(padding: const EdgeInsets.only(top: 16.0)),
                       ],
                     ),
                     new Padding(
-                      padding:
-                          const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
+                      padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
                     )
                   ],
                 ),
