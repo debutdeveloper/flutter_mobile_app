@@ -26,7 +26,6 @@ class _AssetHistoryState extends State<AssetHistory> {
   bool _showLoader = true;
 
   Future getAssetHistory() async {
-    print("getting asset history called");
     print("Getting Asset History");
 
     final assetHistoryURL = assetDetailsAPI + widget.asset.key;
@@ -37,7 +36,7 @@ class _AssetHistoryState extends State<AssetHistory> {
 
     try {
       var response = await http.get(assetHistoryURL, headers: {
-        "Authorization": widget.user.data.token
+        "Authorization": authorizationToken
       }).timeout(timeoutDuration);
 
       if (response.statusCode == 200) {
@@ -53,54 +52,10 @@ class _AssetHistoryState extends State<AssetHistory> {
         });
       } else {
         var errorJson = json.decode(response.body);
-        showAlert(_context,
-            title: new Icon(
-              Icons.error,
-              color: Colors.red,
-            ),
-            content: new Text(errorJson["message"]),
-            cupertinoActions: <Widget>[
-              new CupertinoDialogAction(
-                child: new Text('Ok'),
-                onPressed: () {
-                  Navigator.pop(_context);
-                },
-                isDefaultAction: true,
-              ),
-            ],
-            materialActions: <Widget>[
-              new FlatButton(
-                onPressed: () {
-                  Navigator.pop(_context);
-                },
-                child: new Text('Ok'),
-              )
-            ]);
+        showOkAlert(_context, errorJson["message"], true);
       }
     } catch (e) {
-      showAlert(_context,
-          title: new Icon(
-            Icons.error,
-            color: Colors.red,
-          ),
-          content: new Text('Connection time-out'),
-          cupertinoActions: <Widget>[
-            new CupertinoDialogAction(
-              child: new Text('Ok'),
-              onPressed: () {
-                Navigator.pop(_context);
-              },
-              isDefaultAction: true,
-            ),
-          ],
-          materialActions: <Widget>[
-            new FlatButton(
-              onPressed: () {
-                Navigator.pop(_context);
-              },
-              child: new Text('Ok'),
-            )
-          ]);
+      showOkAlert(_context, "Connection time-out", true);
     }
 
     setState(() {

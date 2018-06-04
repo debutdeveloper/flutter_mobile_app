@@ -5,6 +5,7 @@ import 'package:debut_assets/models/User.dart';
 import 'package:debut_assets/reset_password.dart';
 import 'package:debut_assets/utils.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'assetlogin.dart';
 
@@ -110,6 +111,9 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
             new Divider(),
             new InkWell(
               onTap: () {
+                SharedPreferences.getInstance().then((prefs) {
+                  prefs.clear();
+                });
                 Navigator.of(context).pushAndRemoveUntil(
                   new MaterialPageRoute(builder: (context) => new Login()),
                       (Route<dynamic> newRoute) => false,
@@ -136,6 +140,7 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
         ),
         tabs: <Widget>[
           new Tab(
+
             icon: new Icon(Icons.devices),
             text: _allAssets,
           ),
@@ -152,7 +157,7 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
       ),
       body: new TabBarView(
         //key: _tabBarKey,
-        physics: new NeverScrollableScrollPhysics(),
+//        physics: new NeverScrollableScrollPhysics(),
         children: [
           new Assets(user: widget.user),
           new MyAssets(widget.user),

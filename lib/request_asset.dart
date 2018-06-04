@@ -48,202 +48,50 @@ class _State extends State<RequestAsset> {
 
   String _today = new DateFormat("dd/MM/yyyy").format(new DateTime.now());
 
-  Future startTimePicker(BuildContext context) async {
+  Future startTimePicker(BuildContext context, bool isStart) async {
+    final TimeOfDay currentTime = new TimeOfDay.now();
     final TimeOfDay time = await showTimePicker(
-        context: context, initialTime: new TimeOfDay.now());
-
+        context: context, initialTime: currentTime);
     /// Check selected date
     if (time != null) {
-      if (time.hour == new TimeOfDay.now().hour) {
-        if (time.minute > new TimeOfDay.now().minute) {
+      if (time.hour == currentTime.hour && time.minute > currentTime.minute) {
           setState(() {
             _startTimeLabel = time.format(context);
             _startTimeString = '${time.toString().substring(10,15)}:00';
             _actualStartTime = time;
-            isStartTimeSelected = true;
-            _endTimeLabel = "Select date";
           });
-        } else {
-          showAlert(context,
-              title: new Icon(
-                Icons.error,
-                color: Colors.red,
-              ),
-              content: new Text("Selected time is not valid"),
-              materialActions: <Widget>[
-                new CupertinoDialogAction(
-                  child: new Text("OK"),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  isDefaultAction: true,
-                ),
-              ],
-              cupertinoActions: <Widget>[
-                new FlatButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: new Text("OK"))
-              ]);
-        }
-      } else if (time.hour > new TimeOfDay.now().hour) {
-        setState(() {
-          _startTimeLabel = time.format(context);
-          _startTimeString = '${time.toString().substring(10,15)}:00';
-          _actualStartTime = time;
-          isStartTimeSelected = true;
-          isEndTimeSelected = false;
-          _endTimeLabel = "Select time";
-        });
       } else {
-        print("failed 2");
-        showAlert(context,
-            title: new Icon(
-              Icons.error,
-              color: Colors.red,
-            ),
-            content: new Text("Selected time is not valid"),
-            materialActions: <Widget>[
-              new CupertinoDialogAction(
-                child: new Text("OK"),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                isDefaultAction: true,
-              ),
-            ],
-            cupertinoActions: <Widget>[
-              new FlatButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: new Text("OK"))
-            ]);
+        alert("Please select valid time");
       }
-    } else {
-      print('failed 3');
-      showAlert(context,
-          title: new Icon(
-            Icons.error,
-            color: Colors.red,
-          ),
-          content: new Text("Please select time"),
-          materialActions: <Widget>[
-            new CupertinoDialogAction(
-              child: new Text("OK"),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              isDefaultAction: true,
-            ),
-          ],
-          cupertinoActions: <Widget>[
-            new FlatButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: new Text("OK"))
-          ]);
     }
   }
 
-  Future endTimePicker(BuildContext context) async {
-    final TimeOfDay time = await showTimePicker(
-        context: context, initialTime: new TimeOfDay.now());
 
-    /// Check selected date
-    //   && (time.hour >= _actualStartTime.hour && time.minute > _actualStartTime.minute)
-    if (time != null) {
-      if (time.hour == _actualStartTime.hour) {
-        if (time.minute > _actualStartTime.minute) {
-          setState(() {
-            _endTimeLabel = time.format(context);
-            isEndTimeSelected = true;
-            _endTimeString = '${time.toString().substring(10,15)}:00';
-          });
-        } else {
-          print("Failed 1");
-          showAlert(context,
-              title: new Icon(
-                Icons.error,
-                color: Colors.red,
-              ),
-              content: new Text("Selected time is not valid"),
-              materialActions: <Widget>[
-                new CupertinoDialogAction(
-                  child: new Text("OK"),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  isDefaultAction: true,
-                ),
-              ],
-              cupertinoActions: <Widget>[
-                new FlatButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: new Text("OK"))
-              ]);
-        }
-      } else if (time.hour > _actualStartTime.hour) {
-        setState(() {
-          _endTimeLabel = time.format(context);
-          isEndTimeSelected = true;
-          _endTimeString = '${time.toString().substring(10,15)}:00';
-        });
-      } else {
-        print("Failed 2");
-        showAlert(context,
-            title: new Icon(
-              Icons.error,
-              color: Colors.red,
-            ),
-            content: new Text("Selected time is not valid"),
-            materialActions: <Widget>[
-              new CupertinoDialogAction(
-                child: new Text("OK"),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                isDefaultAction: true,
-              ),
-            ],
-            cupertinoActions: <Widget>[
-              new FlatButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: new Text("OK"))
-            ]);
-      }
-    } else {
-      print('failed 3');
-      showAlert(context,
-          title: new Icon(
-            Icons.error,
-            color: Colors.red,
+  alert(String message) {
+    showAlert(context,
+        title: new Icon(
+          Icons.error,
+          color: Colors.red,
+        ),
+        content: new Text(message),
+        materialActions: <Widget>[
+          new CupertinoDialogAction(
+            child: new Text("OK"),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            isDefaultAction: true,
           ),
-          content: new Text("Please select time"),
-          materialActions: <Widget>[
-            new CupertinoDialogAction(
-              child: new Text("OK"),
+        ],
+        cupertinoActions: <Widget>[
+          new FlatButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              isDefaultAction: true,
-            ),
-          ],
-          cupertinoActions: <Widget>[
-            new FlatButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: new Text("OK"))
-          ]);
-    }
+              child: new Text("OK"))
+        ]);
   }
+
 
   String _validatePurpose(String value) {
     if (value.isEmpty) {
@@ -298,7 +146,7 @@ class _State extends State<RequestAsset> {
         try {
           var response = await http
               .post(requestURL, body: json.encode(credentials), headers: {
-            "Authorization": widget.user.data.token,
+            "Authorization": authorizationToken,
             "Content-Type": "application/json",
           }).timeout(timeoutDuration);
           print(response.body);
@@ -314,7 +162,6 @@ class _State extends State<RequestAsset> {
                 new CupertinoDialogAction(
                   child: new Text("OK"),
                   onPressed: () {
-                    _purposeController.clear();
                     Navigator.pop(context);
                     Navigator.pop(context);
                     Navigator.pop(context);
@@ -324,7 +171,6 @@ class _State extends State<RequestAsset> {
               materialActions: <Widget>[
                 new FlatButton(
                     onPressed: () {
-                      _purposeController.clear();
                       Navigator.pop(context);
                       Navigator.pop(context);
                       Navigator.pop(context);
@@ -487,7 +333,7 @@ class _State extends State<RequestAsset> {
                                     new GestureDetector(
                                       onTap: () {
                                         _purposeFieldFocus.unfocus();
-                                        startTimePicker(context);
+                                        startTimePicker(context, true);
                                       },
                                       child: new Container(
                                         padding: const EdgeInsets.symmetric(
@@ -530,7 +376,7 @@ class _State extends State<RequestAsset> {
                                     new GestureDetector(
                                       onTap: () {
                                         _purposeFieldFocus.unfocus();
-                                        endTimePicker(context);
+                                        startTimePicker(context, false);
                                       },
                                       child: new Container(
                                         height: 48.0,

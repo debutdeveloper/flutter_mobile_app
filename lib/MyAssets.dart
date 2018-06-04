@@ -23,16 +23,15 @@ class _CardViewState extends State<MyAssets> {
   bool _showLoader = true;
 
   Future getAssetHistory() async {
-    final assetHistoryURL = myAssetsAPI;
+
     setState(() {
       _showLoader = false;
     });
 
     try {
-      var response = await http.get(assetHistoryURL, headers: {
+      var response = await http.get(myAssetsAPI, headers: {
         "Authorization": authorizationToken
       }).timeout(timeoutDuration);
-
       if (response.statusCode == 200) {
         print(response.body);
         var assetHistoryJson = json.decode(response.body);

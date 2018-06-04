@@ -19,7 +19,7 @@ double timePickerFieldFontSize = 16.0;
 double sliderFieldFontSize = 16.0;
 
 /// API URLs
-String baseURL = "http://192.168.0.18:3001";
+String baseURL = "http://assetchainapi.debutinfotech.com:3001";
 String loginAPI = "$baseURL/user/login";
 String forgetPasswordAPI = "$baseURL/user/forget-password";
 String resetPasswordAPI = "$baseURL/user/change-password";
@@ -86,15 +86,64 @@ showAlert(BuildContext context,
     actions: materialActions,
   );
 
+  showDialog(
+      context: context,
+      builder: (BuildContext context) => materialAlert,
+      barrierDismissible: false);
+}
+
+showOkAlert(BuildContext context, String message, bool isFail) {
+  print("showOkAlert Shown");
+  BuildContext local;
+  var cupertinoAlert = new CupertinoAlertDialog(
+
+    content: new Text(message),
+    title: new Icon(
+      isFail ? Icons.error : Icons.tag_faces,
+      color: isFail ? Colors.red : Colors.green,
+    ),
+    actions: <Widget>[
+      new CupertinoDialogAction(
+        child: new Text('Ok'),
+        onPressed: () {
+          Navigator.of(local).pop();
+        },
+        isDefaultAction: true,
+      ),
+    ],
+  );
+
+  var materialAlert = new AlertDialog(
+    title: new Icon(
+      isFail ? Icons.error : Icons.tag_faces,
+      color: isFail ? Colors.red : Colors.green,
+    ),
+    content: new Text(message),
+    actions: <Widget>[
+      new FlatButton(
+        onPressed: () {
+          Navigator.of(local).pop();
+        },
+        child: new Text('Ok'),
+      )
+    ],
+  );
+
   defaultTargetPlatform == TargetPlatform.iOS
       ? showDialog(
-          context: context,
-          builder: (BuildContext context) => cupertinoAlert,
-          barrierDismissible: false)
+      context: context,
+      builder: (BuildContext context) {
+        local = context;
+        return cupertinoAlert;
+      },
+      barrierDismissible: false)
       : showDialog(
-          context: context,
-          builder: (BuildContext context) => materialAlert,
-          barrierDismissible: false);
+      context: context,
+      builder: (BuildContext context) {
+        local = context;
+        return materialAlert;
+      },
+      barrierDismissible: false);
 }
 
 Duration timeoutDuration = new Duration(seconds: 30);

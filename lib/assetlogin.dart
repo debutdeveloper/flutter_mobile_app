@@ -90,66 +90,19 @@ class _LoginState extends State<Login> {
           }
         } else {
           var errorJson = json.decode(response.body);
-          showAlert(
-            _context,
-            title: new Icon(
-              Icons.error,
-              color: Colors.red,
-            ),
-            content: new Text(errorJson["message"]),
-            cupertinoActions: <Widget>[
-              new CupertinoDialogAction(
-                child: new Text("OK"),
-                isDefaultAction: true,
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              ),
-            ],
-            materialActions: <Widget>[
-              new FlatButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: new Text("OK"))
-            ],
-          );
+          showOkAlert(_context, errorJson["message"], true);
         }
       } catch (e) {
         print(e);
-
-        showAlert(
-          _context,
-          title: new Icon(
-            Icons.error,
-            color: Colors.red,
-          ),
-          content: new Text('Connection time-out'),
-          cupertinoActions: <Widget>[
-            new CupertinoDialogAction(
-              child: new Text("OK"),
-              isDefaultAction: true,
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            ),
-          ],
-          materialActions: <Widget>[
-            new FlatButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: new Text("OK"))
-          ],
-        );
+        showOkAlert(_context, 'Connection time-out', true);
       }
 
       setState(() {
         _showLoader = true;
-//        _pass.clear();
       });
     }
   }
+
 
   String _validateEmail(String value) {
     if (value.isEmpty || !isEmailValid(value)) {
@@ -157,7 +110,6 @@ class _LoginState extends State<Login> {
       return 'Please enter a valid email.';
     }
     errorsOnForm = false;
-    FocusScope.of(context).requestFocus(_password);
     username = value;
     return null;
   }
