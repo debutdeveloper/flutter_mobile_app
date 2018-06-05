@@ -50,7 +50,7 @@ class _LoginState extends State<Login> {
     if (_formKey.currentState.validate()) {
       final String loginURL = loginAPI;
       final credentials = {
-        "email": username.toLowerCase(),
+        "email": username.toLowerCase().trim(),
         "password": password,
         "device_token": deviceToken
       };

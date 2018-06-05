@@ -58,33 +58,6 @@ class _CardViewState extends State<Assets> {
     });
   }
 
-  void alert(String message, bool isFail) {
-    showAlert(
-      context,
-      title: new Icon(
-        isFail ? Icons.error : Icons.tag_faces,
-        color: isFail ? Colors.red : Colors.green,
-      ),
-      content: new Text(message),
-      cupertinoActions: <Widget>[
-        new CupertinoDialogAction(
-          child: new Text("OK"),
-          isDefaultAction: true,
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        )
-      ],
-      materialActions: <Widget>[
-        new FlatButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            child: new Text("OK"))
-      ],
-    );
-  }
-
   @override
   void initState() {
     super.initState();
@@ -125,7 +98,7 @@ class _CardViewState extends State<Assets> {
               asset: listOfAssets[index],
               user: widget.user,
             ),
-            new SizedBox(height: 8.0,)
+            new SizedBox(height: 12.0,)
           ],
         );
       },

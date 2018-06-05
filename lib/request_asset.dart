@@ -5,6 +5,7 @@ import 'package:debut_assets/models/Asset.dart';
 import 'package:debut_assets/models/User.dart';
 import 'package:debut_assets/utils.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
@@ -61,37 +62,10 @@ class _State extends State<RequestAsset> {
             _actualStartTime = time;
           });
       } else {
-        alert("Please select valid time");
+        showOkAlert(context, "Please select valid time", true);
       }
     }
   }
-
-
-  alert(String message) {
-    showAlert(context,
-        title: new Icon(
-          Icons.error,
-          color: Colors.red,
-        ),
-        content: new Text(message),
-        materialActions: <Widget>[
-          new CupertinoDialogAction(
-            child: new Text("OK"),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            isDefaultAction: true,
-          ),
-        ],
-        cupertinoActions: <Widget>[
-          new FlatButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: new Text("OK"))
-        ]);
-  }
-
 
   String _validatePurpose(String value) {
     if (value.isEmpty) {
@@ -154,82 +128,62 @@ class _State extends State<RequestAsset> {
           if (response.statusCode == 200) {
             var responseJson = json.decode(response.body);
             print("SUCCESSFULLY REQUEST SENT");
-            showAlert(
-              context,
-              title: new Title(color: Colors.blue, child: new Text("Success")),
-              content: new Text(responseJson["message"]),
-              cupertinoActions: <Widget>[
-                new CupertinoDialogAction(
-                  child: new Text("OK"),
-                  onPressed: () {
-                    Navigator.pop(context);
-                    Navigator.pop(context);
-                    Navigator.pop(context);
-                  },
-                )
-              ],
-              materialActions: <Widget>[
-                new FlatButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                      Navigator.pop(context);
-                      Navigator.pop(context);
-                    },
-                    child: new Text("OK"))
-              ],
-            );
+
+            defaultTargetPlatform == TargetPlatform.iOS
+                ? showDialog(
+                context: context,
+                builder: (context) {
+                  return new CupertinoAlertDialog(
+                    title: new Icon(
+                      Icons.check_circle,
+                      color: Colors.green,
+                    ),
+                    content: new Text(responseJson["message"]),
+                    actions: <Widget>[
+                      new CupertinoDialogAction(
+                        isDefaultAction: true,
+                        onPressed: () {
+                          Navigator.pop(context);
+                          Navigator.pop(context);
+                          Navigator.pop(context);
+                        },
+                        child: new Text(
+                          "OK",
+                          style: new TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ],
+                  );
+                })
+                : showDialog(
+                context: context,
+                builder: (context) {
+                  return new AlertDialog(
+                    title: new Icon(
+                      Icons.check_circle,
+                      color: Colors.green,
+                    ),
+                    content: new Text(responseJson["message"]),
+                    actions: <Widget>[
+                      new FlatButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                          Navigator.pop(context);
+                          Navigator.pop(context);
+                        },
+                        child: new Text("OK"),
+                      )
+                    ],
+                  );
+                });
+
           } else {
             var errorJson = json.decode(response.body);
-            showAlert(
-              context,
-              title: new Icon(
-                Icons.error,
-                color: Colors.red,
-              ),
-              content: new Text(errorJson["message"]),
-              cupertinoActions: <Widget>[
-                new CupertinoDialogAction(
-                  child: new Text("OK"),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                )
-              ],
-              materialActions: <Widget>[
-                new FlatButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: new Text("OK"))
-              ],
-            );
+            showOkAlert(context, errorJson["message"], true);
             print(response.statusCode);
           }
         } catch (e) {
-          showAlert(
-            context,
-            title: new Icon(
-              Icons.error,
-              color: Colors.red,
-            ),
-            content: new Text('Connection time-out'),
-            cupertinoActions: <Widget>[
-              new CupertinoDialogAction(
-                child: new Text("OK"),
-                isDefaultAction: true,
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
-            materialActions: <Widget>[
-              new FlatButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: new Text("OK"))
-            ],
-          );
+          showOkAlert(context, "Connection time-out", true);
         }
 
         setState(() {
@@ -237,28 +191,7 @@ class _State extends State<RequestAsset> {
         });
       }
     } else {
-      showAlert(context,
-          title: new Icon(
-            Icons.error,
-            color: Colors.red,
-          ),
-          content: new Text("All fields are required"),
-          materialActions: <Widget>[
-            new CupertinoDialogAction(
-              child: new Text("OK"),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              isDefaultAction: true,
-            ),
-          ],
-          cupertinoActions: <Widget>[
-            new FlatButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: new Text("OK"))
-          ]);
+      showOkAlert(context, "All fields are required", true);
     }
   }
 
@@ -273,10 +206,6 @@ class _State extends State<RequestAsset> {
             print("on tap called");
             _purposeFieldFocus.unfocus();
           },
-//          onVerticalDragDown: (value) {
-//            print("on drag called");
-//            _purposeFieldFocus.unfocus();
-//          },
           child: new Scaffold(
             key: scaffoldKey,
             appBar: new AppBar(
@@ -434,25 +363,22 @@ class _State extends State<RequestAsset> {
                                     new SizedBox(
                                       height: 8.0,
                                     ),
-                                    new EnsureVisibleWhenFocused(
-                                      focusNode: _purposeFieldFocus,
-                                      child: new TextFormField(
-                                          maxLines: 5,
-                                          controller: _purposeController,
-                                          validator: _validatePurpose,
-                                          focusNode: _purposeFieldFocus,
-                                          onFieldSubmitted: (value) {
-                                            _purposeFieldFocus.unfocus();
-                                          },
-                                          decoration: new InputDecoration(
-                                            hintText: "Purpose",
-                                            labelText: "Purpose",
-                                            border: new OutlineInputBorder(
-                                                borderRadius:
-                                                new BorderRadius.circular(
-                                                    12.0)),
-                                          )),
-                                    ),
+                                    new TextFormField(
+                                        maxLines: 5,
+                                        controller: _purposeController,
+                                        validator: _validatePurpose,
+                                        focusNode: _purposeFieldFocus,
+                                        onFieldSubmitted: (value) {
+                                          _purposeFieldFocus.unfocus();
+                                        },
+                                        decoration: new InputDecoration(
+                                          hintText: "Purpose",
+                                          labelText: "Purpose",
+                                          border: new OutlineInputBorder(
+                                              borderRadius:
+                                              new BorderRadius.circular(
+                                                  12.0)),
+                                        )),
                                     new SizedBox(
                                       height: 8.0,
                                     ),

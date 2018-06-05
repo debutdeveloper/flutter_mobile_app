@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:debut_assets/assetlogin.dart';
 import 'package:debut_assets/models/User.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -65,104 +66,67 @@ class ResetPasswordScreenState extends State<ResetPasswordScreen> {
         if (response.statusCode == 200) {
           print("Password changed successfully");
           var responseJson = json.decode(response.body);
-          showAlert(
-            context,
-            title: new Title(color: Colors.blue, child: new Text("Success")),
-            content: new Text(responseJson["message"]),
-            cupertinoActions: <Widget>[
-              new CupertinoDialogAction(
-                child: new Text("Login"),
-                isDefaultAction: true,
-                onPressed: () {
-                  Navigator.of(context).pushAndRemoveUntil(
-                        new MaterialPageRoute(
-                            builder: (context) => new Login()),
-                        (Route<dynamic> newRoute) => false,
-                      );
-                },
-              ),
-            ],
-            materialActions: <Widget>[
-              new FlatButton(
-                  onPressed: () {
-                    Navigator.of(context).pushAndRemoveUntil(
+
+          defaultTargetPlatform == TargetPlatform.iOS
+              ? showDialog(
+              context: context,
+              builder: (context) {
+                return new CupertinoAlertDialog(
+                  title: new Icon(
+                    Icons.check_circle,
+                    color: Colors.green,
+                  ),
+                  content: new Text(responseJson["message"]),
+                  actions: <Widget>[
+                    new CupertinoDialogAction(
+                      isDefaultAction: true,
+                      onPressed: () {
+                        Navigator.of(context).pushAndRemoveUntil(
                           new MaterialPageRoute(
                               builder: (context) => new Login()),
-                          (Route<dynamic> newRoute) => false,
+                              (Route<dynamic> newRoute) => false,
                         );
-                  },
-                  child: new Text("Login"))
-            ],
-          );
+                      },
+                      child: new Text(
+                        "OK",
+                        style: new TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ],
+                );
+              })
+              : showDialog(
+              context: context,
+              builder: (context) {
+                return new AlertDialog(
+                  title: new Icon(
+                    Icons.check_circle,
+                    color: Colors.green,
+                  ),
+                  content: new Text(responseJson["message"]),
+                  actions: <Widget>[
+                    new FlatButton(
+                      onPressed: () {
+                        Navigator.of(context).pushAndRemoveUntil(
+                          new MaterialPageRoute(
+                              builder: (context) => new Login()),
+                              (Route<dynamic> newRoute) => false,
+                        );
+                      },
+                      child: new Text("OK"),
+                    )
+                  ],
+                );
+              });
+
         } else {
           print("Error occured");
           var errorJson = json.decode(response.body);
-          showAlert(
-            context,
-            title: new Icon(
-              Icons.warning,
-              color: Colors.red,
-            ),
-            content: new Text(errorJson["message"]),
-            cupertinoActions: <Widget>[
-              new CupertinoDialogAction(
-                child: new Text("OK"),
-                isDefaultAction: true,
-                onPressed: () {
-                  _oldPasswordController.clear();
-                  _newPasswordController.clear();
-                  _confirmPasswordController.clear();
-                  Navigator.of(context).pop();
-                  FocusScope.of(context).requestFocus(_oldPasswordField);
-                },
-              ),
-            ],
-            materialActions: <Widget>[
-              new FlatButton(
-                  onPressed: () {
-                    _oldPasswordController.clear();
-                    _newPasswordController.clear();
-                    _confirmPasswordController.clear();
-                    Navigator.of(context).pop();
-                    FocusScope.of(context).requestFocus(_oldPasswordField);
-                  },
-                  child: new Text("OK"))
-            ],
-          );
+          showOkAlert(context, errorJson["message"], true);
         }
       } catch (e) {
         print("Exception occured");
-        showAlert(context,
-            title: new Icon(
-              Icons.warning,
-              color: Colors.red,
-            ),
-            content: new Text('Connection time-out'),
-          cupertinoActions: <Widget>[
-            new CupertinoDialogAction(
-              child: new Text("OK"),
-              isDefaultAction: true,
-              onPressed: () {
-                _oldPasswordController.clear();
-                _newPasswordController.clear();
-                _confirmPasswordController.clear();
-                Navigator.of(context).pop();
-                FocusScope.of(context).requestFocus(_oldPasswordField);
-              },
-            ),
-          ],
-          materialActions: <Widget>[
-            new FlatButton(
-                onPressed: () {
-                  _oldPasswordController.clear();
-                  _newPasswordController.clear();
-                  _confirmPasswordController.clear();
-                  Navigator.of(context).pop();
-                  FocusScope.of(context).requestFocus(_oldPasswordField);
-                },
-                child: new Text("OK"))
-          ],
-        );
+        showOkAlert(context, "Connection time-out", true);
       }
 
       setState(() {
@@ -267,67 +231,58 @@ class ResetPasswordScreenState extends State<ResetPasswordScreen> {
                             new Padding(
                               padding:
                               const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 0.0),
-                              child: new EnsureVisibleWhenFocused(
-                                focusNode: _oldPasswordField,
-                                child: new TextFormField(
-                                    controller: _oldPasswordController,
-                                    validator: _validateOldPassword,
-                                    obscureText: true,
-                                    focusNode: _oldPasswordField,
-                                    onFieldSubmitted: (value) {
-                                      FocusScope
-                                          .of(context)
-                                          .requestFocus(_newPasswordField);
-                                    },
-                                    decoration: new InputDecoration(
-                                      hintText: "Old Password",
-                                      labelText: "Old Password",
-                                      border: new UnderlineInputBorder(),
-                                      suffixIcon: new Icon(Icons.lock),
-                                    )),
-                              ),
-                            ),
-                            new SizedBox(height: 16.0),
-                            new Padding(
-                              padding:
-                              const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 0.0),
-                              child: new EnsureVisibleWhenFocused(
-                                focusNode: _newPasswordField,
-                                child: new TextFormField(
-                                    controller: _newPasswordController,
-                                    validator: _validateNewPassword,
-                                    focusNode: _newPasswordField,
-                                    obscureText: true,
-                                    onFieldSubmitted: (value) {
-                                      FocusScope
-                                          .of(context)
-                                          .requestFocus(_confirmNewPasswordField);
-                                    },
-                                    decoration: new InputDecoration(
-                                      hintText: "New Password",
-                                      labelText: "New Password",
-                                      border: new UnderlineInputBorder(),
-                                      suffixIcon: new Icon(Icons.lock),
-                                    )),
-                              ),
-                            ),
-                            new SizedBox(height: 16.0),
-                            new Padding(
-                              padding:
-                              const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 0.0),
-                              child: new EnsureVisibleWhenFocused(
-                                focusNode: _confirmNewPasswordField,
-                                child: new TextFormField(
-                                  controller: _confirmPasswordController,
-                                  validator: _validateConfirmPassword,
-                                  focusNode: _confirmNewPasswordField,
+                              child: new TextFormField(
+                                  controller: _oldPasswordController,
+                                  validator: _validateOldPassword,
                                   obscureText: true,
+                                  focusNode: _oldPasswordField,
+                                  onFieldSubmitted: (value) {
+                                    FocusScope
+                                        .of(context)
+                                        .requestFocus(_newPasswordField);
+                                  },
                                   decoration: new InputDecoration(
-                                    hintText: "Confirm Password",
-                                    labelText: "Confirm Password",
+                                    hintText: "Old Password",
+                                    labelText: "Old Password",
                                     border: new UnderlineInputBorder(),
                                     suffixIcon: new Icon(Icons.lock),
-                                  ),
+                                  )),
+                            ),
+                            new SizedBox(height: 16.0),
+                            new Padding(
+                              padding:
+                              const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 0.0),
+                              child: new TextFormField(
+                                  controller: _newPasswordController,
+                                  validator: _validateNewPassword,
+                                  focusNode: _newPasswordField,
+                                  obscureText: true,
+                                  onFieldSubmitted: (value) {
+                                    FocusScope
+                                        .of(context)
+                                        .requestFocus(_confirmNewPasswordField);
+                                  },
+                                  decoration: new InputDecoration(
+                                    hintText: "New Password",
+                                    labelText: "New Password",
+                                    border: new UnderlineInputBorder(),
+                                    suffixIcon: new Icon(Icons.lock),
+                                  )),
+                            ),
+                            new SizedBox(height: 16.0),
+                            new Padding(
+                              padding:
+                              const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 0.0),
+                              child: new TextFormField(
+                                controller: _confirmPasswordController,
+                                validator: _validateConfirmPassword,
+                                focusNode: _confirmNewPasswordField,
+                                obscureText: true,
+                                decoration: new InputDecoration(
+                                  hintText: "Confirm Password",
+                                  labelText: "Confirm Password",
+                                  border: new UnderlineInputBorder(),
+                                  suffixIcon: new Icon(Icons.lock),
                                 ),
                               ),
                             ),

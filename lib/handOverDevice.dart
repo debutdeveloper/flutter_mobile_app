@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:debut_assets/models/Request.dart';
 import 'package:debut_assets/utils.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
@@ -27,6 +28,7 @@ class _HandOverAssetState extends State<HandOverAsset> {
     if (widget.request != null && widget.request.id != null) {
       empOffStage = false;
     }
+    super.initState();
   }
 
   _handoverAsset(BuildContext context) async {
@@ -69,10 +71,53 @@ class _HandOverAssetState extends State<HandOverAsset> {
       print(response.body);
       if (response.statusCode == 200) {
         print("HANDOVER SUCCESSFULLY");
-        alert("Success", false, () {
-          Navigator.of(context).pop();
-          Navigator.of(context).pop();
-        });
+
+        defaultTargetPlatform == TargetPlatform.iOS
+            ? showDialog(
+            context: context,
+            builder: (context) {
+              return new CupertinoAlertDialog(
+                title: new Icon(
+                  Icons.check_circle,
+                  color: Colors.green,
+                ),
+                content: new Text("Success"),
+                actions: <Widget>[
+                  new CupertinoDialogAction(
+                    isDefaultAction: true,
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      Navigator.of(context).pop();
+                    },
+                    child: new Text(
+                      "OK",
+                      style: new TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ],
+              );
+            })
+            : showDialog(
+            context: context,
+            builder: (context) {
+              return new AlertDialog(
+                title: new Icon(
+                  Icons.check_circle,
+                  color: Colors.green,
+                ),
+                content: new Text("Success"),
+                actions: <Widget>[
+                  new FlatButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      Navigator.of(context).pop();
+                    },
+                    child: new Text("OK"),
+                  )
+                ],
+              );
+            });
+
       } else {
         var errorJson = json.decode(response.body);
 
@@ -229,33 +274,4 @@ class _HandOverAssetState extends State<HandOverAsset> {
       ],
     );
   }
-
-  void alert(String message, bool isFail, f) {
-    showAlert(
-      context,
-      title: new Icon(
-        isFail ? Icons.error : Icons.tag_faces,
-        color: isFail ? Colors.red : Colors.green,
-      ),
-      content: new Text(message),
-      cupertinoActions: <Widget>[
-        new CupertinoDialogAction(
-          child: new Text("OK"),
-          isDefaultAction: true,
-          onPressed: () {
-            f();
-          },
-        ),
-      ],
-      materialActions: <Widget>[
-        new FlatButton(
-            onPressed: () {
-              f();
-            },
-            child: new Text("OK"))
-      ],
-    );
-  }
 }
-
-typedef void f();

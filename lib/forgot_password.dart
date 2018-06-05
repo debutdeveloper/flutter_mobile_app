@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:debut_assets/assetlogin.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -54,14 +55,16 @@ class _ForgotPasswordState extends State<ForgotPassword> {
         if (response.statusCode == 200) {
           print("Your new password has been sent to your email address.");
           var responseJson = json.decode(response.body);
-          showAlert(
-            context,
-            title: new Title(color: Colors.blue, child: new Text("Success")),
+
+          /// Android style AlertDialog
+          var alert = new AlertDialog(
+            title: new Icon(
+              Icons.check_circle,
+              color: Colors.green,
+            ),
             content: new Text(responseJson["message"]),
-            cupertinoActions: <Widget>[
-              new CupertinoDialogAction(
-                child: new Text("Login"),
-                isDefaultAction: true,
+            actions: <Widget>[
+              new FlatButton(
                 onPressed: () {
                   _emailController.clear();
                   Navigator.of(context).pushAndRemoveUntil(
@@ -70,21 +73,65 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                         (Route<dynamic> newRoute) => false,
                       );
                 },
-              ),
-            ],
-            materialActions: <Widget>[
-              new FlatButton(
-                  onPressed: () {
-                    _emailController.clear();
-                    Navigator.of(context).pushAndRemoveUntil(
-                          new MaterialPageRoute(
-                              builder: (context) => new Login()),
-                          (Route<dynamic> newRoute) => false,
-                        );
-                  },
-                  child: new Text("Login"))
+                child: new Text("Login"),
+              )
             ],
           );
+
+          defaultTargetPlatform == TargetPlatform.iOS
+              ? showDialog(
+                  context: context,
+                  builder: (context) {
+                    return new CupertinoAlertDialog(
+                      title: new Icon(
+                        Icons.check_circle,
+                        color: Colors.green,
+                      ),
+                      content: new Text(responseJson["message"]),
+                      actions: <Widget>[
+                        new CupertinoDialogAction(
+                          isDefaultAction: true,
+                          onPressed: () {
+                            _emailController.clear();
+                            Navigator.of(context).pushAndRemoveUntil(
+                                  new MaterialPageRoute(
+                                      builder: (context) => new Login()),
+                                  (Route<dynamic> newRoute) => false,
+                                );
+                          },
+                          child: new Text(
+                            "Login",
+                            style: new TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ],
+                    );
+                  })
+              : showDialog(
+                  context: context,
+                  builder: (context) {
+                    return new AlertDialog(
+                      title: new Icon(
+                        Icons.check_circle,
+                        color: Colors.green,
+                      ),
+                      content: new Text(responseJson["message"]),
+                      actions: <Widget>[
+                        new FlatButton(
+                          onPressed: () {
+                            _emailController.clear();
+                            Navigator.of(context).pushAndRemoveUntil(
+                                  new MaterialPageRoute(
+                                      builder: (context) => new Login()),
+                                  (Route<dynamic> newRoute) => false,
+                                );
+                          },
+                          child: new Text("Login"),
+                        )
+                      ],
+                    );
+                  });
+
         } else {
           print("Error occured");
           var errorJson = json.decode(response.body);
@@ -151,17 +198,14 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                           new SizedBox(height: 24.0),
                           new Form(
                             key: _forgotPasswordFormKey,
-                            child: new EnsureVisibleWhenFocused(
+                            child: new TextFormField(
+                              decoration: new InputDecoration(
+                                  border: new UnderlineInputBorder(),
+                                  suffixIcon: new Icon(Icons.email),
+                                  hintText: "Registered Email ID"),
+                              controller: _emailController,
+                              validator: _validateEmail,
                               focusNode: _emailIDField,
-                              child: new TextFormField(
-                                decoration: new InputDecoration(
-                                    border: new UnderlineInputBorder(),
-                                    suffixIcon: new Icon(Icons.email),
-                                    hintText: "Registered Email ID"),
-                                controller: _emailController,
-                                validator: _validateEmail,
-                                focusNode: _emailIDField,
-                              ),
                             ),
                           ),
                           new SizedBox(height: 32.0),

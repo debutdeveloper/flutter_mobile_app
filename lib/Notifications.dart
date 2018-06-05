@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:debut_assets/models/notification.dart';
 import 'package:debut_assets/utils.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -13,8 +14,13 @@ class Notifications extends StatefulWidget {
 
 class _NotificationsState extends State<Notifications> {
   List<AssetNotification> notifications = [];
+  bool _showLoader = true;
 
   _getNotification() async {
+    setState(() {
+      _showLoader = false;
+    });
+
     try {
       print(authorizationToken);
       var response = await http.get(notificationAPI, headers: {
@@ -29,7 +35,7 @@ class _NotificationsState extends State<Notifications> {
           for (var notification in notificationListJson) {
             print(notification);
             AssetNotification assetNotification =
-            new AssetNotification.fromJSON(notification);
+                new AssetNotification.fromJSON(notification);
             notificationList.add(assetNotification);
           }
           print(notificationList.length);
@@ -39,38 +45,15 @@ class _NotificationsState extends State<Notifications> {
           });
         }
       } else {
-        alert("There is no notifiaction!", true);
+        showOkAlert(context, "There is no notifiaction!", true);
       }
     } catch (e) {
-      alert("Connection time-out", true);
+      showOkAlert(context, "Connection time-out", true);
     }
-  }
 
-  void alert(String message, bool isFail) {
-    showAlert(
-      context,
-      title: new Icon(
-        isFail ? Icons.error : Icons.tag_faces,
-        color: isFail ? Colors.red : Colors.green,
-      ),
-      content: new Text(message),
-      cupertinoActions: <Widget>[
-        new CupertinoDialogAction(
-          child: new Text("OK"),
-          isDefaultAction: true,
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        )
-      ],
-      materialActions: <Widget>[
-        new FlatButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            child: new Text("OK"))
-      ],
-    );
+    setState(() {
+      _showLoader = true;
+    });
   }
 
   @override
@@ -87,12 +70,29 @@ class _NotificationsState extends State<Notifications> {
           children: <Widget>[
             notifications.length > 0
                 ? new ListView.builder(
-                padding: new EdgeInsets.all(8.0),
-                itemBuilder: (BuildContext context, int index) {
-                  return new NotificationCard(notifications[index], this);
-                },
-                itemCount: notifications.length)
+                    padding: new EdgeInsets.all(8.0),
+                    itemBuilder: (BuildContext context, int index) {
+                      return new Column(
+                        children: <Widget>[
+                          new NotificationCard(notifications[index], this),
+                          new SizedBox(
+                            height: 12.0,
+                          )
+                        ],
+                      );
+                    },
+                    itemCount: notifications.length)
                 : getNoDataView("No Notifications"),
+            new Offstage(
+              child: new Container(
+                  color: new Color.fromRGBO(1, 1, 1, 0.3),
+                  child: new Center(
+                    child: new CircularProgressIndicator(
+                      backgroundColor: Colors.transparent,
+                    ),
+                  )),
+              offstage: _showLoader,
+            )
           ],
         ));
   }
@@ -133,12 +133,57 @@ class NotificationCard extends StatelessWidget {
           }).timeout(timeoutDuration);
       print(response.body);
       if (response.statusCode == 200) {
-        parentWidget.alert("Success", false);
+
+        defaultTargetPlatform == TargetPlatform.iOS
+            ? showDialog(
+            context: parentWidget.context,
+            builder: (context) {
+              return new CupertinoAlertDialog(
+                title: new Icon(
+                  Icons.check_circle,
+                  color: Colors.green,
+                ),
+                content: new Text("Success"),
+                actions: <Widget>[
+                  new CupertinoDialogAction(
+                    isDefaultAction: true,
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: new Text(
+                      "OK",
+                      style: new TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ],
+              );
+            })
+            : showDialog(
+            context: parentWidget.context,
+            builder: (context) {
+              return new AlertDialog(
+                title: new Icon(
+                  Icons.check_circle,
+                  color: Colors.green,
+                ),
+                content: new Text("Success"),
+                actions: <Widget>[
+                  new FlatButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: new Text("OK"),
+                  )
+                ],
+              );
+            });
+
+        //parentWidget.alert("Success", false);
         parentWidget._getNotification();
       }
     } catch (e) {
       print(e);
-      parentWidget.alert("Error", true);
+      showOkAlert(parentWidget.context, "Error", true);
     }
   }
 
@@ -172,9 +217,7 @@ class NotificationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Size _screenSize = MediaQuery
-        .of(context)
-        .size;
+    final Size _screenSize = MediaQuery.of(context).size;
 
     return new Card(
       elevation: 4.0,

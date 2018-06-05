@@ -53,58 +53,33 @@ Widget getNoDataView(String message) {
     color: Colors.black12,
     child: new Center(
         child: new Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            new Icon(
-              Icons.sentiment_dissatisfied,
-              size: 64.0,
-            ),
-            new Text(
-              message,
-              style: new TextStyle(fontSize: 32.0),
-            ),
-          ],
-        )),
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        new Icon(
+          Icons.sentiment_dissatisfied,
+          size: 64.0,
+        ),
+        new Text(
+          message,
+          style: new TextStyle(fontSize: 32.0),
+        ),
+      ],
+    )),
   );
-}
-// Custom Alert
-
-showAlert(BuildContext context,
-    {Widget title,
-    Widget content,
-    List<Widget> cupertinoActions,
-    List<Widget> materialActions}) {
-  var cupertinoAlert = new CupertinoAlertDialog(
-    content: content,
-    title: title,
-    actions: cupertinoActions,
-  );
-
-  var materialAlert = new AlertDialog(
-    title: title,
-    content: content,
-    actions: materialActions,
-  );
-
-  showDialog(
-      context: context,
-      builder: (BuildContext context) => materialAlert,
-      barrierDismissible: false);
 }
 
 showOkAlert(BuildContext context, String message, bool isFail) {
   print("showOkAlert Shown");
   BuildContext local;
   var cupertinoAlert = new CupertinoAlertDialog(
-
     content: new Text(message),
     title: new Icon(
-      isFail ? Icons.error : Icons.tag_faces,
+      isFail ? Icons.error : Icons.check_circle,
       color: isFail ? Colors.red : Colors.green,
     ),
     actions: <Widget>[
       new CupertinoDialogAction(
-        child: new Text('Ok'),
+        child: new Text('OK'),
         onPressed: () {
           Navigator.of(local).pop();
         },
@@ -115,7 +90,7 @@ showOkAlert(BuildContext context, String message, bool isFail) {
 
   var materialAlert = new AlertDialog(
     title: new Icon(
-      isFail ? Icons.error : Icons.tag_faces,
+      isFail ? Icons.error : Icons.check_circle,
       color: isFail ? Colors.red : Colors.green,
     ),
     content: new Text(message),
@@ -124,26 +99,26 @@ showOkAlert(BuildContext context, String message, bool isFail) {
         onPressed: () {
           Navigator.of(local).pop();
         },
-        child: new Text('Ok'),
+        child: new Text('OK'),
       )
     ],
   );
 
   defaultTargetPlatform == TargetPlatform.iOS
       ? showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        local = context;
-        return cupertinoAlert;
-      },
-      barrierDismissible: false)
+          context: context,
+          builder: (BuildContext context) {
+            local = context;
+            return cupertinoAlert;
+          },
+          barrierDismissible: false)
       : showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        local = context;
-        return materialAlert;
-      },
-      barrierDismissible: false);
+          context: context,
+          builder: (BuildContext context) {
+            local = context;
+            return materialAlert;
+          },
+          barrierDismissible: false);
 }
 
 Duration timeoutDuration = new Duration(seconds: 30);
@@ -225,7 +200,6 @@ class EnsureVisibleWhenFocusedState extends State<EnsureVisibleWhenFocused> {
 
   Future<Null> _ensureVisible() async {
     // Wait for the keyboard to come into view
-    // TODO: position doesn't seem to notify listeners when metrics change,
     // perhaps a NotificationListener around the scrollable could avoid
     // the need insert a delay here.
     await new Future.delayed(const Duration(milliseconds: 600));

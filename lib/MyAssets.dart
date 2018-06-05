@@ -48,44 +48,17 @@ class _CardViewState extends State<MyAssets> {
       } else {
         print("response !200");
         var errorJson = json.decode(response.body);
-        alert(errorJson["message"], true);
+        showOkAlert(context, errorJson["message"], true);
       }
     } catch (e) {
       print("inside catch");
-      alert('Connection time-out', true);
+      showOkAlert(context, "Connection time-out", true);
     }
 
     setState(() {
       print("Hide loader");
       _showLoader = true;
     });
-  }
-
-  void alert(String message, bool isFail) {
-    showAlert(
-      context,
-      title: new Icon(
-        isFail ? Icons.error : Icons.tag_faces,
-        color: isFail ? Colors.red : Colors.green,
-      ),
-      content: new Text(message),
-      cupertinoActions: <Widget>[
-        new CupertinoDialogAction(
-          child: new Text("OK"),
-          isDefaultAction: true,
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-        ),
-      ],
-      materialActions: <Widget>[
-        new FlatButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            child: new Text("OK"))
-      ],
-    );
   }
 
   @override
@@ -197,56 +170,12 @@ class MyAssetCard extends StatelessWidget {
       } else {
         print("response !200");
         var errorJson = json.decode(response.body);
-        showAlert(context,
-            title: new Icon(
-              Icons.error,
-              color: Colors.red,
-            ),
-            content: new Text(errorJson["message"]),
-            cupertinoActions: <Widget>[
-              new CupertinoDialogAction(
-                child: new Text('OK'),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                isDefaultAction: true,
-              ),
-            ],
-            materialActions: <Widget>[
-              new FlatButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: new Text('OK'),
-              )
-            ]);
+        showOkAlert(context, errorJson["message"], true);
       }
     } catch (e) {
       print("inside catch");
       print("Exception: $e");
-      showAlert(context,
-          title: new Icon(
-            Icons.error,
-            color: Colors.red,
-          ),
-          content: new Text("Error Occured"),
-          cupertinoActions: <Widget>[
-            new CupertinoDialogAction(
-              child: new Text('OK'),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              isDefaultAction: true,
-            ),
-          ],
-          materialActions: <Widget>[
-            new FlatButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: new Text('OK'),
-            )
-          ]);
+      showOkAlert(context, "Connection time-out", true);
     }
   }
 
@@ -370,32 +299,3 @@ class MyAssetCard extends StatelessWidget {
     );
   }
 }
-
-//new Column(
-//crossAxisAlignment: CrossAxisAlignment.start,
-//children: <Widget>[
-//new Row(
-//children: <Widget>[
-//new Text(""),
-//new Text(""),
-//],
-//),
-//new Padding(
-//padding: const EdgeInsets.only(top: 4.0)),
-//new Row(
-//children: <Widget>[
-//new Text('Retrun date - ',
-//style: new TextStyle(
-//fontSize: 12.0,
-//)),
-//new Text(
-//new DateFormat.yMMMd()
-//.format(new DateTime.now()),
-//style: new TextStyle(
-//fontSize: 12.0,
-//color: Colors.green,
-//fontWeight: FontWeight.w400)),
-//],
-//)
-//],
-//),
