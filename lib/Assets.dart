@@ -17,6 +17,7 @@ class Assets extends StatefulWidget {
 
 class _CardViewState extends State<Assets> {
   bool _showLoader = true;
+  BuildContext _context;
   List<Asset> listOfAssets = [];
 
   getAssetsList() async {
@@ -46,10 +47,10 @@ class _CardViewState extends State<Assets> {
           listOfAssets = assetsList;
         });
       } else {
-        alert("Assets not found!", true);
+        showOkAlert(_context, "Assets not found!", true);
       }
     } catch (e) {
-      alert("Connection time-out", true);
+      showOkAlert(_context, "Connection time-out", true);
     }
 
     setState(() {
@@ -92,6 +93,7 @@ class _CardViewState extends State<Assets> {
 
   @override
   Widget build(BuildContext context) {
+    _context = context;
     return new Stack(
       children: <Widget>[
         new Container(
@@ -117,9 +119,14 @@ class _CardViewState extends State<Assets> {
     return new ListView.builder(
       padding: new EdgeInsets.all(8.0),
       itemBuilder: (buildContext, index) {
-        return new AssetCard(
-          asset: listOfAssets[index],
-          user: widget.user,
+        return new Column(
+          children: <Widget>[
+            new AssetCard(
+              asset: listOfAssets[index],
+              user: widget.user,
+            ),
+            new SizedBox(height: 8.0,)
+          ],
         );
       },
       itemCount: listOfAssets == null ? 0 : listOfAssets.length,

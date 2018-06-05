@@ -17,6 +17,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
   final _forgotPasswordFormKey = new GlobalKey<FormState>();
   FocusNode _emailIDField = new FocusNode();
 
+  BuildContext _context;
   static final TextEditingController _emailController =
       new TextEditingController();
 
@@ -87,61 +88,11 @@ class _ForgotPasswordState extends State<ForgotPassword> {
         } else {
           print("Error occured");
           var errorJson = json.decode(response.body);
-          showAlert(
-            context,
-            title: new Icon(
-              Icons.error,
-              color: Colors.red,
-            ),
-            content: new Text(errorJson["message"]),
-            cupertinoActions: <Widget>[
-              new CupertinoDialogAction(
-                child: new Text("OK"),
-                isDefaultAction: true,
-                onPressed: () {
-                  FocusScope.of(context).requestFocus(_emailIDField);
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
-            materialActions: <Widget>[
-              new FlatButton(
-                  onPressed: () {
-                    FocusScope.of(context).requestFocus(_emailIDField);
-                    Navigator.of(context).pop();
-                  },
-                  child: new Text("OK"))
-            ],
-          );
+          showOkAlert(_context, errorJson["message"], true);
         }
       } catch (e) {
         print("Exception occured");
-        showAlert(
-          context,
-          title: new Icon(
-            Icons.error,
-            color: Colors.red,
-          ),
-          content: new Text('Connection time-out'),
-          cupertinoActions: <Widget>[
-            new CupertinoDialogAction(
-              child: new Text("OK"),
-              isDefaultAction: true,
-              onPressed: () {
-                FocusScope.of(context).requestFocus(_emailIDField);
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-          materialActions: <Widget>[
-            new FlatButton(
-                onPressed: () {
-                  FocusScope.of(context).requestFocus(_emailIDField);
-                  Navigator.of(context).pop();
-                },
-                child: new Text("OK"))
-          ],
-        );
+        showOkAlert(_context, 'Connection time-out', true);
       }
 
       setState(() {
@@ -152,6 +103,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
 
   @override
   Widget build(BuildContext context) {
+    _context = context;
     final Size _screenSize = MediaQuery.of(context).size;
     return new Stack(
       children: <Widget>[

@@ -68,7 +68,6 @@ class _HandOverAssetState extends State<HandOverAsset> {
       }).timeout(timeoutDuration);
       print(response.body);
       if (response.statusCode == 200) {
-        var responseJson = json.decode(response.body);
         print("HANDOVER SUCCESSFULLY");
         alert("Success", false, () {
           Navigator.of(context).pop();
@@ -76,14 +75,11 @@ class _HandOverAssetState extends State<HandOverAsset> {
         });
       } else {
         var errorJson = json.decode(response.body);
-        alert(errorJson["message"], true, () {
-          Navigator.of(context).pop();
-        });
+
+        showOkAlert(context, errorJson["message"], true);
       }
     } catch (e) {
-      alert('Connection time-out', true, () {
-        Navigator.of(context).pop();
-      });
+      showOkAlert(context, 'Connection time-out', true);
     }
 
     setState(() {
