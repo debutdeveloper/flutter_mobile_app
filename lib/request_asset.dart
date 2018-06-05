@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:debut_assets/Dashboard.dart';
 import 'package:debut_assets/models/Asset.dart';
 import 'package:debut_assets/models/User.dart';
 import 'package:debut_assets/utils.dart';
@@ -37,10 +38,9 @@ class _State extends State<RequestAsset> {
   bool isStartTimeSelected = false;
   bool isEndTimeSelected = false;
 
-  TimeOfDay _actualStartTime = new TimeOfDay.now();
-
   String _startTimeLabel = 'Select time';
   String _endTimeLabel = 'Select time';
+  TimeOfDay _actualStartTime = new TimeOfDay.now();
 
   String _startTimeString =
       '${new TimeOfDay.now().toString().substring(10,15)}:00';
@@ -49,20 +49,61 @@ class _State extends State<RequestAsset> {
 
   String _today = new DateFormat("dd/MM/yyyy").format(new DateTime.now());
 
-  Future startTimePicker(BuildContext context, bool isStart) async {
+  Future requestTimePicker(BuildContext context, bool isStart) async {
     final TimeOfDay currentTime = new TimeOfDay.now();
-    final TimeOfDay time = await showTimePicker(
-        context: context, initialTime: currentTime);
+    final TimeOfDay time =
+    await showTimePicker(context: context, initialTime: currentTime);
+
     /// Check selected date
     if (time != null) {
-      if (time.hour == currentTime.hour && time.minute > currentTime.minute) {
+      if (isStart) {
+        if (time.hour == currentTime.hour) {
+          if (time.minute > currentTime.minute) {
+            setState(() {
+              _startTimeLabel = time.format(context);
+              _startTimeString = '${time.toString().substring(10, 15)}:00';
+              isStartTimeSelected = true;
+              _actualStartTime = time;
+              _endTimeLabel = "Select time";
+            });
+          } else {
+            showOkAlert(context, "Please select valid time", true);
+          }
+        } else if (time.hour > currentTime.hour) {
           setState(() {
             _startTimeLabel = time.format(context);
             _startTimeString = '${time.toString().substring(10,15)}:00';
+            isStartTimeSelected = true;
             _actualStartTime = time;
+            _endTimeLabel = "Select time";
           });
+        } else {
+          showOkAlert(context, "Please select valid time", true);
+        }
       } else {
-        showOkAlert(context, "Please select valid time", true);
+        if (time.hour == _actualStartTime.hour) {
+          if (time.minute >= (_actualStartTime.minute + 15)) {
+            setState(() {
+              _endTimeLabel = time.format(context);
+              _endTimeString = '${time.toString().substring(10, 15)}:00';
+              isEndTimeSelected = true;
+            });
+          } else {
+            showOkAlert(
+                context,
+                "Please select minimum 15 minute gap between start time and end time",
+                true);
+          }
+        } else if (time.hour > _actualStartTime.hour) {
+          setState(() {
+            _endTimeLabel = time.format(context);
+            _endTimeString = '${time.toString().substring(10, 15)}:00';
+            isEndTimeSelected = true;
+          });
+        } else {
+          showOkAlert(context,
+              "End time must be greater than start time selected.", true);
+        }
       }
     }
   }
@@ -76,18 +117,17 @@ class _State extends State<RequestAsset> {
   }
 
   _requestForAsset() async {
-    print(
-        "Date : ${new DateFormat("dd-MM-yyyy").format(
+    final String format = "dd/MM/yyyy HH:mm:ss";
+    print("Date : ${new DateFormat("dd-MM-yyyy").format(
             new DateTime.now().toUtc())}");
     if (isStartTimeSelected && isEndTimeSelected) {
       if (_formKey.currentState.validate()) {
-        var utcStartTime = new DateFormat("dd/MM/yyyy HH:mm:ss")
+        var utcStartTime = new DateFormat(format)
             .parse(_today + " " + _startTimeString)
             .toUtc();
-        var utcEndTime = new DateFormat("dd/MM/yyyy HH:mm:ss")
-            .parse(_today + " " + _endTimeString)
-            .toUtc();
-        var formatter = new DateFormat("dd/MM/yyyy HH:mm:ss");
+        var utcEndTime =
+        new DateFormat(format).parse(_today + " " + _endTimeString).toUtc();
+        var formatter = new DateFormat(format);
         var formattedStartDate =
         formatter.format(utcStartTime).toString().substring(0, 19);
         var formattedEndDate =
@@ -143,9 +183,12 @@ class _State extends State<RequestAsset> {
                       new CupertinoDialogAction(
                         isDefaultAction: true,
                         onPressed: () {
-                          Navigator.pop(context);
-                          Navigator.pop(context);
-                          Navigator.pop(context);
+                          Navigator.of(context).pushAndRemoveUntil(
+                            new MaterialPageRoute(
+                                builder: (context) =>
+                                new Dashboard(widget.user)),
+                                (Route<dynamic> newRoute) => false,
+                          );
                         },
                         child: new Text(
                           "OK",
@@ -167,16 +210,18 @@ class _State extends State<RequestAsset> {
                     actions: <Widget>[
                       new FlatButton(
                         onPressed: () {
-                          Navigator.pop(context);
-                          Navigator.pop(context);
-                          Navigator.pop(context);
+                          Navigator.of(context).pushAndRemoveUntil(
+                            new MaterialPageRoute(
+                                builder: (context) =>
+                                new Dashboard(widget.user)),
+                                (Route<dynamic> newRoute) => false,
+                          );
                         },
                         child: new Text("OK"),
                       )
                     ],
                   );
                 });
-
           } else {
             var errorJson = json.decode(response.body);
             showOkAlert(context, errorJson["message"], true);
@@ -232,9 +277,6 @@ class _State extends State<RequestAsset> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
-                      new SizedBox(
-                        height: 24.0,
-                      ),
                       new Padding(
                         padding: new EdgeInsets.all(16.0),
                         child: new Card(
@@ -258,11 +300,10 @@ class _State extends State<RequestAsset> {
                                     new SizedBox(
                                       height: 24.0,
                                     ),
-//
                                     new GestureDetector(
                                       onTap: () {
                                         _purposeFieldFocus.unfocus();
-                                        startTimePicker(context, true);
+                                        requestTimePicker(context, true);
                                       },
                                       child: new Container(
                                         padding: const EdgeInsets.symmetric(
@@ -305,7 +346,7 @@ class _State extends State<RequestAsset> {
                                     new GestureDetector(
                                       onTap: () {
                                         _purposeFieldFocus.unfocus();
-                                        startTimePicker(context, false);
+                                        requestTimePicker(context, false);
                                       },
                                       child: new Container(
                                         height: 48.0,
