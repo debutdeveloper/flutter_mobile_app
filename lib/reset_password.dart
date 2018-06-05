@@ -88,7 +88,7 @@ class ResetPasswordScreenState extends State<ResetPasswordScreen> {
                         );
                       },
                       child: new Text(
-                        "OK",
+                        "LOGIN",
                         style: new TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ),
@@ -113,7 +113,7 @@ class ResetPasswordScreenState extends State<ResetPasswordScreen> {
                               (Route<dynamic> newRoute) => false,
                         );
                       },
-                      child: new Text("OK"),
+                      child: new Text("LOGIN"),
                     )
                   ],
                 );

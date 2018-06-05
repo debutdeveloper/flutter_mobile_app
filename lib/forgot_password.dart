@@ -55,29 +55,6 @@ class _ForgotPasswordState extends State<ForgotPassword> {
         if (response.statusCode == 200) {
           print("Your new password has been sent to your email address.");
           var responseJson = json.decode(response.body);
-
-          /// Android style AlertDialog
-          var alert = new AlertDialog(
-            title: new Icon(
-              Icons.check_circle,
-              color: Colors.green,
-            ),
-            content: new Text(responseJson["message"]),
-            actions: <Widget>[
-              new FlatButton(
-                onPressed: () {
-                  _emailController.clear();
-                  Navigator.of(context).pushAndRemoveUntil(
-                        new MaterialPageRoute(
-                            builder: (context) => new Login()),
-                        (Route<dynamic> newRoute) => false,
-                      );
-                },
-                child: new Text("Login"),
-              )
-            ],
-          );
-
           defaultTargetPlatform == TargetPlatform.iOS
               ? showDialog(
                   context: context,
