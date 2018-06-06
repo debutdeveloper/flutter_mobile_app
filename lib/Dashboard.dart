@@ -157,7 +157,7 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
       ),
       body: new TabBarView(
         //key: _tabBarKey,
-//        physics: new NeverScrollableScrollPhysics(),
+        physics: new NeverScrollableScrollPhysics(),
         children: [
           new Assets(user: widget.user),
           new MyAssets(widget.user),
