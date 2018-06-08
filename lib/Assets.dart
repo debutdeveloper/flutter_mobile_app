@@ -28,7 +28,7 @@ class _CardViewState extends State<Assets> {
     });
 
     try {
-      var response = await http.get(assetsAPI, headers: {
+      var response = await http.post(assetsAPI, headers: {
         "Authorization": authorizationToken
       }).timeout(timeoutDuration);
       if (response.statusCode == 200) {
