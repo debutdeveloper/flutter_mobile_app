@@ -10,15 +10,22 @@ import 'package:http/http.dart' as http;
 
 class Assets extends StatefulWidget {
   final CurrentUser user;
+
   const Assets({@required this.user});
+
   @override
   _CardViewState createState() => new _CardViewState();
 }
 
 class _CardViewState extends State<Assets> {
   bool _showLoader = true;
+  TextEditingController searchBarController;
+
   BuildContext _context;
   List<Asset> listOfAssets = [];
+
+  // For searching purpose
+  List<Asset> tempListOfAssets = [];
 
   getAssetsList() async {
     print("GETASSETSLIST CALLED");
@@ -43,6 +50,7 @@ class _CardViewState extends State<Assets> {
           assetsList.add(asset);
         }
         listOfAssets.clear();
+        tempListOfAssets.addAll(assetsList);
         setState(() {
           listOfAssets = assetsList;
         });
@@ -61,7 +69,14 @@ class _CardViewState extends State<Assets> {
   @override
   void initState() {
     super.initState();
+    searchBarController = new TextEditingController();
     getAssetsList();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    searchBarController.dispose();
   }
 
   @override
@@ -88,21 +103,45 @@ class _CardViewState extends State<Assets> {
     );
   }
 
-  Widget getListView() {
-    return new ListView.builder(
+  Widget getSearchBar() {
+    return new Container(
       padding: new EdgeInsets.all(8.0),
-      itemBuilder: (buildContext, index) {
-        return new Column(
-          children: <Widget>[
-            new AssetCard(
-              asset: listOfAssets[index],
-              user: widget.user,
-            ),
-            new SizedBox(height: 12.0,)
-          ],
-        );
-      },
-      itemCount: listOfAssets == null ? 0 : listOfAssets.length,
+      child: new TextField(
+        controller: searchBarController,
+        decoration: new InputDecoration(
+            suffixIcon: new IconButton(
+              icon: new Icon(Icons.clear),
+              onPressed: _handleSearchBegin,
+            )),
+        onChanged: (String value) {},
+      ),
     );
   }
+
+  Widget getListView() {
+    return Column(
+      children: <Widget>[
+        getSearchBar(),
+        new ListView.builder(
+          padding: new EdgeInsets.all(8.0),
+          itemBuilder: (buildContext, index) {
+            return new Column(
+              children: <Widget>[
+                new AssetCard(
+                  asset: listOfAssets[index],
+                  user: widget.user,
+                ),
+                new SizedBox(
+                  height: 12.0,
+                )
+              ],
+            );
+          },
+          itemCount: listOfAssets == null ? 0 : listOfAssets.length,
+        ),
+      ],
+    );
+  }
+
+  void _handleSearchBegin() {}
 }

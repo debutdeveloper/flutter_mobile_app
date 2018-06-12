@@ -22,6 +22,7 @@ class Dashboard extends StatefulWidget {
 
 class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
   TabController tabController;
+  Size screenSize;
 
   String _allAssets = "All Assets";
   String _myAssets = "My Assets";
@@ -29,6 +30,8 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
 
   String _appTitle = 'ALL ASSETS';
   int _tabIndex = 0;
+
+  bool isSearchShown = false;
 
   _getAppTitle() {
     setState(() {
@@ -49,7 +52,10 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+
+
     tabController = new TabController(length: 3, vsync: this);
+
     tabController.addListener(() {
       if (tabController.indexIsChanging) {
         int index = tabController.index;
@@ -63,15 +69,20 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
   @override
   void dispose() {
     tabController.dispose();
+
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    screenSize = MediaQuery
+        .of(context)
+        .size;
     return new Scaffold(
       appBar: new AppBar(
         title: new Text(_appTitle),
         backgroundColor: new Color.fromRGBO(23, 88, 232, 1.0),
+
       ),
       drawer: new Drawer(
         child: new ListView(
@@ -140,7 +151,6 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
         ),
         tabs: <Widget>[
           new Tab(
-
             icon: new Icon(Icons.devices),
             text: _allAssets,
           ),
@@ -167,4 +177,6 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
       ),
     );
   }
+
+
 }
