@@ -11,8 +11,9 @@ import 'assetlogin.dart';
 
 class Dashboard extends StatefulWidget {
   final CurrentUser user;
+  final int launchOption;
 
-  Dashboard(this.user);
+  Dashboard(this.user, this.launchOption);
 
   @override
   _DashboardState createState() {
@@ -52,10 +53,9 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-
-
+    _tabIndex = widget.launchOption;
     tabController = new TabController(length: 3, vsync: this);
-
+    searchBarController = new TextEditingController();
     tabController.addListener(() {
       if (tabController.indexIsChanging) {
         int index = tabController.index;
@@ -66,12 +66,34 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
     });
   }
 
+
   @override
   void dispose() {
     tabController.dispose();
-
+    searchBarController.dispose();
     super.dispose();
   }
+
+  TextEditingController searchBarController;
+
+
+  Widget getSearchBar() {
+    return new Container(
+      padding: new EdgeInsets.all(8.0),
+      child: new TextField(
+        controller: searchBarController,
+        decoration: new InputDecoration(
+            suffixIcon: new IconButton(
+              icon: new Icon(Icons.clear),
+              onPressed: _handleSearchBegin,
+            )),
+        onChanged: (String value) {},
+      ),
+    );
+  }
+
+
+  void _handleSearchBegin() {}
 
   @override
   Widget build(BuildContext context) {
@@ -82,7 +104,6 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
       appBar: new AppBar(
         title: new Text(_appTitle),
         backgroundColor: new Color.fromRGBO(23, 88, 232, 1.0),
-
       ),
       drawer: new Drawer(
         child: new ListView(

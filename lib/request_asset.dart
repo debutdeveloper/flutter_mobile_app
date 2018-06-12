@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:debut_assets/Dashboard.dart';
 import 'package:debut_assets/models/Asset.dart';
 import 'package:debut_assets/models/User.dart';
 import 'package:debut_assets/utils.dart';
@@ -125,13 +124,15 @@ class _State extends State<RequestAsset> {
         var utcStartTime = new DateFormat(format)
             .parse(_today + " " + _startTimeString)
             .toUtc();
-        var utcEndTime =
-        new DateFormat(format).parse(_today + " " + _endTimeString).toUtc();
+        var utcEndTime = new DateFormat(format).parse(
+            _today + " " + _endTimeString).toUtc();
         var formatter = new DateFormat(format);
-        var formattedStartDate =
-        formatter.format(utcStartTime).toString().substring(0, 19);
-        var formattedEndDate =
-        formatter.format(utcEndTime).toString().substring(0, 19);
+        var formattedStartDate = formatter.format(utcStartTime)
+            .toString()
+            .substring(0, 19);
+        var formattedEndDate = formatter.format(utcEndTime)
+            .toString()
+            .substring(0, 19);
 
         final String requestURL = requestAPI;
         final credentials = {
@@ -183,12 +184,9 @@ class _State extends State<RequestAsset> {
                       new CupertinoDialogAction(
                         isDefaultAction: true,
                         onPressed: () {
-                          Navigator.of(context).pushAndRemoveUntil(
-                            new MaterialPageRoute(
-                                builder: (context) =>
-                                new Dashboard(widget.user)),
-                                (Route<dynamic> newRoute) => false,
-                          );
+                          Navigator.of(context).pop();
+                          Navigator.of(context).pop();
+                          Navigator.of(context).pop();
                         },
                         child: new Text(
                           "OK",
@@ -210,12 +208,9 @@ class _State extends State<RequestAsset> {
                     actions: <Widget>[
                       new FlatButton(
                         onPressed: () {
-                          Navigator.of(context).pushAndRemoveUntil(
-                            new MaterialPageRoute(
-                                builder: (context) =>
-                                new Dashboard(widget.user)),
-                                (Route<dynamic> newRoute) => false,
-                          );
+                          Navigator.of(context).pop();
+                          Navigator.of(context).pop();
+                          Navigator.of(context).pop();
                         },
                         child: new Text("OK"),
                       )

@@ -84,7 +84,7 @@ class _LoginState extends State<Login> {
           } else {
             Navigator.of(context).pushAndRemoveUntil(
               new MaterialPageRoute(
-                  builder: (context) => new Dashboard(newUser)),
+                  builder: (context) => new Dashboard(newUser, 0)),
                   (Route<dynamic> newRoute) => false,
             );
           }

@@ -20,21 +20,16 @@ class MyAssets extends StatefulWidget {
 class _CardViewState extends State<MyAssets> {
   List requestList;
   List<Request> listOfRequests = [];
-  bool _showLoader = true;
 
   Future getAssetHistory() async {
-
-    setState(() {
-      _showLoader = false;
-    });
-
     try {
       var response = await http.get(myAssetsAPI, headers: {
         "Authorization": authorizationToken
       }).timeout(timeoutDuration);
       if (response.statusCode == 200) {
-        print(response.body);
-        var assetHistoryJson = json.decode(response.body);
+        var body = json.decode(response.body);
+        print(body);
+        var assetHistoryJson = body;
         var requestListJson = assetHistoryJson["requests"];
         List<Request> listOfRequests = [];
         for (var requestJSON in requestListJson) {
@@ -54,11 +49,6 @@ class _CardViewState extends State<MyAssets> {
       print("inside catch");
       showOkAlert(context, "Connection time-out", true);
     }
-
-    setState(() {
-      print("Hide loader");
-      _showLoader = true;
-    });
   }
 
   @override
@@ -67,6 +57,7 @@ class _CardViewState extends State<MyAssets> {
     getAssetHistory();
   }
 
+  Widget child;
   Widget getMyAssetList() {
     return new ListView.builder(
       padding: const EdgeInsets.all(8.0),
@@ -89,26 +80,9 @@ class _CardViewState extends State<MyAssets> {
 
   @override
   Widget build(BuildContext context) {
-    return new Container(
-      color: Colors.black12,
-      child: new Stack(
-        children: <Widget>[
-          listOfRequests.length > 0
-              ? getMyAssetList()
-              : getNoDataView("No Asset Found"),
-          new Offstage(
-            child: new Container(
-                color: new Color.fromRGBO(1, 1, 1, 0.3),
-                child: new Center(
-                  child: new CircularProgressIndicator(
-                    backgroundColor: Colors.transparent,
-                  ),
-                )),
-            offstage: _showLoader,
-          )
-        ],
-      ),
-    );
+    return listOfRequests.length > 0
+        ? getMyAssetList()
+        : getNoDataView("No Asset Found");
   }
 }
 

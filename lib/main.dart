@@ -12,19 +12,21 @@ import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 FirebaseMessaging messaging;
+int launchOption = 0;
 
 void main() {
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   messaging = new FirebaseMessaging();
   messaging.configure(
     onMessage: (Map<String, dynamic> message) {
-      print(message);
+      print("onMessage $message");
     },
     onLaunch: (Map<String, dynamic> message) {
-      print(message);
+      print("onLaunch $message");
+      launchOption = 2;
     },
     onResume: (Map<String, dynamic> message) {
-      print(message);
+      print("onResume $message");
     },
   );
 
@@ -70,7 +72,7 @@ class _SplashState extends State<Splash> {
           authorizationToken = user.data.token;
           Navigator.of(buildContext).pushAndRemoveUntil(
             new MaterialPageRoute(
-                builder: (context) => new Dashboard(user)),
+                builder: (context) => new Dashboard(user, launchOption)),
                 (Route<dynamic> newRoute) => false,
           );
         } else {
@@ -126,7 +128,7 @@ class MyAppDashboard extends StatelessWidget {
       theme: new ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: new Dashboard(user),
+      home: new Dashboard(user, launchOption),
     );
   }
 }

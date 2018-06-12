@@ -142,15 +142,20 @@ String getDate(String date) {
 
 String getDateForNotifications(String date) {
   String dateString = '';
-  var tempDate = new DateFormat.jm().format(DateTime.parse(date));
+  var local = new DateFormat("yyyy-MM-ddTHH:mm:ssZ").parseUTC(date).toLocal();
+  var tempDate = new DateFormat.jm().format(local);
   dateString = tempDate.toString();
   return dateString;
 }
 
 String getTime(String time) {
+  print("getTimeBefore $time");
   String timeString;
-  var tempTime = new DateFormat.jm().format(DateTime.parse(time));
+  var local = new DateFormat("yyyy-MM-ddTHH:mm:ssZ").parseUTC(time).toLocal();
+  print("getTimeLocal $local");
+  var tempTime = new DateFormat.jm().format(local);
   timeString = tempTime.toString();
+  print("getTimeAfter $timeString");
   return timeString;
 }
 

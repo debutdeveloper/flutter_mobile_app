@@ -20,15 +20,14 @@ class AssetHistory extends StatefulWidget {
 }
 
 class _AssetHistoryState extends State<AssetHistory> {
-  List requestList;
   List<Request> listOfRequests = [];
   BuildContext _context;
   bool _showLoader = true;
 
   Future getAssetHistory() async {
-    print("Getting Asset History");
-
     final assetHistoryURL = assetDetailsAPI + widget.asset.key;
+
+    print("assetHistoryURL $assetHistoryURL");
 
     setState(() {
       _showLoader = false;
@@ -38,17 +37,17 @@ class _AssetHistoryState extends State<AssetHistory> {
       var response = await http.get(assetHistoryURL, headers: {
         "Authorization": authorizationToken
       }).timeout(timeoutDuration);
-
       if (response.statusCode == 200) {
+        var assetHistoryJson = json.decode(response.body);
+        var requestList = assetHistoryJson["requests"];
+        List<Request> listOfRequestsTemp = [];
+        for (var requestJSON in requestList) {
+          Request request = new Request.fromJSON(requestJSON);
+          listOfRequestsTemp.add(request);
+        }
+        listOfRequests.clear();
         setState(() {
-          var assetHistoryJson = json.decode(response.body);
-          requestList = assetHistoryJson["requests"];
-          print('REQUESTLIST LENGTH :${requestList.length}');
-          for (var requestJSON in requestList) {
-            print("Request json: $requestJSON");
-            Request request = new Request.fromJSON(requestJSON);
-            listOfRequests.add(request);
-          }
+          listOfRequests = listOfRequestsTemp;
         });
       } else {
         var errorJson = json.decode(response.body);
@@ -65,14 +64,12 @@ class _AssetHistoryState extends State<AssetHistory> {
 
   @override
   void initState() {
-    print("ASSET DETAILS INIT CALLED");
     super.initState();
     getAssetHistory();
   }
 
   @override
   Widget build(BuildContext context) {
-    print("Build callled");
     print(listOfRequests.length);
     _context = context;
     final _screenSize = MediaQuery.of(context).size;
@@ -195,7 +192,7 @@ class RequestDetails extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           new Container(
-            height: 40.0,
+            height: 60.0,
             width: 5.0,
             decoration: new BoxDecoration(
                 color: _requestData.status == 0 ? Colors.red : Colors.green,
@@ -212,7 +209,7 @@ class RequestDetails extends StatelessWidget {
               child: new Text(
                 _requestData.details,
                 maxLines: 10,
-                style: new TextStyle(fontSize: descriptionFontSize),
+                style: new TextStyle(fontSize: 20.0),
               ),
             ),
           )
@@ -221,4 +218,3 @@ class RequestDetails extends StatelessWidget {
     );
   }
 }
-

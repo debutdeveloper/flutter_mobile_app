@@ -4,6 +4,7 @@ class AssetNotification {
   String id;
   String rev;
   int reqType;
+  int type;
   String requestId;
   String oldRequestId;
   String description;
@@ -22,6 +23,7 @@ class AssetNotification {
     id = json["_id"];
     rev = json["_rev"];
     reqType = json["req_type"];
+    type = json["type"];
     requestId = json["request_id"];
     oldRequestId = json["old_request_id"];
     description = json["description"];

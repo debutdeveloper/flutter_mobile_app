@@ -14,13 +14,8 @@ class Notifications extends StatefulWidget {
 
 class _NotificationsState extends State<Notifications> {
   List<AssetNotification> notifications = [];
-  bool _showLoader = true;
 
   _getNotification() async {
-    setState(() {
-      _showLoader = false;
-    });
-
     try {
       print(authorizationToken);
       var response = await http.get(notificationAPI, headers: {
@@ -50,10 +45,6 @@ class _NotificationsState extends State<Notifications> {
     } catch (e) {
       showOkAlert(context, "Connection time-out", true);
     }
-
-    setState(() {
-      _showLoader = true;
-    });
   }
 
   @override
@@ -66,35 +57,21 @@ class _NotificationsState extends State<Notifications> {
   Widget build(BuildContext context) {
     return new Material(
         color: Colors.black12,
-        child: new Stack(
-          children: <Widget>[
-            notifications.length > 0
-                ? new ListView.builder(
-                    padding: new EdgeInsets.all(8.0),
-                    itemBuilder: (BuildContext context, int index) {
-                      return new Column(
-                        children: <Widget>[
-                          new NotificationCard(notifications[index], this),
-                          new SizedBox(
-                            height: 12.0,
-                          )
-                        ],
-                      );
-                    },
-                    itemCount: notifications.length)
-                : getNoDataView("No Notifications"),
-            new Offstage(
-              child: new Container(
-                  color: new Color.fromRGBO(1, 1, 1, 0.3),
-                  child: new Center(
-                    child: new CircularProgressIndicator(
-                      backgroundColor: Colors.transparent,
-                    ),
-                  )),
-              offstage: _showLoader,
-            )
-          ],
-        ));
+        child: notifications.length > 0
+            ? new ListView.builder(
+            padding: new EdgeInsets.all(8.0),
+            itemBuilder: (BuildContext context, int index) {
+              return new Column(
+                children: <Widget>[
+                  new NotificationCard(notifications[index], this),
+                  new SizedBox(
+                    height: 12.0,
+                  )
+                ],
+              );
+            },
+            itemCount: notifications.length)
+            : getNoDataView("No Notifications"));
   }
 }
 
@@ -133,7 +110,6 @@ class NotificationCard extends StatelessWidget {
           }).timeout(timeoutDuration);
       print(response.body);
       if (response.statusCode == 200) {
-
         defaultTargetPlatform == TargetPlatform.iOS
             ? showDialog(
             context: parentWidget.context,
@@ -178,8 +154,10 @@ class NotificationCard extends StatelessWidget {
               );
             });
 
-        //parentWidget.alert("Success", false);
         parentWidget._getNotification();
+      } else {
+        var errorJson = json.decode(response.body);
+        showOkAlert(parentWidget.context, errorJson["message"], true);
       }
     } catch (e) {
       print(e);
@@ -215,9 +193,26 @@ class NotificationCard extends StatelessWidget {
     }
   }
 
+  getContent(AssetNotification asset) {
+    int action = asset.action;
+    int type = asset.type;
+
+    if (type == 2 && action == 4) {
+      asset.description = "Your request for this device has been Approved";
+    } else if (type == 2 && action == 5) {
+      asset.description = "Your request for this device has been Rejected";
+    } else if (type == 1 && action == 1) {
+      asset.description = "You accepted the handover";
+    } else if (type == 1 && action == 2) {
+      asset.description = "You reject the handover";
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final Size _screenSize = MediaQuery.of(context).size;
+    getContent(notification);
+
 
     return new Card(
       elevation: 4.0,
@@ -235,10 +230,9 @@ class NotificationCard extends StatelessWidget {
                 new Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    const Text(
-                      'HANDOVER',
+                    new Text(notification.asset.name,
                       style: const TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 15.0),
+                          fontWeight: FontWeight.bold, fontSize: 20.0),
                     ),
                     new Text(
                       'Starts at: ' +
@@ -248,20 +242,14 @@ class NotificationCard extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(
-                  height: 2.0,
-                ),
-                new Text(
-                  notification.asset.name,
-                  style: new TextStyle(
-                      fontWeight: FontWeight.bold, fontSize: 13.0),
-                ),
-                new SizedBox(
                   height: 8.0,
                 ),
+
                 new Text(
                   notification.description,
+                  maxLines: 2,
                   style: new TextStyle(
-                    fontSize: 11.0,
+                    fontSize: 16.0,
                   ),
                 ),
                 const SizedBox(
@@ -288,7 +276,7 @@ class NotificationCard extends StatelessWidget {
             ),
           ),
           new Offstage(
-            offstage: !(notification.action == 0),
+            offstage: !(notification.action == 0 && notification.type == 1),
             child: new Row(
               mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,

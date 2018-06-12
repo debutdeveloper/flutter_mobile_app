@@ -36,10 +36,12 @@ class Value {
   int status;
   String updated_at;
   User user;
+  String color;
 
   Value.fromJSON(Map<String, dynamic> json) {
     currentAsset = CurrentAsset.fromJSON(json["asset"]);
     created_at = json["created_at"];
+    color = json["color"];
     description = json["description"];
     doc_type = json["doc_type"];
     end_timing = json["end_timing"];
