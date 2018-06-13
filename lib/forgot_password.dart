@@ -218,7 +218,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                           new GestureDetector(
                               onTap: () {
                                 print("Back to login page pressed");
-                                Navigator.of(context).pop();
+                                Navigator.pop(context);
                               },
                               child: new Text(
                                 "Back to Login Page",

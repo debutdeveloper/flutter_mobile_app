@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:debut_assets/Dashboard.dart';
 import 'package:debut_assets/models/Asset.dart';
 import 'package:debut_assets/models/User.dart';
 import 'package:debut_assets/utils.dart';
@@ -184,9 +185,12 @@ class _State extends State<RequestAsset> {
                       new CupertinoDialogAction(
                         isDefaultAction: true,
                         onPressed: () {
-                          Navigator.of(context).pop();
-                          Navigator.of(context).pop();
-                          Navigator.of(context).pop();
+                          Navigator.of(context).pushAndRemoveUntil(
+                            new MaterialPageRoute(
+                                builder: (context) =>
+                                new Dashboard(widget.user, 0)),
+                                (Route<dynamic> newRoute) => false,
+                          );
                         },
                         child: new Text(
                           "OK",
@@ -208,9 +212,12 @@ class _State extends State<RequestAsset> {
                     actions: <Widget>[
                       new FlatButton(
                         onPressed: () {
-                          Navigator.of(context).pop();
-                          Navigator.of(context).pop();
-                          Navigator.of(context).pop();
+                          Navigator.of(context).pushAndRemoveUntil(
+                            new MaterialPageRoute(
+                                builder: (context) =>
+                                new Dashboard(widget.user, 0)),
+                                (Route<dynamic> newRoute) => false,
+                          );
                         },
                         child: new Text("OK"),
                       )

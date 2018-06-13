@@ -124,7 +124,7 @@ class NotificationCard extends StatelessWidget {
                   new CupertinoDialogAction(
                     isDefaultAction: true,
                     onPressed: () {
-                      Navigator.of(context).pop();
+                      Navigator.pop(context);
                     },
                     child: new Text(
                       "OK",
@@ -146,7 +146,7 @@ class NotificationCard extends StatelessWidget {
                 actions: <Widget>[
                   new FlatButton(
                     onPressed: () {
-                      Navigator.of(context).pop();
+                      Navigator.pop(context);
                     },
                     child: new Text("OK"),
                   )
@@ -212,7 +212,7 @@ class NotificationCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final Size _screenSize = MediaQuery.of(context).size;
     getContent(notification);
-
+    var requestID = notification.requestId;
 
     return new Card(
       elevation: 4.0,
@@ -240,6 +240,13 @@ class NotificationCard extends StatelessWidget {
                       style: const TextStyle(fontSize: 12.0),
                     ),
                   ],
+                ),
+                const SizedBox(
+                  height: 2.0,
+                ),
+                new Text("Request ID : $requestID",
+                  style: const TextStyle(
+                      fontWeight: FontWeight.normal, fontSize: 14.0),
                 ),
                 const SizedBox(
                   height: 8.0,

@@ -86,8 +86,8 @@ class _HandOverAssetState extends State<HandOverAsset> {
                   new CupertinoDialogAction(
                     isDefaultAction: true,
                     onPressed: () {
-                      Navigator.of(context).pop();
-                      Navigator.of(context).pop();
+                      Navigator.pop(context);
+                      Navigator.pop(context);
                     },
                     child: new Text(
                       "OK",
@@ -109,8 +109,8 @@ class _HandOverAssetState extends State<HandOverAsset> {
                 actions: <Widget>[
                   new FlatButton(
                     onPressed: () {
-                      Navigator.of(context).pop();
-                      Navigator.of(context).pop();
+                      Navigator.pop(context);
+                      Navigator.pop(context);
                     },
                     child: new Text("OK"),
                   )

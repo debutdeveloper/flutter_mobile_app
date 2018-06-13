@@ -19,7 +19,7 @@ double timePickerFieldFontSize = 16.0;
 double sliderFieldFontSize = 16.0;
 
 /// API URLs
-String baseURL = "http://assetchainapi.debutinfotech.com:3001";
+String baseURL = "http://112.196.27.245:3001";
 String loginAPI = "$baseURL/user/login";
 String forgetPasswordAPI = "$baseURL/user/forget-password";
 String resetPasswordAPI = "$baseURL/user/change-password";

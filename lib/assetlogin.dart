@@ -185,6 +185,7 @@ class _LoginState extends State<Login> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
                           new TextFormField(
+                              keyboardType: TextInputType.emailAddress,
                               controller: _user,
                               validator: _validateEmail,
                               focusNode: _email,
