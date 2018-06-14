@@ -96,6 +96,7 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
         decoration: const InputDecoration(
           hintText: 'Search',
         ),
+        onChanged: (value) {},
       ),
       backgroundColor: Theme
           .of(context)
@@ -123,11 +124,19 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
     });
   }
 
+  Assets allAssets;
+  MyAssets myAssets;
+  Notifications notifications;
+
   @override
   Widget build(BuildContext context) {
     screenSize = MediaQuery
         .of(context)
         .size;
+
+    allAssets = new Assets(user: widget.user);
+    myAssets = new MyAssets(widget.user);
+    notifications = new Notifications();
     return new Scaffold(
       appBar: _isSearching ? getSearchBar() : getAppBar(),
       drawer: new Drawer(
@@ -215,11 +224,7 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
       body: new TabBarView(
         //key: _tabBarKey,
         physics: new NeverScrollableScrollPhysics(),
-        children: [
-          new Assets(user: widget.user),
-          new MyAssets(widget.user),
-          new Notifications()
-        ],
+        children: [allAssets, myAssets, notifications],
         controller: tabController,
       ),
     );

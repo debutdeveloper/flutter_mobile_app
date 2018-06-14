@@ -18,17 +18,16 @@ class Assets extends StatefulWidget {
 }
 
 class _CardViewState extends State<Assets> {
-
-
   BuildContext _context;
   List<Asset> listOfAssets = [];
 
   // For searching purpose
-  List<Asset> tempListOfAssets = [];
+  List<Asset> searchedListOfAssets = [];
+
+  bool isSearching = false;
 
   getAssetsList() async {
     print("GETASSETSLIST CALLED");
-
 
     try {
       var response = await http.post(assetsAPI, headers: {
@@ -44,7 +43,6 @@ class _CardViewState extends State<Assets> {
           assetsList.add(asset);
         }
         listOfAssets.clear();
-        tempListOfAssets.addAll(assetsList);
         setState(() {
           listOfAssets = assetsList;
         });
@@ -54,7 +52,6 @@ class _CardViewState extends State<Assets> {
     } catch (e) {
       showOkAlert(_context, "Connection time-out", true);
     }
-
   }
 
   @override
@@ -63,7 +60,6 @@ class _CardViewState extends State<Assets> {
 
     getAssetsList();
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -82,7 +78,7 @@ class _CardViewState extends State<Assets> {
         return new Column(
           children: <Widget>[
             new AssetCard(
-              asset: listOfAssets[index],
+              asset: getListAsset(index),
               user: widget.user,
             ),
             new SizedBox(
@@ -91,9 +87,33 @@ class _CardViewState extends State<Assets> {
           ],
         );
       },
-      itemCount: listOfAssets == null ? 0 : listOfAssets.length,
+      itemCount: getListCount(),
     );
   }
 
+  getListCount() {
+    if (isSearching) {
+      return listOfAssets == null ? 0 : listOfAssets.length;
+    } else {
+      return searchedListOfAssets == null ? 0 : searchedListOfAssets.length;
+    }
+  }
 
+  getListAsset(int index) {
+    return isSearching ? searchedListOfAssets[index] : listOfAssets[index];
+  }
+
+  void searchAsset(String query) {
+    searchedListOfAssets.clear();
+    setState(() {
+      listOfAssets.map((asset) {
+        if (asset.record.name
+            .toLowerCase()
+            .trim()
+            .contains(new RegExp(r'' + query.toLowerCase().trim() + ''))) {
+          searchedListOfAssets.add(asset);
+        }
+      }).toList();
+    });
+  }
 }
