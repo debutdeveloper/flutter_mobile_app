@@ -25,6 +25,8 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
   TabController tabController;
   Size screenSize;
 
+  bool _isSearching = false;
+
   String _allAssets = "All Assets";
   String _myAssets = "My Assets";
   String _notifications = "Notifications";
@@ -66,7 +68,6 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
     });
   }
 
-
   @override
   void dispose() {
     tabController.dispose();
@@ -76,24 +77,51 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
 
   TextEditingController searchBarController;
 
-
   Widget getSearchBar() {
-    return new Container(
-      padding: new EdgeInsets.all(8.0),
-      child: new TextField(
-        controller: searchBarController,
-        decoration: new InputDecoration(
-            suffixIcon: new IconButton(
-              icon: new Icon(Icons.clear),
-              onPressed: _handleSearchBegin,
-            )),
-        onChanged: (String value) {},
+    return new AppBar(
+      leading: new IconButton(
+        icon: new Icon(Icons.arrow_back),
+        onPressed: () {
+          setState(() {
+            _isSearching = false;
+          });
+        },
+        color: Theme
+            .of(context)
+            .accentColor,
       ),
+      title: new TextField(
+        controller: searchBarController,
+        autofocus: true,
+        decoration: const InputDecoration(
+          hintText: 'Search',
+        ),
+      ),
+      backgroundColor: Theme
+          .of(context)
+          .canvasColor,
     );
   }
 
+  Widget getAppBar() {
+    return new AppBar(
+      title: new Text(_appTitle),
+      backgroundColor: new Color.fromRGBO(23, 88, 232, 1.0),
+      actions: <Widget>[
+        new IconButton(
+          icon: const Icon(Icons.search),
+          onPressed: _handleSearchBegin,
+          tooltip: 'Search',
+        )
+      ],
+    );
+  }
 
-  void _handleSearchBegin() {}
+  void _handleSearchBegin() {
+    setState(() {
+      _isSearching = true;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -101,12 +129,10 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
         .of(context)
         .size;
     return new Scaffold(
-      appBar: new AppBar(
-        title: new Text(_appTitle),
-        backgroundColor: new Color.fromRGBO(23, 88, 232, 1.0),
-      ),
+      appBar: _isSearching ? getSearchBar() : getAppBar(),
       drawer: new Drawer(
         child: new ListView(
+          padding: const EdgeInsets.all(0.0),
           children: <Widget>[
             new UserAccountsDrawerHeader(
               decoration: new BoxDecoration(gradient: getGradient()),
@@ -198,6 +224,4 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
       ),
     );
   }
-
-
 }

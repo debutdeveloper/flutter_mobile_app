@@ -95,5 +95,5 @@ class _CardViewState extends State<Assets> {
     );
   }
 
-  void _handleSearchBegin() {}
+
 }
