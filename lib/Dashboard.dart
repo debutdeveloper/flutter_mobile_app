@@ -25,6 +25,8 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
   TabController tabController;
   Size screenSize;
 
+  var key = new GlobalKey<CardViewState>();
+
   bool _isSearching = false;
 
   String _allAssets = "All Assets";
@@ -35,22 +37,27 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
   int _tabIndex = 0;
 
   bool isSearchShown = false;
+  bool searchOffStage = false;
 
   _getAppTitle() {
     setState(() {
       switch (_tabIndex) {
         case 0:
           _appTitle = _allAssets;
+          searchOffStage = false;
           break;
         case 1:
           _appTitle = _myAssets;
+          searchOffStage = true;
           break;
         case 2:
           _appTitle = _notifications;
+          searchOffStage = true;
           break;
       }
     });
   }
+
 
   @override
   void initState() {
@@ -83,6 +90,8 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
         icon: new Icon(Icons.arrow_back),
         onPressed: () {
           setState(() {
+            searchBarController.clear();
+            key.currentState.stopSearching();
             _isSearching = false;
           });
         },
@@ -96,7 +105,9 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
         decoration: const InputDecoration(
           hintText: 'Search',
         ),
-        onChanged: (value) {},
+        onChanged: (value) {
+          key.currentState.searchAsset(value.toLowerCase().trim());
+        },
       ),
       backgroundColor: Theme
           .of(context)
@@ -109,10 +120,13 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
       title: new Text(_appTitle),
       backgroundColor: new Color.fromRGBO(23, 88, 232, 1.0),
       actions: <Widget>[
-        new IconButton(
-          icon: const Icon(Icons.search),
-          onPressed: _handleSearchBegin,
-          tooltip: 'Search',
+        new Offstage(
+          offstage: searchOffStage,
+          child: new IconButton(
+            icon: const Icon(Icons.search),
+            onPressed: _handleSearchBegin,
+            tooltip: 'Search',
+          ),
         )
       ],
     );
@@ -134,7 +148,7 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
         .of(context)
         .size;
 
-    allAssets = new Assets(user: widget.user);
+    allAssets = new Assets(key: key, user: widget.user);
     myAssets = new MyAssets(widget.user);
     notifications = new Notifications();
     return new Scaffold(

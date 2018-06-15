@@ -10,29 +10,29 @@ import 'package:http/http.dart' as http;
 
 class Assets extends StatefulWidget {
   final CurrentUser user;
+  CardViewState myState;
 
-  const Assets({@required this.user});
+  Assets({@required this.user, GlobalKey<CardViewState> key}) : super(key: key);
 
   @override
-  _CardViewState createState() => new _CardViewState();
+  CardViewState createState() {
+    myState = new CardViewState();
+    return myState;
+  }
 }
 
-class _CardViewState extends State<Assets> {
+class CardViewState extends State<Assets> {
   BuildContext _context;
   List<Asset> listOfAssets = [];
-
   // For searching purpose
   List<Asset> searchedListOfAssets = [];
-
   bool isSearching = false;
-
   getAssetsList() async {
-    print("GETASSETSLIST CALLED");
-
     try {
       var response = await http.post(assetsAPI, headers: {
         "Authorization": authorizationToken
       }).timeout(timeoutDuration);
+      print(response.body);
       if (response.statusCode == 200) {
         var body = json.decode(response.body);
         var listData = body;
@@ -43,9 +43,11 @@ class _CardViewState extends State<Assets> {
           assetsList.add(asset);
         }
         listOfAssets.clear();
+
         setState(() {
           listOfAssets = assetsList;
         });
+        print(listOfAssets);
       } else {
         showOkAlert(_context, "Assets not found!", true);
       }
@@ -57,7 +59,6 @@ class _CardViewState extends State<Assets> {
   @override
   void initState() {
     super.initState();
-
     getAssetsList();
   }
 
@@ -92,7 +93,7 @@ class _CardViewState extends State<Assets> {
   }
 
   getListCount() {
-    if (isSearching) {
+    if (!isSearching) {
       return listOfAssets == null ? 0 : listOfAssets.length;
     } else {
       return searchedListOfAssets == null ? 0 : searchedListOfAssets.length;
@@ -103,17 +104,26 @@ class _CardViewState extends State<Assets> {
     return isSearching ? searchedListOfAssets[index] : listOfAssets[index];
   }
 
+  void stopSearching() {
+    setState(() {
+      isSearching = false;
+    });
+  }
+
   void searchAsset(String query) {
     searchedListOfAssets.clear();
+    List<Asset> tempSearchedListOfAssets = [];
+    listOfAssets.map((asset) {
+      var current = asset.record.name.toLowerCase().trim();
+      if (current.contains(query.toLowerCase().trim())) {
+        print("query $query ::: current $current");
+        tempSearchedListOfAssets.add(asset);
+      }
+    }).toList();
+    print("Search Complete with results : ${tempSearchedListOfAssets.length}");
     setState(() {
-      listOfAssets.map((asset) {
-        if (asset.record.name
-            .toLowerCase()
-            .trim()
-            .contains(new RegExp(r'' + query.toLowerCase().trim() + ''))) {
-          searchedListOfAssets.add(asset);
-        }
-      }).toList();
+      isSearching = true;
+      searchedListOfAssets = tempSearchedListOfAssets;
     });
   }
 }
