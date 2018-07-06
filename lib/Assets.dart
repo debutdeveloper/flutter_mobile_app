@@ -12,7 +12,7 @@ class Assets extends StatefulWidget {
   final CurrentUser user;
   CardViewState myState;
 
-  Assets({@required this.user, GlobalKey<CardViewState> key}) : super(key: key);
+  Assets({@required this.user});
 
   @override
   CardViewState createState() {

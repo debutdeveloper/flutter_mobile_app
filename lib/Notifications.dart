@@ -14,7 +14,7 @@ class Notifications extends StatefulWidget {
 
 class _NotificationsState extends State<Notifications> {
   List<AssetNotification> notifications = [];
-
+  BuildContext _context;
   _getNotification() async {
     try {
       print(authorizationToken);
@@ -55,6 +55,7 @@ class _NotificationsState extends State<Notifications> {
 
   @override
   Widget build(BuildContext context) {
+    _context = context;
     return new Material(
         color: Colors.black12,
         child: notifications.length > 0

@@ -60,6 +60,7 @@ class _LoginState extends State<Login> {
       });
 
       try {
+        print("LOGIN body $credentials");
         var response = await http.post(loginURL,
             body: credentials, headers: {}).timeout(timeoutDuration);
         if (response.statusCode == 200) {
@@ -207,7 +208,12 @@ class _LoginState extends State<Login> {
                             decoration: new InputDecoration(
                               hintText: "Password",
                               border: new UnderlineInputBorder(),
-                              suffixIcon: new Icon(Icons.lock),
+                              suffixIcon: new IconButton(
+                                  icon: new Icon(Icons.lock), onPressed: () {
+                                setState(() {
+                                  _obscureText = !_obscureText;
+                                });
+                              }),
                             ),
                             obscureText: _obscureText,
                           ),

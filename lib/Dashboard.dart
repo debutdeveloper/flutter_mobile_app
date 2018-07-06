@@ -47,10 +47,16 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
           searchOffStage = false;
           break;
         case 1:
+          _isSearching = false;
+          searchBarController.clear();
+          key.currentState.stopSearching();
           _appTitle = _myAssets;
           searchOffStage = true;
           break;
         case 2:
+          _isSearching = false;
+          searchBarController.clear();
+          key.currentState.stopSearching();
           _appTitle = _notifications;
           searchOffStage = true;
           break;
@@ -148,7 +154,7 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
         .of(context)
         .size;
 
-    allAssets = new Assets(key: key, user: widget.user);
+    allAssets = new Assets(user: widget.user);
     myAssets = new MyAssets(widget.user);
     notifications = new Notifications();
     return new Scaffold(

@@ -10,7 +10,7 @@ import 'package:intl/intl.dart';
 
 /// Custom UI Properties
 String authorizationToken;
-String deviceToken;
+String deviceToken = "No Token";
 double titleFontSize = 18.0;
 double subTitleFontSize = 12.0;
 double buttonTitleFontSize = 16.0;

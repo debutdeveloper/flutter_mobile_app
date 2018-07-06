@@ -20,6 +20,7 @@ class MyAssets extends StatefulWidget {
 class _CardViewState extends State<MyAssets> {
   List requestList;
   List<Request> listOfRequests = [];
+  BuildContext _context;
 
   Future getAssetHistory() async {
     try {
@@ -80,6 +81,7 @@ class _CardViewState extends State<MyAssets> {
 
   @override
   Widget build(BuildContext context) {
+    _context = context;
     return listOfRequests.length > 0
         ? getMyAssetList()
         : getNoDataView("No Asset Found");

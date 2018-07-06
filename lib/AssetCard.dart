@@ -63,10 +63,13 @@ class AssetCard extends StatelessWidget {
                                 style: new TextStyle(
                                   fontSize: descriptionFontSize,
                                 )),
-                            new Text(asset.record.category.name,
-                                style: new TextStyle(
-                                    fontSize: descriptionFontSize,
-                                    fontWeight: FontWeight.bold)),
+                            new Container(
+                              width: 80.0,
+                              child: new Text(asset.record.category.name,
+                                  style: new TextStyle(
+                                      fontSize: descriptionFontSize,
+                                      fontWeight: FontWeight.bold)),
+                            ),
                           ],
                         ),
                         new Padding(padding: const EdgeInsets.only(top: 4.0)),
