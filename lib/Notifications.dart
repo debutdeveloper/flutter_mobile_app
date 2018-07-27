@@ -231,7 +231,8 @@ class NotificationCard extends StatelessWidget {
                 new Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    new Text(notification.asset.name,
+                    new Text(
+                      notification.asset.name,
                       style: const TextStyle(
                           fontWeight: FontWeight.bold, fontSize: 20.0),
                     ),
@@ -245,14 +246,14 @@ class NotificationCard extends StatelessWidget {
                 const SizedBox(
                   height: 2.0,
                 ),
-                new Text("Request ID : $requestID",
+                new Text(
+                  "Request ID : $requestID",
                   style: const TextStyle(
                       fontWeight: FontWeight.normal, fontSize: 14.0),
                 ),
                 const SizedBox(
                   height: 8.0,
                 ),
-
                 new Text(
                   notification.description,
                   maxLines: 2,

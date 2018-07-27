@@ -125,15 +125,13 @@ class _State extends State<RequestAsset> {
         var utcStartTime = new DateFormat(format)
             .parse(_today + " " + _startTimeString)
             .toUtc();
-        var utcEndTime = new DateFormat(format).parse(
-            _today + " " + _endTimeString).toUtc();
+        var utcEndTime =
+        new DateFormat(format).parse(_today + " " + _endTimeString).toUtc();
         var formatter = new DateFormat(format);
-        var formattedStartDate = formatter.format(utcStartTime)
-            .toString()
-            .substring(0, 19);
-        var formattedEndDate = formatter.format(utcEndTime)
-            .toString()
-            .substring(0, 19);
+        var formattedStartDate =
+        formatter.format(utcStartTime).toString().substring(0, 19);
+        var formattedEndDate =
+        formatter.format(utcEndTime).toString().substring(0, 19);
 
         final String requestURL = requestAPI;
         final credentials = {
@@ -153,7 +151,7 @@ class _State extends State<RequestAsset> {
           }
         };
 
-        print(json.encode(credentials));
+        print("request credentials 1 :::: ${json.encode(credentials)}");
 
         setState(() {
           _showLoader = false;
@@ -166,7 +164,7 @@ class _State extends State<RequestAsset> {
             "Content-Type": "application/json",
           }).timeout(timeoutDuration);
           print(response.body);
-
+          print("request credentials 2 :::: ${json.encode(credentials)}");
           if (response.statusCode == 200) {
             var responseJson = json.decode(response.body);
             print("SUCCESSFULLY REQUEST SENT");
@@ -240,6 +238,7 @@ class _State extends State<RequestAsset> {
     } else {
       showOkAlert(context, "All fields are required", true);
     }
+    _purposeController.clear();
   }
 
   @override

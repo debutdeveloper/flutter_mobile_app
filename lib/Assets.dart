@@ -24,14 +24,22 @@ class Assets extends StatefulWidget {
 class CardViewState extends State<Assets> {
   BuildContext _context;
   List<Asset> listOfAssets = [];
+
   // For searching purpose
   List<Asset> searchedListOfAssets = [];
   bool isSearching = false;
+
   getAssetsList() async {
+    var body = {"req_type": "1"};
     try {
-      var response = await http.post(assetsAPI, headers: {
-        "Authorization": authorizationToken
-      }).timeout(timeoutDuration);
+      var response = await http
+          .post(assetsAPI,
+          headers: {
+            "Authorization": authorizationToken,
+            "Content-Type": "application/json",
+          },
+          body: json.encode(body))
+          .timeout(timeoutDuration);
       print(response.body);
       if (response.statusCode == 200) {
         var body = json.decode(response.body);

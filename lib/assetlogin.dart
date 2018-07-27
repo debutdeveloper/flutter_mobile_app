@@ -12,6 +12,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'utils.dart';
+
 class Login extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
@@ -25,7 +26,6 @@ class _LoginState extends State<Login> {
 
   String username = _user.text;
   String password = _pass.text;
-
 
   bool rememberMe = false;
   bool errorsOnForm = false;
@@ -43,8 +43,6 @@ class _LoginState extends State<Login> {
   bool isPasswordValid(String password) {
     return true;
   }
-
-
 
   void _validate() async {
     if (_formKey.currentState.validate()) {
@@ -103,7 +101,6 @@ class _LoginState extends State<Login> {
       });
     }
   }
-
 
   String _validateEmail(String value) {
     if (value.isEmpty || !isEmailValid(value)) {
@@ -191,9 +188,7 @@ class _LoginState extends State<Login> {
                               validator: _validateEmail,
                               focusNode: _email,
                               onFieldSubmitted: (value) {
-                                FocusScope
-                                    .of(context)
-                                    .requestFocus(_password);
+                                FocusScope.of(context).requestFocus(_password);
                               },
                               decoration: new InputDecoration(
                                 hintText: "Email ID",
@@ -209,11 +204,12 @@ class _LoginState extends State<Login> {
                               hintText: "Password",
                               border: new UnderlineInputBorder(),
                               suffixIcon: new IconButton(
-                                  icon: new Icon(Icons.lock), onPressed: () {
-                                setState(() {
-                                  _obscureText = !_obscureText;
-                                });
-                              }),
+                                  icon: new Icon(Icons.lock),
+                                  onPressed: () {
+                                    setState(() {
+                                      _obscureText = !_obscureText;
+                                    });
+                                  }),
                             ),
                             obscureText: _obscureText,
                           ),
