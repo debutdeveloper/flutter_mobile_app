@@ -26,9 +26,7 @@ class _AssetHistoryState extends State<AssetHistory> {
 
   Future getAssetHistory() async {
     final assetHistoryURL = assetDetailsAPI + widget.asset.key;
-
     print("assetHistoryURL $assetHistoryURL");
-
     setState(() {
       _showLoader = false;
     });

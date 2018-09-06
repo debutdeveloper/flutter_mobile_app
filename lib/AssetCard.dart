@@ -136,24 +136,21 @@ class AssetCard extends StatelessWidget {
           )
         ]),
         spacer,
-        new ButtonTheme(
-          height: 40.0,
-          child: new RaisedButton(
-            child: new Text(
-              'VIEW DETAILS',
-              style: new TextStyle(fontSize: buttonTitleFontSize),
-            ),
-            color: Colors.blueAccent,
-            onPressed: () {
-              Navigator.of(context).push(new MaterialPageRoute(
-                  builder: (context) =>
-                  new AssetHistory(
-                    user: user,
-                    asset: asset,
-                  )));
-            },
-            textColor: Colors.white,
+        new RaisedButton(
+          child: new Text(
+            'VIEW DETAILS',
+            style: new TextStyle(fontSize: buttonTitleFontSize),
           ),
+          color: Colors.blueAccent,
+          onPressed: () {
+            Navigator.of(context).push(new MaterialPageRoute(
+                builder: (context) =>
+                new AssetHistory(
+                  user: user,
+                  asset: asset,
+                )));
+          },
+          textColor: Colors.white,
         )
       ]),
     );

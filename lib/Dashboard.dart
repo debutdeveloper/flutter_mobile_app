@@ -125,16 +125,7 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
     return new AppBar(
       title: new Text(_appTitle),
       backgroundColor: new Color.fromRGBO(23, 88, 232, 1.0),
-      actions: <Widget>[
-        new Offstage(
-          offstage: searchOffStage,
-          child: new IconButton(
-            icon: const Icon(Icons.search),
-            onPressed: _handleSearchBegin,
-            tooltip: 'Search',
-          ),
-        )
-      ],
+
     );
   }
 
@@ -158,7 +149,7 @@ class _DashboardState extends State<Dashboard> with TickerProviderStateMixin {
     myAssets = new MyAssets(widget.user);
     notifications = new Notifications();
     return new Scaffold(
-      appBar: _isSearching ? getSearchBar() : getAppBar(),
+      appBar: getAppBar(),
       drawer: new Drawer(
         child: new ListView(
           padding: const EdgeInsets.all(0.0),

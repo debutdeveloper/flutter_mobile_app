@@ -234,7 +234,7 @@ class NotificationCard extends StatelessWidget {
                     new Text(
                       notification.asset.name,
                       style: const TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 20.0),
+                          fontWeight: FontWeight.bold, fontSize: 16.0),
                     ),
                     new Text(
                       'Starts at: ' +
