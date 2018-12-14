@@ -47,6 +47,7 @@ class _LoginState extends State<Login> {
   void _validate() async {
     if (_formKey.currentState.validate()) {
       final String loginURL = loginAPI;
+
       final credentials = {
         "email": username.toLowerCase().trim(),
         "password": password,

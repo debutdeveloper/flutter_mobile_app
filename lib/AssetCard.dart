@@ -23,9 +23,7 @@ class AssetCard extends StatelessWidget {
       elevation: 6.0,
       shape: new RoundedRectangleBorder(
           borderRadius: new BorderRadius.all(new Radius.circular(8.0))),
-      child:
-      new Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: <
-          Widget>[
+      child: new Column(children: <Widget>[
         spacer,
         new Row(children: <Widget>[
           new Padding(padding: const EdgeInsets.only(left: 12.0)),
@@ -136,22 +134,25 @@ class AssetCard extends StatelessWidget {
           )
         ]),
         spacer,
-        new RaisedButton(
-          child: new Text(
-            'VIEW DETAILS',
-            style: new TextStyle(fontSize: buttonTitleFontSize),
+        new InkWell(
+          child: new Container(
+            color: Colors.blueAccent,
+            width: double.infinity,
+            height: 40.0,
+            alignment: Alignment.center,
+            child: new Text(
+              'VIEW DETAILS',
+              style: new TextStyle(fontSize: buttonTitleFontSize,color: Colors.white),
+            ),
           ),
-          color: Colors.blueAccent,
-          onPressed: () {
+          onTap: () {
             Navigator.of(context).push(new MaterialPageRoute(
-                builder: (context) =>
-                new AssetHistory(
+                builder: (context) => new AssetHistory(
                   user: user,
                   asset: asset,
                 )));
           },
-          textColor: Colors.white,
-        )
+        ),
       ]),
     );
   }
